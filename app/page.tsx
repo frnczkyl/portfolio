@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import Image from 'next/image';
 
 export default function Portfolio() {
   const [mounted, setMounted] = useState(false);
@@ -10,7 +11,6 @@ export default function Portfolio() {
   useEffect(() => {
     setMounted(true);
 
-    // Intersection Observer for scroll animations
     const observerOptions = {
       threshold: 0.1,
     };
@@ -30,15 +30,28 @@ export default function Portfolio() {
       });
     }, observerOptions);
 
-    // Observe all sections
     const sections = ['hero', 'about', 'projects', 'skills', 'education', 'certificates', 'contact'];
     sections.forEach(sectionId => {
       const element = document.getElementById(sectionId);
       if (element) observer.observe(element);
     });
 
+    const typingInterval = setInterval(() => {
+      const line1 = document.querySelector('.line1');
+      const line2 = document.querySelector('.line2');
+      if (line1 && line2) {
+        line1.classList.remove('typing-animation');
+        line2.classList.remove('typing-animation');
+        setTimeout(() => {
+          line1.classList.add('typing-animation');
+          line2.classList.add('typing-animation');
+        }, 100);
+      }
+    }, 13500);
+
     return () => {
       observer.disconnect();
+      clearInterval(typingInterval);
     };
   }, []);
 
@@ -140,8 +153,9 @@ export default function Portfolio() {
       <nav className="fixed top-0 left-0 right-0 z-50 bg-zinc-950/80 backdrop-blur-xl border-b border-zinc-800 w-full">
 
         <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center w-full">
-          <div className={'text-2xl font-bold tracking-tight transition-all duration-700 ' + (mounted ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-4')}>
-            <span className="bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">FK</span>
+          <div className={'text-2xl font-bold tracking-tight transition-all duration-700 flex items-center gap-2 ' + (mounted ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-4')}>
+            <span className="bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">Kyle's Portfolio</span>
+            <Image src="/PixelatedIcon.gif" alt="Pixelated Icon" width={48} height={48} />
           </div>
           <div className={'flex gap-8 text-sm font-medium transition-all duration-700 delay-200 ' + (mounted ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-4')}>
             {['About', 'Projects', 'Skills', 'Contact'].map((item) => (
@@ -162,38 +176,47 @@ export default function Portfolio() {
         <div className="absolute inset-0 bg-[linear-gradient(to_right,#111111_1px,transparent_1px),linear-gradient(to_bottom,#111111_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_80%_50%_at_50%_50%,#000_70%,transparent_100%)]"></div>
         
         <div className="relative z-10 max-w-6xl mx-auto text-center">
-          <div className={visibleSections.has('hero') ? 'fade-in-up' : 'opacity-0'}>
-            <div className="inline-block mb-4 px-4 py-2 bg-cyan-500/10 border border-cyan-500/20 rounded-full text-cyan-400 text-sm font-medium">
-              Available for OJT Opportunities
-            </div>
+          <div className="typing-container">
+            <h1 className={'text-7xl md:text-9xl font-black mb-6 tracking-tighter ' + (visibleSections.has('hero') ? 'fade-in-up' : 'opacity-0')} style={{ animationDelay: '0.2s' }}>
+              <div className="typing-animation line1">
+                <span className="bg-gradient-to-b from-white to-zinc-400 bg-clip-text text-transparent">
+                  FRANCIS KYLE
+                </span>
+              </div>
+              <div className="typing-animation line2">
+                <span className="bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-600 bg-clip-text text-transparent">
+                  LORENZANA
+                </span>
+              </div>
+            </h1>
           </div>
           
-          <h1 className={'text-7xl md:text-9xl font-black mb-6 tracking-tighter ' + (visibleSections.has('hero') ? 'fade-in-up' : 'opacity-0')} style={{ animationDelay: '0.2s' }}>
-            <span className="bg-gradient-to-b from-white to-zinc-400 bg-clip-text text-transparent">
-              FRANCIS KYLE
-            </span>
-            <br />
-            <span className="bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-600 bg-clip-text text-transparent">
-              LORENZANA
-            </span>
-          </h1>
-          
-          <p className={'text-xl md:text-2xl text-zinc-400 mb-12 max-w-3xl mx-auto ' + (visibleSections.has('hero') ? 'fade-in-up' : 'opacity-0')} style={{ animationDelay: '0.4s' }}>
-            Full-Stack Developer & Software Development Student
-          </p>
+          <div className="text-center">
+            <p className={'text-xl md:text-2xl text-zinc-400 mb-12 ' + (visibleSections.has('hero') ? 'fade-in-up' : 'opacity-0')} style={{ animationDelay: '0.4s' }}>
+              Full-Stack Developer & Software Developer
+            </p>
+          </div>
+
+          <div className="h-24"></div>
           
           <div className={'flex gap-6 justify-center items-center ' + (visibleSections.has('hero') ? 'fade-in-up' : 'opacity-0')} style={{ animationDelay: '0.6s' }}>
             <a
               href="#projects"
-              className="px-8 py-4 bg-gradient-to-r from-cyan-500 to-blue-600 rounded-full font-semibold hover:shadow-[0_0_30px_rgba(6,182,212,0.5)] transition-all duration-300 hover:scale-105"
+              className="group flex items-center gap-3 px-24 py-4 bg-gradient-to-b from-zinc-300 to-zinc-400 rounded-md font-mono text-base text-zinc-800 border-b-4 border-zinc-600 hover:from-zinc-400 hover:to-zinc-500 hover:border-b-2 hover:translate-y-[2px] transition-all duration-150"
             >
-              View My Work
+              <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16m-7 6h7" />
+              </svg>
+              <span>View My Work</span>
             </a>
             <a
               href="#contact"
-              className="px-8 py-4 border border-zinc-700 rounded-full font-semibold hover:border-cyan-500 hover:bg-cyan-500/10 transition-all duration-300"
+              className="group flex items-center gap-3 px-24 py-4 bg-gradient-to-b from-zinc-300 to-zinc-400 rounded-md font-mono text-base text-zinc-800 border-b-4 border-zinc-600 hover:from-zinc-400 hover:to-zinc-500 hover:border-b-2 hover:translate-y-[2px] transition-all duration-150"
             >
-              Get In Touch
+              <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+              </svg>
+              <span>Get In Touch</span>
             </a>
           </div>
         </div>
@@ -205,66 +228,69 @@ export default function Portfolio() {
         </div>
       </section>
 
-      <section id="about" className="snap-section relative px-6">
+      <section id="about" className="snap-section relative px-6 py-20">
         <div className="max-w-6xl mx-auto">
-          <div className="grid md:grid-cols-2 gap-16 items-center">
-            <div className={visibleSections.has('about') ? 'fade-in-up' : 'opacity-0'}>
+          <div className="grid md:grid-cols-3 gap-16 items-center">
+            <div className={'md:col-span-2 ' + (visibleSections.has('about') ? 'fade-in-up' : 'opacity-0')}>
               <h2 className="text-5xl md:text-6xl font-black mb-6 tracking-tight">
                 About <span className="bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">Me</span>
               </h2>
               <div className="space-y-4 text-zinc-400 text-lg leading-relaxed">
                 <p>
-                  I am a 4th-year Software Developer student seeking an OJT opportunity to apply my technical skills in a professional environment.
-                </p>
-                <p>
-                  I have hands-on experience in full-stack development, working with frontend technologies to build responsive user interfaces, backend frameworks to develop server-side applications, and database systems to manage data effectively.
-                </p>
-                <p>
-                  I am passionate about building functional applications, eager to learn from industry professionals, and committed to delivering quality work while gaining real-world software development experience.
+                  As a 4th-year Software Development student, I specialize in full-stack development, building robust applications from front to back. I have practical experience with technologies like React, Next.js, and Django and a strong passion for creating functional, user-friendly digital experiences. I am actively seeking an OJT opportunity to apply my skills in a professional setting and contribute to real-world projects.
                 </p>
               </div>
             </div>
 
-            <div className={'relative ' + (visibleSections.has('about') ? 'fade-in-up' : 'opacity-0')} style={{ animationDelay: '0.2s' }}>
-              <div className="bg-gradient-to-br from-cyan-500/20 to-blue-600/20 rounded-3xl p-8 border border-cyan-500/20 backdrop-blur-sm">
-                <div className="space-y-6">
-                  <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-full bg-cyan-500/20 flex items-center justify-center">
-                      <svg className="w-6 h-6 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                      </svg>
-                    </div>
-                    <div>
-                      <div className="text-sm text-zinc-500">Email</div>
-                      <div className="text-zinc-200">kaelexx12@gmail.com</div>
-                    </div>
-                  </div>
+            <div className={'relative flex justify-center items-center ' + (visibleSections.has('about') ? 'fade-in-up' : 'opacity-0')} style={{ animationDelay: '0.2s' }}>
+              <div className="profile-image-container w-72 h-72 overflow-hidden rounded-full">
+                <Image
+                  src="/MeMyself.jpg"
+                  alt="Francis Kyle Lorenzana"
+                  layout="fill"
+                  objectFit="cover"
+                />
+              </div>
+            </div>
+          </div>
 
-                  <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-full bg-cyan-500/20 flex items-center justify-center">
-                      <svg className="w-6 h-6 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-                      </svg>
-                    </div>
-                    <div>
-                      <div className="text-sm text-zinc-500">Phone</div>
-                      <div className="text-zinc-200">09458924721</div>
-                    </div>
-                  </div>
+          <div className="h-20"></div> {/* Spacer div */}
 
-                  <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-full bg-cyan-500/20 flex items-center justify-center">
-                      <svg className="w-6 h-6 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                      </svg>
-                    </div>
-                    <div>
-                      <div className="text-sm text-zinc-500">Location</div>
-                      <div className="text-zinc-200">Lovely Homes Subdivision, Mohon, Talisay City, Cebu</div>
-                    </div>
-                  </div>
-                </div>
+          <div className={'mt-16 grid md:grid-cols-3 gap-8 text-center ' + (visibleSections.has('about') ? 'fade-in-up' : 'opacity-0')} style={{ animationDelay: '0.4s' }}>
+            <div className="flex items-center justify-center gap-4">
+              <div className="w-12 h-12 rounded-full bg-cyan-500/20 flex items-center justify-center">
+                <svg className="w-6 h-6 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                </svg>
+              </div>
+              <div>
+                <div className="text-sm text-zinc-500">Email</div>
+                <div className="text-zinc-200">kaelexx12@gmail.com</div>
+              </div>
+            </div>
+
+            <div className="flex items-center justify-center gap-4">
+              <div className="w-12 h-12 rounded-full bg-cyan-500/20 flex items-center justify-center">
+                <svg className="w-6 h-6 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                </svg>
+              </div>
+              <div>
+                <div className="text-sm text-zinc-500">Phone</div>
+                <div className="text-zinc-200">09458924721</div>
+              </div>
+            </div>
+
+            <div className="flex items-center justify-center gap-4">
+              <div className="w-12 h-12 rounded-full bg-cyan-500/20 flex items-center justify-center">
+                <svg className="w-6 h-6 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+              </div>
+              <div>
+                <div className="text-sm text-zinc-500">Location</div>
+                <div className="text-zinc-200">Talisay, Cebu</div>
               </div>
             </div>
           </div>
