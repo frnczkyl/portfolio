@@ -5,6 +5,8 @@ import { useEffect, useState } from 'react';
 export default function Portfolio() {
   const [mounted, setMounted] = useState(false);
   const [activeSection, setActiveSection] = useState('hero');
+  const [visibleSections, setVisibleSections] = useState<Set<string>>(new Set());
+  const [scrollProgress, setScrollProgress] = useState(0);
 
   useEffect(() => {
     setMounted(true);
@@ -20,11 +22,65 @@ export default function Portfolio() {
         return false;
       });
       if (current) setActiveSection(current);
+
+      // Calculate scroll progress
+      const scrollHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+      const progress = (window.scrollY / scrollHeight) * 100;
+      setScrollProgress(progress);
     };
 
+    // Intersection Observer for scroll animations
+    const observerOptions = {
+      threshold: 0.1,
+      rootMargin: '0px 0px -100px 0px'
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          setVisibleSections(prev => new Set(prev).add(entry.target.id));
+        }
+      });
+    }, observerOptions);
+
+    // Observe all sections
+    const sections = ['hero', 'about', 'projects', 'skills', 'education', 'certificates', 'contact'];
+    sections.forEach(sectionId => {
+      const element = document.getElementById(sectionId);
+      if (element) observer.observe(element);
+    });
+
     window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      observer.disconnect();
+    };
   }, []);
+
+  useEffect(() => {
+    const observerOptions = {
+      threshold: 0.1,
+      rootMargin: '0px 0px -100px 0px'
+    };
+
+    const observerCallback = (entries: IntersectionObserverEntry[]) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          setVisibleSections(prev => new Set(prev).add(entry.target.id));
+        }
+      });
+    };
+
+    const observer = new IntersectionObserver(observerCallback, observerOptions);
+
+    const sections = document.querySelectorAll('section[id]');
+    sections.forEach(section => observer.observe(section));
+
+    const animatedElements = document.querySelectorAll('.animate-on-scroll');
+    animatedElements.forEach(el => observer.observe(el));
+
+    return () => observer.disconnect();
+  }, [mounted]);
 
   const projects = [
     {
@@ -118,28 +174,32 @@ export default function Portfolio() {
   ];
 
   return (
-    <div className="min-h-screen bg-zinc-950 text-zinc-50">
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-zinc-950/80 backdrop-blur-xl border-b border-zinc-800">
-        <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+    <div className="min-h-screen bg-zinc-950 text-zinc-50 w-full">
+      <nav className="fixed top-0 left-0 right-0 z-50 bg-zinc-950/80 backdrop-blur-xl border-b border-zinc-800 w-full">
+        <div 
+          className="absolute bottom-0 left-0 h-0.5 bg-gradient-to-r from-cyan-400 to-blue-500 transition-all duration-300"
+          style={{ width: `${scrollProgress}%` }}
+        ></div>
+        <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center w-full">
           <div className={'text-2xl font-bold tracking-tight transition-all duration-700 ' + (mounted ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-4')}>
             <span className="bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">FK</span>
           </div>
           <div className={'flex gap-8 text-sm font-medium transition-all duration-700 delay-200 ' + (mounted ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-4')}>
             {['About', 'Projects', 'Skills', 'Contact'].map((item) => (
-              
+              <a
                 key={item}
                 href={'#' + item.toLowerCase()}
-                className="hover:text-cyan-400 transition-colors relative group"
+                className={'hover:text-cyan-400 transition-colors relative group ' + (activeSection === item.toLowerCase() ? 'text-cyan-400' : '')}
               >
                 {item}
-                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-cyan-400 group-hover:w-full transition-all duration-300"></span>
+                <span className={'absolute -bottom-1 left-0 h-0.5 bg-cyan-400 transition-all duration-300 ' + (activeSection === item.toLowerCase() ? 'w-full' : 'w-0 group-hover:w-full')}></span>
               </a>
             ))}
           </div>
         </div>
       </nav>
 
-      <section id="hero" className="min-h-screen flex items-center justify-center relative overflow-hidden px-6">
+      <section id="hero" className="min-h-screen flex items-center justify-center relative overflow-hidden px-6 w-full">
         <div className="absolute inset-0 bg-[linear-gradient(to_right,#111111_1px,transparent_1px),linear-gradient(to_bottom,#111111_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_80%_50%_at_50%_50%,#000_70%,transparent_100%)]"></div>
         
         <div className="relative z-10 max-w-6xl mx-auto text-center">
@@ -164,13 +224,13 @@ export default function Portfolio() {
           </p>
           
           <div className={'flex gap-6 justify-center items-center transition-all duration-1000 delay-600 ' + (mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8')}>
-            
+            <a
               href="#projects"
               className="px-8 py-4 bg-gradient-to-r from-cyan-500 to-blue-600 rounded-full font-semibold hover:shadow-[0_0_30px_rgba(6,182,212,0.5)] transition-all duration-300 hover:scale-105"
             >
               View My Work
             </a>
-            
+            <a
               href="#contact"
               className="px-8 py-4 border border-zinc-700 rounded-full font-semibold hover:border-cyan-500 hover:bg-cyan-500/10 transition-all duration-300"
             >
@@ -186,10 +246,10 @@ export default function Portfolio() {
         </div>
       </section>
 
-      <section id="about" className="py-32 px-6 relative">
-        <div className="max-w-6xl mx-auto">
-          <div className="grid md:grid-cols-2 gap-16 items-center">
-            <div>
+      <section id="about" className="py-32 px-6 relative w-full">
+        <div className={`max-w-6xl mx-auto transition-all duration-1000 ${visibleSections.has('about') ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-20'}`}>
+          <div className="grid md:grid-cols-2 gap-16 items-center w-full">
+            <div className={`transition-all duration-1000 delay-200 w-full ${visibleSections.has('about') ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-20'}`}>
               <h2 className="text-5xl md:text-6xl font-black mb-6 tracking-tight">
                 About <span className="bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">Me</span>
               </h2>
@@ -206,7 +266,7 @@ export default function Portfolio() {
               </div>
             </div>
 
-            <div className="relative">
+            <div className={'relative transition-all duration-1000 delay-400 w-full ' + (visibleSections.has('about') ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-20')}>
               <div className="bg-gradient-to-br from-cyan-500/20 to-blue-600/20 rounded-3xl p-8 border border-cyan-500/20 backdrop-blur-sm">
                 <div className="space-y-6">
                   <div className="flex items-center gap-4">
@@ -242,7 +302,7 @@ export default function Portfolio() {
                     </div>
                     <div>
                       <div className="text-sm text-zinc-500">Location</div>
-                      <div className="text-zinc-200">Talisay City, Cebu</div>
+                      <div className="text-zinc-200">Lovely Homes Subdivision, Mohon, Talisay City, Cebu</div>
                     </div>
                   </div>
                 </div>
@@ -252,17 +312,18 @@ export default function Portfolio() {
         </div>
       </section>
 
-      <section id="projects" className="py-32 px-6 bg-zinc-900/50">
+      <section id="projects" className="py-32 px-6 bg-zinc-900/50 w-full">
         <div className="max-w-7xl mx-auto">
-          <h2 className="text-5xl md:text-6xl font-black mb-16 tracking-tight text-center">
+          <h2 className={'text-5xl md:text-6xl font-black mb-16 tracking-tight text-center transition-all duration-1000 ' + (visibleSections.has('projects') ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-20')}>
             Featured <span className="bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">Projects</span>
           </h2>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 w-full justify-items-center">
             {projects.map((project, index) => (
               <div
                 key={project.title}
-                className="group relative bg-zinc-900 rounded-2xl p-6 border border-zinc-800 hover:border-cyan-500/50 transition-all duration-500 hover:shadow-[0_0_30px_rgba(6,182,212,0.1)] overflow-hidden"
+                className={'group relative bg-zinc-900 rounded-2xl p-6 border border-zinc-800 hover:border-cyan-500/50 transition-all duration-500 hover:shadow-[0_0_30px_rgba(6,182,212,0.1)] overflow-hidden w-full max-w-sm ' + (visibleSections.has('projects') ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-20')}
+                style={{ transitionDelay: `${index * 100}ms` }}
               >
                 <div className={'absolute inset-0 bg-gradient-to-br ' + project.color + ' opacity-0 group-hover:opacity-10 transition-opacity duration-500'}></div>
                 
@@ -290,17 +351,18 @@ export default function Portfolio() {
         </div>
       </section>
 
-      <section id="skills" className="py-32 px-6">
+      <section id="skills" className="py-32 px-6 w-full">
         <div className="max-w-6xl mx-auto">
-          <h2 className="text-5xl md:text-6xl font-black mb-16 tracking-tight text-center">
+          <h2 className={'text-5xl md:text-6xl font-black mb-16 tracking-tight text-center transition-all duration-1000 ' + (visibleSections.has('skills') ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-20')}>
             Technical <span className="bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">Skills</span>
           </h2>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 w-full justify-items-center">
             {skills.map((skillSet, index) => (
               <div
                 key={skillSet.category}
-                className="bg-zinc-900/50 rounded-2xl p-6 border border-zinc-800 hover:border-cyan-500/50 transition-all duration-300"
+                className={'bg-zinc-900/50 rounded-2xl p-6 border border-zinc-800 hover:border-cyan-500/50 transition-all duration-500 w-full max-w-sm ' + (visibleSections.has('skills') ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-20')}
+                style={{ transitionDelay: `${index * 100}ms` }}
               >
                 <h3 className="text-xl font-bold mb-4 text-cyan-400">{skillSet.category}</h3>
                 <ul className="space-y-2">
@@ -317,17 +379,18 @@ export default function Portfolio() {
         </div>
       </section>
 
-      <section id="education" className="py-32 px-6 bg-zinc-900/50">
+      <section id="education" className="py-32 px-6 bg-zinc-900/50 w-full">
         <div className="max-w-4xl mx-auto">
-          <h2 className="text-5xl md:text-6xl font-black mb-16 tracking-tight text-center">
+          <h2 className={'text-5xl md:text-6xl font-black mb-16 tracking-tight text-center transition-all duration-1000 ' + (visibleSections.has('education') ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-20')}>
             <span className="bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">Education</span>
           </h2>
 
-          <div className="space-y-8">
+          <div className="space-y-8 w-full">
             {education.map((edu, index) => (
               <div
                 key={edu.school}
-                className="relative pl-8 border-l-2 border-cyan-500/30"
+                className={'relative pl-8 border-l-2 border-cyan-500/30 transition-all duration-700 w-full max-w-2xl mx-auto ' + (visibleSections.has('education') ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-20')}
+                style={{ transitionDelay: `${index * 150}ms` }}
               >
                 <div className="absolute left-0 top-0 w-4 h-4 -translate-x-[9px] rounded-full bg-cyan-500 border-4 border-zinc-950"></div>
                 
@@ -345,17 +408,18 @@ export default function Portfolio() {
         </div>
       </section>
 
-      <section id="certificates" className="py-32 px-6">
+      <section id="certificates" className="py-32 px-6 w-full">
         <div className="max-w-6xl mx-auto">
-          <h2 className="text-5xl md:text-6xl font-black mb-16 tracking-tight text-center">
+          <h2 className={'text-5xl md:text-6xl font-black mb-16 tracking-tight text-center transition-all duration-1000 ' + (visibleSections.has('certificates') ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-20')}>
             <span className="bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">Certificates</span>
           </h2>
 
-          <div className="grid md:grid-cols-2 gap-4">
+          <div className="grid md:grid-cols-2 gap-4 w-full justify-items-center">
             {certificates.map((cert, index) => (
               <div
                 key={cert}
-                className="bg-zinc-900/50 rounded-xl p-6 border border-zinc-800 hover:border-cyan-500/50 transition-all duration-300 flex items-center gap-4"
+                className={'bg-zinc-900/50 rounded-xl p-6 border border-zinc-800 hover:border-cyan-500/50 transition-all duration-500 flex items-center gap-4 w-full max-w-lg ' + (visibleSections.has('certificates') ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-20')}
+                style={{ transitionDelay: `${index * 80}ms` }}
               >
                 <div className="w-12 h-12 rounded-full bg-cyan-500/20 flex items-center justify-center flex-shrink-0">
                   <svg className="w-6 h-6 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -369,23 +433,23 @@ export default function Portfolio() {
         </div>
       </section>
 
-      <section id="contact" className="py-32 px-6 bg-zinc-900/50">
-        <div className="max-w-4xl mx-auto text-center">
+      <section id="contact" className="py-32 px-6 bg-zinc-900/50 w-full">
+        <div className={'max-w-4xl mx-auto text-center transition-all duration-1000 ' + (visibleSections.has('contact') ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-20')}>
           <h2 className="text-5xl md:text-6xl font-black mb-8 tracking-tight">
             Let's <span className="bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">Connect</span>
           </h2>
-          <p className="text-xl text-zinc-400 mb-12 max-w-2xl mx-auto">
+          <p className={'text-xl text-zinc-400 mb-12 max-w-2xl mx-auto transition-all duration-1000 delay-200 ' + (visibleSections.has('contact') ? 'opacity-100' : 'opacity-0')}>
             I'm actively seeking OJT opportunities. Feel free to reach out if you'd like to discuss potential collaborations or just want to connect!
           </p>
           
-          <div className="flex flex-col sm:flex-row gap-6 justify-center">
-            
+          <div className={'flex flex-col sm:flex-row gap-6 justify-center transition-all duration-1000 delay-400 ' + (visibleSections.has('contact') ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10')}>
+            <a
               href="mailto:kaelexx12@gmail.com"
               className="px-8 py-4 bg-gradient-to-r from-cyan-500 to-blue-600 rounded-full font-semibold hover:shadow-[0_0_30px_rgba(6,182,212,0.5)] transition-all duration-300 hover:scale-105"
             >
               Send me an email
             </a>
-            
+            <a
               href="tel:09458924721"
               className="px-8 py-4 border border-zinc-700 rounded-full font-semibold hover:border-cyan-500 hover:bg-cyan-500/10 transition-all duration-300"
             >
@@ -395,7 +459,7 @@ export default function Portfolio() {
         </div>
       </section>
 
-      <footer className="border-t border-zinc-800 py-12 px-6">
+      <footer className="border-t border-zinc-800 py-12 px-6 w-full">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
           <div className="text-zinc-500">
             © 2024 Francis Kyle Lorenzana. All rights reserved.
@@ -417,6 +481,39 @@ export default function Portfolio() {
           to {
             opacity: 1;
             transform: translateY(0);
+          }
+        }
+        
+        @keyframes slideInLeft {
+          from {
+            opacity: 0;
+            transform: translateX(-30px);
+          }
+          to {
+            opacity: 1;
+            transform: translateX(0);
+          }
+        }
+        
+        @keyframes slideInRight {
+          from {
+            opacity: 0;
+            transform: translateX(30px);
+          }
+          to {
+            opacity: 1;
+            transform: translateX(0);
+          }
+        }
+        
+        @keyframes scaleIn {
+          from {
+            opacity: 0;
+            transform: scale(0.9);
+          }
+          to {
+            opacity: 1;
+            transform: scale(1);
           }
         }
       `}</style>
