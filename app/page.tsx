@@ -1,12 +1,68 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import Image from 'next/image';
 
 export default function Portfolio() {
   const [mounted, setMounted] = useState(false);
   const [activeSection, setActiveSection] = useState('hero');
   const [visibleSections, setVisibleSections] = useState<Set<string>>(new Set());
+
+  const projects = [
+    {
+      title: "Ruined Light",
+      description: "A game developed using only Java alone. This is an RPG game where you have to defeat each level to reach the boss level. It also has different characters.",
+      tags: ["Java", "Game Development", "RPG"],
+      image: "/RuinedLight.png",
+      link: "https://github.com/frnczkyl/Ruined_Light_OOP1_PROJECT",
+      color: "from-gray-400 to-gray-600"
+    },
+    {
+      title: "ChipIn",
+      description: "Collaborative expense tracking platform with expense input system, participant management, and automated cost-splitting calculations. Clean, user-friendly interface for group events.",
+      tags: ["Java", "React.js", "Android"],
+      color: "from-blue-500 to-cyan-600"
+    },
+    {
+      title: "Sleepsync",
+      description: "Full-stack sleep tracking web application with pattern monitoring, personalized relaxation tips, optimal bedtime calculations, and customizable alarm scheduling.",
+      tags: ["Django", "Python", "Healthcare"],
+      color: "from-purple-500 to-pink-600"
+    },
+    {
+      title: "Wildlitz",
+      description: "Grade 3 learning platform with interactive educational activities. Full-stack development for assigned modules to enhance student engagement.",
+      tags: ["Django", "Python", "React.js", "Education"],
+      color: "from-green-500 to-teal-600"
+    },
+    {
+      title: "Russian Roulette",
+      description: "Turn-based Java game with XAMPP database management, featuring data persistence and game state tracking throughout gameplay.",
+      tags: ["Java", "XAMPP", "Game Development"],
+      color: "from-red-500 to-rose-600"
+    },
+    {
+      title: "Identity: Fragments of Me",
+      description: "Turn-based 2D game developed for GDAP gamified event. Created visual assets and contributed to main concept using Godot IDE.",
+      tags: ["Godot", "C#", "Game Design"],
+      color: "from-indigo-500 to-purple-600"
+    }
+  ];
+
+  const [currentProject, setCurrentProject] = useState(0);
+  const carouselRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (carouselRef.current) {
+      const cardWidth = 384; // w-96
+      const margin = 16; // mx-4
+      const scrollTo = currentProject * (cardWidth + margin * 2) + cardWidth / 2 - carouselRef.current.offsetWidth / 2;
+      carouselRef.current.scrollTo({
+        left: scrollTo,
+        behavior: 'smooth',
+      });
+    }
+  }, [currentProject]);
 
   useEffect(() => {
     setMounted(true);
@@ -54,47 +110,6 @@ export default function Portfolio() {
       clearInterval(typingInterval);
     };
   }, []);
-
-
-
-  const projects = [
-    {
-      title: "Wildroute",
-      description: "Route-finding application with Firebase integration, featuring fast route optimization with jeepney codes for schools, malls, and destinations across Cebu City.",
-      tags: ["Firebase", "Route Optimization", "Geolocation"],
-      color: "from-orange-500 to-red-600"
-    },
-    {
-      title: "ChipIn",
-      description: "Collaborative expense tracking platform with expense input system, participant management, and automated cost-splitting calculations. Clean, user-friendly interface for group events.",
-      tags: ["Java", "React.js", "Android"],
-      color: "from-blue-500 to-cyan-600"
-    },
-    {
-      title: "Sleepsync",
-      description: "Full-stack sleep tracking web application with pattern monitoring, personalized relaxation tips, optimal bedtime calculations, and customizable alarm scheduling.",
-      tags: ["Django", "Python", "Healthcare"],
-      color: "from-purple-500 to-pink-600"
-    },
-    {
-      title: "Wildlitz",
-      description: "Grade 3 learning platform with interactive educational activities. Full-stack development for assigned modules to enhance student engagement.",
-      tags: ["Django", "Python", "React.js", "Education"],
-      color: "from-green-500 to-teal-600"
-    },
-    {
-      title: "Russian Roulette",
-      description: "Turn-based Java game with XAMPP database management, featuring data persistence and game state tracking throughout gameplay.",
-      tags: ["Java", "XAMPP", "Game Development"],
-      color: "from-red-500 to-rose-600"
-    },
-    {
-      title: "Identity: Fragments of Me",
-      description: "Turn-based 2D game developed for GDAP gamified event. Created visual assets and contributed to main concept using Godot IDE.",
-      tags: ["Godot", "C#", "Game Design"],
-      color: "from-indigo-500 to-purple-600"
-    }
-  ];
 
   const skills = [
     {
@@ -193,7 +208,7 @@ export default function Portfolio() {
           
           <div className="text-center">
             <p className={'text-xl md:text-2xl text-zinc-400 mb-12 ' + (visibleSections.has('hero') ? 'fade-in-up' : 'opacity-0')} style={{ animationDelay: '0.4s' }}>
-              Full-Stack Developer & Software Developer
+              Full-Stack Developer
             </p>
           </div>
 
@@ -202,21 +217,21 @@ export default function Portfolio() {
           <div className={'flex gap-6 justify-center items-center ' + (visibleSections.has('hero') ? 'fade-in-up' : 'opacity-0')} style={{ animationDelay: '0.6s' }}>
             <a
               href="#projects"
-              className="group flex items-center gap-3 px-24 py-4 bg-gradient-to-b from-zinc-300 to-zinc-400 rounded-md font-mono text-base text-zinc-800 border-b-4 border-zinc-600 hover:from-zinc-400 hover:to-zinc-500 hover:border-b-2 hover:translate-y-[2px] transition-all duration-150"
+              className="group flex items-center gap-3 px-24 py-4 bg-gradient-to-b from-zinc-300 to-zinc-400 rounded-md font-mono text-zinc-800 border-b-4 border-zinc-600 hover:from-zinc-400 hover:to-zinc-500 hover:border-b-2 hover:translate-y-[2px] transition-all duration-150"
             >
               <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16m-7 6h7" />
               </svg>
-              <span>View My Work</span>
+              <span className="text-md">View My Work</span>
             </a>
             <a
               href="#contact"
-              className="group flex items-center gap-3 px-24 py-4 bg-gradient-to-b from-zinc-300 to-zinc-400 rounded-md font-mono text-base text-zinc-800 border-b-4 border-zinc-600 hover:from-zinc-400 hover:to-zinc-500 hover:border-b-2 hover:translate-y-[2px] transition-all duration-150"
+              className="group flex items-center gap-3 px-24 py-4 bg-gradient-to-b from-zinc-300 to-zinc-400 rounded-md font-mono text-zinc-800 border-b-4 border-zinc-600 hover:from-zinc-400 hover:to-zinc-500 hover:border-b-2 hover:translate-y-[2px] transition-all duration-150"
             >
               <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
               </svg>
-              <span>Get In Touch</span>
+              <span className="text-md">Get In Touch</span>
             </a>
           </div>
         </div>
@@ -247,8 +262,9 @@ export default function Portfolio() {
                 <Image
                   src="/MeMyself.jpg"
                   alt="Francis Kyle Lorenzana"
-                  layout="fill"
-                  objectFit="cover"
+                  width={288}
+                  height={288}
+                  className="rounded-full object-cover"
                 />
               </div>
             </div>
@@ -297,41 +313,96 @@ export default function Portfolio() {
         </div>
       </section>
 
-      <section id="projects" className="snap-section px-6 bg-zinc-900/50">
+      <section id="projects" className="snap-section px-6 bg-zinc-900/50 py-20">
         <div className="max-w-7xl mx-auto">
           <h2 className={'text-5xl md:text-6xl font-black mb-16 tracking-tight text-center ' + (visibleSections.has('projects') ? 'fade-in-up' : 'opacity-0')}>
             Featured <span className="bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">Projects</span>
           </h2>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 justify-items-center">
-            {projects.map((project, index) => (
+          <div className="relative w-full flex flex-col items-center">
+            {/* Carousel container */}
+            <div className="w-full overflow-hidden">
               <div
-                key={project.title}
-                className={'group relative bg-zinc-900 rounded-2xl p-6 border border-zinc-800 hover:border-cyan-500/50 transition-all duration-500 hover:shadow-[0_0_30px_rgba(6,182,212,0.1)] overflow-hidden max-w-sm ' + (visibleSections.has('projects') ? 'fade-in-up' : 'opacity-0')}
-                style={{ animationDelay: `${index * 100}ms` }}
+                className="flex items-center transition-transform duration-500 ease-in-out"
+                style={{ transform: `translateX(calc(50% - ${currentProject * 384}px - 192px + 1rem))` }}
               >
-                <div className={'absolute inset-0 bg-gradient-to-br ' + project.color + ' opacity-0 group-hover:opacity-10 transition-opacity duration-500'}></div>
-                
-                <div className="relative z-10">
-                  <h3 className="text-2xl font-bold mb-3 group-hover:text-cyan-400 transition-colors">
-                    {project.title}
-                  </h3>
-                  <p className="text-zinc-400 mb-4 leading-relaxed">
-                    {project.description}
-                  </p>
-                  <div className="flex flex-wrap gap-2">
-                    {project.tags.map(tag => (
-                      <span
-                        key={tag}
-                        className="px-3 py-1 bg-zinc-800 rounded-full text-xs font-medium text-cyan-400 border border-zinc-700"
-                      >
-                        {tag}
-                      </span>
-                    ))}
+                {projects.map((project, index) => (
+                  <div
+                    key={project.title}
+                    className="flex-shrink-0 w-96 mx-4 cursor-pointer"
+                    onClick={() => setCurrentProject(index)}
+                    style={{
+                      transform: `scale(${currentProject === index ? 1 : 0.8})`,
+                      opacity: currentProject === index ? 1 : 0.5,
+                      transition: 'transform 0.5s ease-in-out, opacity 0.5s ease-in-out',
+                    }}
+                  >
+                    <div
+                      className={'group relative bg-zinc-900 rounded-2xl p-6 border border-zinc-800 hover:border-cyan-500/50 transition-all duration-500 hover:shadow-[0_0_30px_rgba(6,182,212,0.1)] overflow-hidden w-full h-full'}
+                    >
+                      <div className={'absolute inset-0 bg-gradient-to-br ' + project.color + ' opacity-0 group-hover:opacity-10 transition-opacity duration-500'}></div>
+                      
+                      <div className="relative z-10">
+                        {project.image && (
+                          <div className="w-full h-48 relative">
+                            <Image
+                              src={project.image}
+                              alt={project.title}
+                              width={400}
+                              height={200}
+                              className="rounded-t-2xl object-cover"
+                            />
+                          </div>
+                        )}
+                        <h3 className="text-2xl font-bold mt-4 mb-3 group-hover:text-cyan-400 transition-colors">
+                          {project.title}
+                        </h3>
+                        <p className="text-zinc-400 mb-4 leading-relaxed h-24">
+                          {project.description}
+                        </p>
+                        <div className="flex flex-wrap gap-2">
+                          {project.tags.map(tag => (
+                            <span
+                              key={tag}
+                              className="px-3 py-1 bg-zinc-800 rounded-full text-xs font-medium text-cyan-400 border border-zinc-700"
+                            >
+                              {tag}
+                            </span>
+                          ))}
+                        </div>
+                        {project.link && (
+                          <a
+                            href={project.link}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="mt-4 inline-flex items-center gap-2 px-4 py-2 bg-transparent border border-zinc-700 rounded-md text-white hover:bg-zinc-800 transition-colors"
+                          >
+                            <Image
+                              src="/GithubLogo.png"
+                              alt="GitHub Logo"
+                              width={24}
+                              height={24}
+                            />
+                            <span>View Proof</span>
+                          </a>
+                        )}
+                      </div>
+                    </div>
                   </div>
-                </div>
+                ))}
               </div>
-            ))}
+            </div>
+
+            {/* Navigation Dots */}
+            <div className="flex gap-4 mt-8">
+              {projects.map((_, index) => (
+                <div
+                  key={index}
+                  className={'cursor-pointer w-3 h-3 rounded-full transition-all duration-300 ' + (currentProject === index ? 'bg-cyan-500 scale-125' : 'bg-zinc-700')}
+                  onClick={() => setCurrentProject(index)}
+                ></div>
+              ))}
+            </div>
           </div>
         </div>
       </section>
@@ -373,7 +444,7 @@ export default function Portfolio() {
           <div className="space-y-8">
             {education.map((edu, index) => (
               <div
-                key={edu.school}
+                key={`${edu.school}-${index}`}
                 className={'relative pl-8 border-l-2 border-cyan-500/30 transition-all duration-700 max-w-2xl mx-auto ' + (visibleSections.has('education') ? 'fade-in-up' : 'opacity-0')}
                 style={{ animationDelay: `${index * 150}ms` }}
               >
