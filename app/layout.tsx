@@ -36,6 +36,13 @@ export default function RootLayout({
       <body
         className={`${spaceGrotesk.variable} ${jetbrainsMono.variable} antialiased`}
       >
+        <video
+          src="/Background2.mp4"
+          autoPlay
+          loop
+          muted
+          className="fixed inset-0 w-full h-full object-cover -z-10"
+        ></video>
         {children}
       </body>
     </html>

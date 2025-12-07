@@ -21,30 +21,43 @@ export default function Portfolio() {
       title: "ChipIn",
       description: "Collaborative expense tracking platform with expense input system, participant management, and automated cost-splitting calculations. Clean, user-friendly interface for group events.",
       tags: ["Java", "React.js", "Android"],
+      image: "/ChipIn.png",
+      link: "https://github.com/Jeskunnn/ChipIn",
+      projectLink: "https://chip-in-phi.vercel.app/",
       color: "from-blue-500 to-cyan-600"
     },
     {
       title: "Sleepsync",
       description: "Full-stack sleep tracking web application with pattern monitoring, personalized relaxation tips, optimal bedtime calculations, and customizable alarm scheduling.",
       tags: ["Django", "Python", "Healthcare"],
+      image: "/SleepSync.png",
+      link: "https://github.com/ciddysed/IT342_SleepSync",
+      projectLink: "https://sleepsyncapp.netlify.app",
       color: "from-purple-500 to-pink-600"
     },
     {
       title: "Wildlitz",
       description: "Grade 3 learning platform with interactive educational activities. Full-stack development for assigned modules to enhance student engagement.",
       tags: ["Django", "Python", "React.js", "Education"],
+      image: "/WildLitz.png",
+      link: "https://github.com/Nokitaki/WildLitz-Capstone",
+      projectLink: "https://wildlitz-capstone-raeg.onrender.com/",
       color: "from-green-500 to-teal-600"
     },
     {
       title: "Russian Roulette",
       description: "Turn-based Java game with XAMPP database management, featuring data persistence and game state tracking throughout gameplay.",
       tags: ["Java", "XAMPP", "Game Development"],
+      image: "/RussianRoulette.jpg",
+      link: "https://github.com/danrave1234/OOP2_FinalProj",
       color: "from-red-500 to-rose-600"
     },
     {
       title: "Identity: Fragments of Me",
       description: "Turn-based 2D game developed for GDAP gamified event. Created visual assets and contributed to main concept using Godot IDE.",
       tags: ["Godot", "C#", "Game Design"],
+      image: "/Identity.jpg",
+      link: "https://github.com/danrave1234/Godot-Project",
       color: "from-indigo-500 to-purple-600"
     }
   ];
@@ -164,7 +177,7 @@ export default function Portfolio() {
   ];
 
   return (
-    <div className="snap-container bg-zinc-950 text-zinc-50 w-full">
+    <div className="snap-container text-zinc-50 w-full">
       <nav className="fixed top-0 left-0 right-0 z-50 bg-zinc-950/80 backdrop-blur-xl border-b border-zinc-800 w-full">
 
         <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center w-full">
@@ -314,12 +327,13 @@ export default function Portfolio() {
       </section>
 
       <section id="projects" className="snap-section px-6 bg-zinc-900/50 py-20">
-        <div className="max-w-7xl mx-auto">
-          <h2 className={'text-5xl md:text-6xl font-black mb-16 tracking-tight text-center ' + (visibleSections.has('projects') ? 'fade-in-up' : 'opacity-0')}>
+        <div className="max-w-7xl mx-auto h-full flex flex-col items-center">
+          <div className="h-16"></div>
+          <h2 className={'text-5xl md:text-6xl font-black tracking-tight text-center ' + (visibleSections.has('projects') ? 'fade-in-up' : 'opacity-0')}>
             Featured <span className="bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">Projects</span>
-          </h2>
-
-          <div className="relative w-full flex flex-col items-center">
+                    </h2>
+                    <div className="h-16"></div>
+                    <div className="relative w-full flex flex-col items-center">
             {/* Carousel container */}
             <div className="w-full overflow-hidden">
               <div
@@ -338,54 +352,69 @@ export default function Portfolio() {
                     }}
                   >
                     <div
-                      className={'group relative bg-zinc-900 rounded-2xl p-6 border border-zinc-800 hover:border-cyan-500/50 transition-all duration-500 hover:shadow-[0_0_30px_rgba(6,182,212,0.1)] overflow-hidden w-full h-full'}
+                      className={'relative bg-zinc-900 rounded-2xl p-6 border border-zinc-800 hover:border-cyan-500/50 transition-all duration-500 hover:shadow-[0_0_30px_rgba(6,182,212,0.1)] w-full'}
                     >
-                      <div className={'absolute inset-0 bg-gradient-to-br ' + project.color + ' opacity-0 group-hover:opacity-10 transition-opacity duration-500'}></div>
+                      <div className={'absolute inset-0 bg-gradient-to-br ' + project.color + ' opacity-0 transition-opacity duration-500'}></div>
                       
-                      <div className="relative z-10">
+                      <div className="relative z-10 flex flex-col">
                         {project.image && (
-                          <div className="w-full h-48 relative">
+                          <div className="w-full h-48 relative hover:overflow-visible">
                             <Image
                               src={project.image}
                               alt={project.title}
-                              width={400}
-                              height={200}
-                              className="rounded-t-2xl object-cover"
+                              layout="fill"
+                              className="rounded-t-2xl object-cover hover:scale-125 hover:translate-y-8 transition-all duration-500 hover:shadow-cyan-500/50 hover:shadow-2xl"
                             />
                           </div>
                         )}
-                        <h3 className="text-2xl font-bold mt-4 mb-3 group-hover:text-cyan-400 transition-colors">
+                        <h3 className="text-2xl font-bold mt-8 mb-3 transition-colors text-cyan-400">
                           {project.title}
                         </h3>
-                        <p className="text-zinc-400 mb-4 leading-relaxed h-24">
-                          {project.description}
-                        </p>
-                        <div className="flex flex-wrap gap-2">
-                          {project.tags.map(tag => (
-                            <span
-                              key={tag}
-                              className="px-3 py-1 bg-zinc-800 rounded-full text-xs font-medium text-cyan-400 border border-zinc-700"
-                            >
-                              {tag}
-                            </span>
-                          ))}
+                        <div>
+                          <p className="text-zinc-400 mb-8 leading-relaxed">
+                            {project.description}
+                          </p>
                         </div>
-                        {project.link && (
-                          <a
-                            href={project.link}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="mt-4 inline-flex items-center gap-2 px-4 py-2 bg-transparent border border-zinc-700 rounded-md text-white hover:bg-zinc-800 transition-colors"
-                          >
-                            <Image
-                              src="/GithubLogo.png"
-                              alt="GitHub Logo"
-                              width={24}
-                              height={24}
-                            />
-                            <span>View Proof</span>
-                          </a>
-                        )}
+                        <div className="h-8"></div>
+                        <div>
+                          <div className="flex justify-center gap-4">
+                            {project.link && (
+                              <a
+                                href={project.link}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="bg-gradient-to-r from-cyan-500 to-blue-600 rounded-full font-semibold hover:shadow-[0_0_30px_rgba(6,182,212,0.5)] transition-all duration-300 hover:scale-105 inline-flex items-center gap-2 justify-center"
+                                style={{ padding: '0.4rem 0.8rem' }}
+                              >
+                                <Image
+                                  src="/GithubLogo.png"
+                                  alt="GitHub Logo"
+                                  width={20}
+                                  height={20}
+                                />
+                                <span className="text-xs">View Proof</span>
+                              </a>
+                            )}
+                            {project.projectLink && (
+                              <a
+                                href={project.projectLink}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="bg-gradient-to-r from-cyan-500 to-blue-600 rounded-full font-semibold hover:shadow-[0_0_30px_rgba(6,182,212,0.5)] transition-all duration-300 hover:scale-105 inline-flex items-center gap-2 justify-center"
+                                style={{ padding: '0.4rem 0.8rem' }}
+                              >
+                                <Image
+                                  src="/Books.png"
+                                  alt="Book Icon"
+                                  width={20}
+                                  height={20}
+                                />
+                                <span className="text-xs">View Project</span>
+                              </a>
+                            )}
+                          </div>
+                        </div>
+                        <div className="h-8"></div>
                       </div>
                     </div>
                   </div>
@@ -393,16 +422,19 @@ export default function Portfolio() {
               </div>
             </div>
 
+            <div className="h-16"></div>
+
             {/* Navigation Dots */}
-            <div className="flex gap-4 mt-8">
+            <div className="flex gap-4">
               {projects.map((_, index) => (
                 <div
                   key={index}
-                  className={'cursor-pointer w-3 h-3 rounded-full transition-all duration-300 ' + (currentProject === index ? 'bg-cyan-500 scale-125' : 'bg-zinc-700')}
+                  className={'cursor-pointer w-2 h-2 rounded-full transition-all duration-300 ' + (currentProject === index ? 'bg-cyan-500 scale-125' : 'bg-zinc-700')}
                   onClick={() => setCurrentProject(index)}
                 ></div>
               ))}
             </div>
+            <div className="h-16"></div>
           </div>
         </div>
       </section>
