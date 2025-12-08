@@ -38,7 +38,7 @@ body {
 .snap-section {
   scroll-snap-align: start;
   height: 100vh;
-  width: 100vw;
+  width: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -167,4 +167,8 @@ body {
 @keyframes blink-caret {
   from, to { border-color: transparent }
   50% { border-color: #06b6d4; }
+}
+
+.button-pressed {
+  transform: scale(0.95);
 }

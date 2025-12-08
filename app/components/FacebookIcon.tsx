@@ -1,0 +1,18 @@
+import React from 'react';
+
+const FacebookIcon = (props: React.SVGProps<SVGSVGElement>) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 210 210"
+    width={40}
+    height={40}
+    {...props}
+  >
+    <path
+      fill="currentColor"
+      d="M149.9 85.2h-22.4v-15c0-5.5 2.2-11 11.4-11h11.1V39.9h-19.7c-23.3 0-38.7 14.7-38.7 39.9v15.4h-19.7v23.3h19.7v59.2h23.3v-59.2h19.7l3-23.3z"
+    />
+  </svg>
+);
+
+export default FacebookIcon;

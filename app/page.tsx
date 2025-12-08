@@ -2,11 +2,16 @@
 
 import { useEffect, useState, useRef } from 'react';
 import Image from 'next/image';
+import FacebookIcon from './components/FacebookIcon';
+import GithubIcon from './components/GithubIcon';
+import LinkedInIcon from './components/LinkedInIcon';
 
 export default function Portfolio() {
   const [mounted, setMounted] = useState(false);
   const [activeSection, setActiveSection] = useState('hero');
   const [visibleSections, setVisibleSections] = useState<Set<string>>(new Set());
+  const [skillsPage, setSkillsPage] = useState('languages');
+  const [pressedButton, setPressedButton] = useState<string | null>(null);
 
   const projects = [
     {
@@ -124,56 +129,95 @@ export default function Portfolio() {
     };
   }, []);
 
-  const skills = [
-    {
-      category: "Frontend Development",
-      items: ["React.js", "Next.js", "Tailwind CSS", "Responsive Design"]
-    },
-    {
-      category: "Backend Development",
-      items: ["Django Python", "Java", "Node.js", "RESTful APIs"]
-    },
-    {
-      category: "Database Management",
-      items: ["MySQL", "Firebase", "Supabase", "XAMPP"]
-    },
-    {
-      category: "Full-Stack Development",
-      items: ["System Integration", "API Development", "State Management"]
-    },
-    {
-      category: "Tools & Technologies",
-      items: ["Git", "AWS", "Godot IDE", "Android Development"]
-    }
-  ];
+  const skillsData = {
+    languages: [
+      { name: "Java", icon: "devicon-java-plain" },
+      { name: "Python", icon: "devicon-python-plain" },
+      { name: "C#", icon: "devicon-csharp-plain" },
+      { name: "JavaScript", icon: "devicon-javascript-plain" },
+      { name: "HTML", icon: "devicon-html5-plain" },
+      { name: "CSS", icon: "devicon-css3-plain" },
+      { name: "Kotlin", icon: "devicon-kotlin-plain" },
+      { name: "SQL (MySQL)", icon: "devicon-mysql-plain" }
+    ],
+    tools: [
+      { name: "React.js", icon: "devicon-react-original" },
+      { name: "Next.js", icon: "devicon-nextjs-original-wordmark" },
+      { name: "Tailwind CSS", icon: "devicon-tailwindcss-plain" },
+      { name: "Django", icon: "devicon-django-plain" },
+      { name: "Node.js", icon: "devicon-nodejs-plain" },
+      { name: "MySQL", icon: "devicon-mysql-plain" },
+      { name: "Firebase", icon: "devicon-firebase-plain" },
+      { name: "Supabase", icon: "devicon-supabase-plain" },
+      { name: "XAMPP", custom: true, src: "/Xampp.svg" },
+      { name: "Git", icon: "devicon-git-plain" },
+      { name: "GitHub", icon: "devicon-github-plain" },
+      { name: "AWS", icon: "devicon-amazonwebservices-plain-wordmark" },
+      { name: "Godot IDE", icon: "devicon-godot-plain" },
+      { name: "Android", icon: "devicon-android-plain" }
+    ]
+  };
+
 
   const education = [
     {
-      level: "Tertiary",
-      school: "CEBU INSTITUTE OF TECHNOLOGY-UNIVERSITY",
-      year: "Present",
-      program: "Software Development"
-    },
-    {
-      level: "Secondary",
-      school: "CEBU INSTITUTE OF TECHNOLOGY-UNIVERSITY",
-      year: "2022"
-    },
-    {
-      level: "Primary",
-      school: "ST. THOMAS AQUINAS SCHOOL PARDO ANNEX",
-      year: "2014"
+      school: "Cebu Institute of Technology-University",
+      year: "2025-2026 present",
+      description: "Currently pursuing a Bachelor of Science in Information Technology, developing strong foundational skills in programming, software development, database management, and IT systems. As a student, I have gained hands-on experience through various academic projects, allowing me to apply technical concepts to real-world scenarios and strengthen my problem-solving and analytical abilities. I continue to build my knowledge in both frontend and backend technologies as I work toward completing my degree.",
+      image: "/GLE-Building.jpg",
+      logo: "/CITLOGO.png"
     }
   ];
 
   const certificates = [
-    "Introduction to JavaScript — Sololearn",
-    "Introduction to HTML — Sololearn",
-    "AWS Academy Cloud Foundations",
-    "AWS Academy Cloud Architecting",
-    "Data Visualization — Kaggle",
-    "DevFest Cebu Workshop — Google Developers Cebu",
-    "Webinar on Intellectual Property Rights for CCS"
+    { 
+      name: "FreeCodeCamp - Front End Development Libraries V8", 
+      image: "/FreeCodeCamp.png",
+      link: "https://www.freecodecamp.org/certification/franciskylelorenzana/front-end-development-libraries",
+      status: "completed"
+    },
+    { 
+      name: "AWS Academy Cloud Foundations", 
+      image: "/AWS.png",
+      link: "https://drive.google.com/file/d/1fCfX2trjn4fW2SG6a2I0iA83Xu8QAKrt/view?usp=drive_link",
+      status: "completed"
+    },
+    { 
+      name: "Data Visualization — Kaggle", 
+      image: "/Data Visualization.png",
+      link: "https://drive.google.com/file/d/10JjnTdPeY67tvnqvLvlf4VUpIPViPjgb/view?usp=drive_link",
+      status: "completed"
+    },
+    { 
+      name: "Webinar on Intellectual Property Rights for CCS", 
+      image: "/Webinar.png",
+      link: "https://drive.google.com/file/d/1XOIgO-XjMlA-wylJwX-TfIn6LnetsS8O/view?usp=drive_link",
+      status: "completed"
+    },
+    { 
+      name: "Introduction to HTML — Sololearn", 
+      image: "/SoloLearn HTML.png",
+      link: "https://drive.google.com/file/d/1B7jYS0LnZhYkRSqGZPweCBUurowOaFFT/view?usp=drive_link",
+      status: "completed"
+    },
+    { 
+      name: "Introduction to JavaScript — Sololearn", 
+      image: "/SoloLearn Javascript.png",
+      link: "https://drive.google.com/file/d/1WtGUzpd1R6GxXitp0CUWcaKQfb30c5PT/view?usp=drive_link",
+      status: "completed"
+    },
+    {
+      name: "AWS Academy Cloud Architecting",
+      image: "",
+      link: "",
+      status: "coming soon"
+    },
+    {
+      name: "DevFest Cebu Workshop — Google Developers Cebu",
+      image: "",
+      link: "",
+      status: "coming soon"
+    }
   ];
 
   return (
@@ -183,10 +227,10 @@ export default function Portfolio() {
         <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center w-full">
           <div className={'text-2xl font-bold tracking-tight transition-all duration-700 flex items-center gap-2 ' + (mounted ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-4')}>
             <span className="bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">Kyle's Portfolio</span>
-            <Image src="/PixelatedIcon.gif" alt="Pixelated Icon" width={48} height={48} />
+            <Image src="/Giphy.gif" alt="Pixelated Icon" width={48} height={48} />
           </div>
           <div className={'flex gap-8 text-sm font-medium transition-all duration-700 delay-200 ' + (mounted ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-4')}>
-            {['About', 'Projects', 'Skills', 'Contact'].map((item) => (
+            {['About', 'Projects', 'Skills', 'Education', 'Certificates', 'Contact'].map((item) => (
               <a
                 key={item}
                 href={'#' + item.toLowerCase()}
@@ -227,24 +271,32 @@ export default function Portfolio() {
 
           <div className="h-24"></div>
           
-          <div className={'flex gap-6 justify-center items-center ' + (visibleSections.has('hero') ? 'fade-in-up' : 'opacity-0')} style={{ animationDelay: '0.6s' }}>
+          <div className={'flex flex-col sm:flex-row gap-6 justify-center items-center ' + (visibleSections.has('hero') ? 'fade-in-up' : 'opacity-0')} style={{ animationDelay: '0.6s' }}>
             <a
               href="#projects"
-              className="group flex items-center gap-3 px-24 py-4 bg-gradient-to-b from-zinc-300 to-zinc-400 rounded-md font-mono text-zinc-800 border-b-4 border-zinc-600 hover:from-zinc-400 hover:to-zinc-500 hover:border-b-2 hover:translate-y-[2px] transition-all duration-150"
+              className="group flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-cyan-500 to-blue-600 text-white rounded-full font-semibold shadow-lg hover:shadow-[0_0_20px_rgba(6,182,212,0.5)] transition-all duration-300 hover:scale-105"
+              style={{ padding: '0.4rem 0.8rem' }}
             >
-              <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16m-7 6h7" />
-              </svg>
-              <span className="text-md">View My Work</span>
+              <Image
+                src="/GithubLogo_black.svg"
+                alt="GitHub Logo"
+                width={20}
+                height={20}
+              />
+              <span className="text-xs">View My Work</span>
             </a>
             <a
               href="#contact"
-              className="group flex items-center gap-3 px-24 py-4 bg-gradient-to-b from-zinc-300 to-zinc-400 rounded-md font-mono text-zinc-800 border-b-4 border-zinc-600 hover:from-zinc-400 hover:to-zinc-500 hover:border-b-2 hover:translate-y-[2px] transition-all duration-150"
+              className="group flex items-center gap-2 px-4 py-2 border border-zinc-700 text-white rounded-full font-semibold hover:border-cyan-500 hover:bg-cyan-500/10 transition-all duration-300 hover:scale-105"
+              style={{ padding: '0.4rem 0.8rem' }}
             >
-              <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-              </svg>
-              <span className="text-md">Get In Touch</span>
+              <Image
+                src="/EmailIcon.svg"
+                alt="Email Icon"
+                width={20}
+                height={20}
+              />
+              <span className="text-xs">Get In Touch</span>
             </a>
           </div>
         </div>
@@ -439,111 +491,171 @@ export default function Portfolio() {
         </div>
       </section>
 
-      <section id="skills" className="snap-section px-6">
-        <div className="max-w-6xl mx-auto">
-          <h2 className={'text-5xl md:text-6xl font-black mb-16 tracking-tight text-center ' + (visibleSections.has('skills') ? 'fade-in-up' : 'opacity-0')}>
+      <section id="skills" className="snap-section px-6 flex items-center justify-center">
+        <div className="max-w-4xl w-full mx-auto">
+          <h2 className={'text-5xl md:text-6xl font-black mb-8 tracking-tight text-center ' + (visibleSections.has('skills') ? 'fade-in-up' : 'opacity-0')}>
             Technical <span className="bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">Skills</span>
           </h2>
+          <p className={'text-xl text-zinc-400 text-center mb-8 ' + (visibleSections.has('skills') ? 'fade-in-up' : 'opacity-0')} style={{ animationDelay: '100ms' }}>
+            These are the tools and languages I'm proficient in.
+          </p>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 justify-items-center">
-            {skills.map((skillSet, index) => (
-              <div
-                key={skillSet.category}
-                className={'bg-zinc-900/50 rounded-2xl p-6 border border-zinc-800 hover:border-cyan-500/50 transition-all duration-500 max-w-sm ' + (visibleSections.has('skills') ? 'fade-in-up' : 'opacity-0')}
-                style={{ animationDelay: `${index * 100}ms` }}
-              >
-                <h3 className="text-xl font-bold mb-4 text-cyan-400">{skillSet.category}</h3>
-                <ul className="space-y-2">
-                  {skillSet.items.map(item => (
-                    <li key={item} className="flex items-center gap-2 text-zinc-400">
-                      <div className="w-1.5 h-1.5 bg-cyan-400 rounded-full"></div>
-                      {item}
-                    </li>
-                  ))}
-                </ul>
+          <div className="h-16"></div> {/* Explicit gap between heading and box */}
+
+          <div className={'bg-zinc-900/50 rounded-2xl p-8 border border-zinc-800 transition-all duration-500 w-full ' + (visibleSections.has('skills') ? 'fade-in-up' : 'opacity-0')} style={{ animationDelay: '200ms' }}>
+            <div className="flex justify-center mb-8">
+              <div className="bg-zinc-800 rounded-full p-1 flex gap-2">
+                <button
+                  onMouseDown={() => setPressedButton('languages')}
+                  onMouseUp={() => setPressedButton(null)}
+                  onClick={() => setSkillsPage('languages')}
+                  className={`transform px-6 py-2 rounded-full text-sm font-semibold transition-transform duration-200 ease-in-out ${skillsPage === 'languages' ? 'bg-cyan-500 text-white' : 'text-zinc-400 hover:bg-zinc-700'} ${pressedButton === 'languages' ? 'button-pressed' : ''}`}
+                >
+                  Languages
+                </button>
+                <button
+                  onMouseDown={() => setPressedButton('tools')}
+                  onMouseUp={() => setPressedButton(null)}
+                  onClick={() => setSkillsPage('tools')}
+                  className={`transform px-6 py-2 rounded-full text-sm font-semibold transition-transform duration-200 ease-in-out ${skillsPage === 'tools' ? 'bg-cyan-500 text-white' : 'text-zinc-400 hover:bg-zinc-700'} ${pressedButton === 'tools' ? 'button-pressed' : ''}`}
+                >
+                  Tools
+                </button>
               </div>
-            ))}
+            </div>
+            
+            <div className="h-8"></div> {/* Explicit gap between buttons and logos */}
+
+            <div className="min-h-[300px]">
+              <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-8 text-center h-full items-start">
+                {(skillsPage === 'languages' ? skillsData.languages : skillsData.tools).map((skill) => (
+                  <div key={skill.name} className="flex flex-col items-center gap-3">
+                    {'custom' in skill && skill.custom ? (
+                      <Image src={skill.src as string} alt={skill.name} width={48} height={48} />
+                    ) : (
+                      <i className={`${skill.icon} text-5xl text-zinc-400 group-hover:text-cyan-400 transition-colors`}></i>
+                    )}
+                    <span className="text-sm text-zinc-400">{skill.name}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
         </div>
       </section>
 
-      <section id="education" className="snap-section px-6 bg-zinc-900/50">
-        <div className="max-w-4xl mx-auto">
-          <h2 className={'text-5xl md:text-6xl font-black mb-16 tracking-tight text-center ' + (visibleSections.has('education') ? 'fade-in-up' : 'opacity-0')}>
-            <span className="bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">Education</span>
+      <section id="education" className="snap-section px-6 flex items-center justify-center">
+        <div className="max-w-6xl mx-auto w-full">
+          <h2 className={'text-5xl md:text-6xl font-black mb-8 tracking-tight text-center ' + (visibleSections.has('education') ? 'fade-in-up' : 'opacity-0')}>
+            My <span className="bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">Education</span>
           </h2>
 
-          <div className="space-y-8">
-            {education.map((edu, index) => (
-              <div
-                key={`${edu.school}-${index}`}
-                className={'relative pl-8 border-l-2 border-cyan-500/30 transition-all duration-700 max-w-2xl mx-auto ' + (visibleSections.has('education') ? 'fade-in-up' : 'opacity-0')}
-                style={{ animationDelay: `${index * 150}ms` }}
-              >
-                <div className="absolute left-0 top-0 w-4 h-4 -translate-x-[9px] rounded-full bg-cyan-500 border-4 border-zinc-950"></div>
-                
-                <div className="bg-zinc-900 rounded-xl p-6 border border-zinc-800">
-                  <div className="flex justify-between items-start mb-2">
-                    <div className="text-sm font-medium text-cyan-400">{edu.level}</div>
-                    <div className="text-sm text-zinc-500">{edu.year}</div>
-                  </div>
-                  <h3 className="text-xl font-bold text-zinc-200 mb-1">{edu.school}</h3>
-                  {edu.program && <p className="text-zinc-400">{edu.program}</p>}
+          <div className="h-16"></div> {/* Explicit gap */}
+
+          {education.map((edu) => (
+            <div key={edu.school} className={'grid md:grid-cols-2 gap-12 items-center bg-zinc-900/50 rounded-2xl p-8 border border-zinc-800 ' + (visibleSections.has('education') ? 'fade-in-up' : 'opacity-0')} style={{ animationDelay: '200ms' }}>
+              {/* Left Column: Image with Hover Effect */}
+              <div className="relative group overflow-hidden rounded-xl cursor-pointer">
+                <Image
+                  src={edu.image}
+                  alt={`${edu.school} Campus`}
+                  width={700}
+                  height={400}
+                  className="rounded-xl object-cover w-full h-full transition-transform duration-300 group-hover:scale-105"
+                />
+                <div className="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                  <Image
+                    src={edu.logo}
+                    alt={`${edu.school} Logo`}
+                    width={150}
+                    height={150}
+                    className="transition-all duration-300 transform scale-75 group-hover:scale-100"
+                  />
                 </div>
               </div>
-            ))}
-          </div>
+
+              {/* Right Column: Description */}
+              <div className="space-y-4 text-zinc-400">
+                <h3 className="text-3xl font-bold text-zinc-50 mb-2">{edu.school}</h3>
+                <p className="text-lg text-cyan-400">{edu.year}</p>
+                <p className="leading-relaxed">
+                  {edu.description}
+                </p>
+              </div>
+            </div>
+          ))}
         </div>
       </section>
 
-      <section id="certificates" className="snap-section px-6">
-        <div className="max-w-6xl mx-auto">
-          <h2 className={'text-5xl md:text-6xl font-black mb-16 tracking-tight text-center ' + (visibleSections.has('certificates') ? 'fade-in-up' : 'opacity-0')}>
+      <section id="certificates" className="snap-section px-6 min-h-screen py-20">
+        <div className="max-w-6xl mx-auto w-full">
+          <h2 className={'mt-16 text-5xl md:text-6xl font-black mb-4 tracking-tight text-center ' + (visibleSections.has('certificates') ? 'fade-in-up' : 'opacity-0')}>
             <span className="bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">Certificates</span>
           </h2>
 
-          <div className="grid md:grid-cols-2 gap-4 justify-items-center">
-            {certificates.map((cert, index) => (
-              <div
-                key={cert}
-                className={'bg-zinc-900/50 rounded-xl p-6 border border-zinc-800 hover:border-cyan-500/50 transition-all duration-500 flex items-center gap-4 max-w-lg ' + (visibleSections.has('certificates') ? 'fade-in-up' : 'opacity-0')}
-                style={{ animationDelay: `${index * 80}ms` }}
+                    <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+                                  {certificates.map((cert, index) => (
+            <div
+                key={cert.name}
+                className={`bg-zinc-900/50 rounded-2xl p-2 border border-zinc-800 transition-all duration-500 flex flex-col justify-between ${cert.status === 'completed' ? 'hover:border-cyan-500/50' : 'opacity-60'}`}
+                style={{ animationDelay: `${index * 100}ms` }}
               >
-                <div className="w-12 h-12 rounded-full bg-cyan-500/20 flex items-center justify-center flex-shrink-0">
-                  <svg className="w-6 h-6 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
-                  </svg>
+                <div className="flex flex-col justify-between h-full">
+                  <div>
+                    {cert.status === 'completed' ? (
+                      <Image src={cert.image} alt={cert.name} width={180} height={100} className="rounded-md mb-2 w-full object-cover mx-auto" />
+                    ) : (
+                      <div className="w-full h-[100px] bg-zinc-800 rounded-md mb-2 flex items-center justify-center mx-auto">
+                        <p className="text-zinc-500">Coming Soon</p>
+                      </div>
+                    )}
+                    <h3 className="text-base font-bold mb-2 text-zinc-200 text-center">{cert.name}</h3>
+                  </div>
+                  
+                  <div>
+                    {cert.status === 'completed' ? (
+                        // Note: file:// URLs will only work on the user's local machine.
+                        <a href={cert.link} target="_blank" rel="noopener noreferrer" className="inline-block w-full text-center bg-gradient-to-r from-cyan-500 to-blue-600 text-white rounded-full font-semibold py-1.5 px-3 transition-all duration-300 hover:scale-105 hover:shadow-cyan-500/50">
+                          Show Credentials
+                        </a>
+                      ) : (
+                        <button disabled className="w-full text-center bg-zinc-800 text-zinc-500 rounded-full font-semibold py-1.5 px-3 cursor-not-allowed">
+                          Coming Soon
+                        </button>
+                      )}
+                  </div>
                 </div>
-                <div className="text-zinc-300">{cert}</div>
               </div>
-            ))}
-          </div>
-        </div>
+                                  ))}                    </div>        </div>
       </section>
 
-      <section id="contact" className="snap-section px-6 bg-zinc-900/50">
+      <section id="contact" className="snap-section px-6 bg-zinc-900/50 flex items-center justify-center">
         <div className={'max-w-4xl mx-auto text-center ' + (visibleSections.has('contact') ? 'fade-in-up' : 'opacity-0')}>
-          <h2 className="text-5xl md:text-6xl font-black mb-8 tracking-tight">
+          <h2 className="text-5xl md:text-6xl font-black tracking-tight">
             Let's <span className="bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">Connect</span>
           </h2>
-          <p className="text-xl text-zinc-400 mb-12 max-w-2xl mx-auto" style={{ animationDelay: '0.2s' }}>
+          <div className="h-16"></div> {/* Explicit gap between heading and description */}
+          <p className="text-xl text-zinc-400 max-w-2xl mx-auto" style={{ animationDelay: '0.2s' }}>
             I'm actively seeking OJT opportunities. Feel free to reach out if you'd like to discuss potential collaborations or just want to connect!
           </p>
-          
-          <div className="flex flex-col sm:flex-row gap-6 justify-center" style={{ animationDelay: '0.4s' }}>
-            <a
-              href="mailto:kaelexx12@gmail.com"
-              className="px-8 py-4 bg-gradient-to-r from-cyan-500 to-blue-600 rounded-full font-semibold hover:shadow-[0_0_30px_rgba(6,182,212,0.5)] transition-all duration-300 hover:scale-105"
-            >
-              Send me an email
+
+          <div className="h-24"></div> {/* Explicit gap between description and icons */}
+
+          <div className="flex justify-center gap-x-16" style={{ animationDelay: '0.4s' }}>
+            <a href="https://www.facebook.com/kyle.lorenzana.967522" target="_blank" rel="noopener noreferrer" className="block transform hover:scale-110 transition-transform duration-300 text-blue-600">
+              <FacebookIcon />
             </a>
-            <a
-              href="tel:09458924721"
-              className="px-8 py-4 border border-zinc-700 rounded-full font-semibold hover:border-cyan-500 hover:bg-cyan-500/10 transition-all duration-300"
-            >
-              Give me a call
+            <a href="https://github.com/frnczkyl" target="_blank" rel="noopener noreferrer" className="block transform hover:scale-110 transition-transform duration-300 text-white">
+              <GithubIcon />
+            </a>
+            <a href="https://www.linkedin.com/in/francis-kyle-lorenzana-a94777397/" target="_blank" rel="noopener noreferrer" className="block transform hover:scale-110 transition-transform duration-300 text-blue-500">
+              <LinkedInIcon />
             </a>
           </div>
+
+          <div className="h-24"></div> {/* Explicit gap between icons and copyright */}
+
+          <p className="text-sm text-zinc-500">© 2025 Francis Kyle Lorenzana. All rights reserved.</p>
         </div>
       </section>
 
