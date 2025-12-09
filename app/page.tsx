@@ -208,9 +208,9 @@ export default function Portfolio() {
     },
     {
       name: "AWS Academy Cloud Architecting",
-      image: "",
-      link: "",
-      status: "coming soon"
+      image: "/AwsArchitecting.png",
+      link: "https://drive.google.com/file/d/1hYegeloVsDd1Wd1hA7760M36DuSFxSdt/view?usp=sharing",
+      status: "completed"
     },
     {
       name: "DevFest Cebu Workshop — Google Developers Cebu",
