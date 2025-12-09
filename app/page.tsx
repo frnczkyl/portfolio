@@ -214,9 +214,9 @@ export default function Portfolio() {
     },
     {
       name: "DevFest Cebu Workshop — Google Developers Cebu",
-      image: "",
-      link: "",
-      status: "coming soon"
+      image: "/DevFest.png",
+      link: "https://drive.google.com/drive/folders/195wRJ3ss_0bx18tJNliahxT9uTyiA_R-",
+      status: "completed"
     }
   ];
 
