@@ -294,7 +294,7 @@ export default function Portfolio() {
         
         <div className="relative z-10 max-w-6xl mx-auto text-center">
           <div className="typing-container">
-            <h1 className={'text-7xl md:text-9xl font-black mb-6 tracking-tighter ' + (visibleSections.has('hero') ? 'fade-in-up' : 'opacity-0')} style={{ animationDelay: '0.2s' }}>
+            <h1 className={'text-5xl md:text-7xl lg:text-9xl font-black mb-6 tracking-tighter ' + (visibleSections.has('hero') ? 'fade-in-up' : 'opacity-0')} style={{ animationDelay: '0.2s' }}>
               <div className="typing-animation line1">
                 <span className="bg-gradient-to-b from-white to-zinc-400 bg-clip-text text-transparent">
                   FRANCIS KYLE
@@ -357,7 +357,7 @@ export default function Portfolio() {
         <div className="max-w-6xl mx-auto">
           <div className="grid md:grid-cols-3 gap-16 items-center">
             <div className={'md:col-span-2 ' + (visibleSections.has('about') ? 'fade-in-up' : 'opacity-0')}>
-              <h2 className="text-5xl md:text-6xl font-black mb-6 tracking-tight">
+              <h2 className="text-4xl md:text-5xl lg:text-6xl font-black mb-6 tracking-tight">
                 About <span className="bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">Me</span>
               </h2>
               <div className="space-y-4 text-zinc-400 text-lg leading-relaxed">
@@ -368,7 +368,7 @@ export default function Portfolio() {
             </div>
 
             <div className={'relative flex justify-center items-center ' + (visibleSections.has('about') ? 'fade-in-up' : 'opacity-0')} style={{ animationDelay: '0.2s' }}>
-              <div className="profile-image-container w-72 h-72 overflow-hidden rounded-full">
+              <div className="profile-image-container w-48 h-48 md:w-72 md:h-72 overflow-hidden rounded-full">
                 <Image
                   src="/MeMyself.jpg"
                   alt="Francis Kyle Lorenzana"
@@ -426,7 +426,7 @@ export default function Portfolio() {
       <section id="projects" className="snap-section px-6 bg-zinc-900/50 py-20">
         <div className="max-w-7xl mx-auto h-full flex flex-col items-center">
           <div className="h-16"></div>
-          <h2 className={'text-5xl md:text-6xl font-black tracking-tight text-center ' + (visibleSections.has('projects') ? 'fade-in-up' : 'opacity-0')}>
+          <h2 className={'text-4xl md:text-5xl lg:text-6xl font-black tracking-tight text-center ' + (visibleSections.has('projects') ? 'fade-in-up' : 'opacity-0')}>
             Featured <span className="bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">Projects</span>
                     </h2>
                     <div className="h-16"></div>
@@ -545,7 +545,7 @@ export default function Portfolio() {
 
       <section id="skills" className="snap-section px-6 flex items-center justify-center">
         <div className="max-w-4xl w-full mx-auto">
-          <h2 className={'text-5xl md:text-6xl font-black mb-8 tracking-tight text-center ' + (visibleSections.has('skills') ? 'fade-in-up' : 'opacity-0')}>
+          <h2 className={'text-4xl md:text-5xl lg:text-6xl font-black mb-8 tracking-tight text-center ' + (visibleSections.has('skills') ? 'fade-in-up' : 'opacity-0')}>
             Technical <span className="bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">Skills</span>
           </h2>
           <p className={'text-xl text-zinc-400 text-center mb-8 ' + (visibleSections.has('skills') ? 'fade-in-up' : 'opacity-0')} style={{ animationDelay: '100ms' }}>
@@ -598,7 +598,7 @@ export default function Portfolio() {
 
       <section id="education" className="snap-section px-6 flex items-center justify-center">
         <div className="max-w-6xl mx-auto w-full">
-          <h2 className={'text-5xl md:text-6xl font-black mb-8 tracking-tight text-center ' + (visibleSections.has('education') ? 'fade-in-up' : 'opacity-0')}>
+          <h2 className={'text-4xl md:text-5xl lg:text-6xl font-black mb-8 tracking-tight text-center ' + (visibleSections.has('education') ? 'fade-in-up' : 'opacity-0')}>
             My <span className="bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">Education</span>
           </h2>
 
@@ -641,7 +641,7 @@ export default function Portfolio() {
 
       <section id="certificates" className="snap-section px-6 min-h-screen py-20">
         <div className="max-w-6xl mx-auto w-full">
-          <h2 className={'mt-16 text-5xl md:text-6xl font-black mb-4 tracking-tight text-center ' + (visibleSections.has('certificates') ? 'fade-in-up' : 'opacity-0')}>
+          <h2 className={'mt-16 text-4xl md:text-5xl lg:text-6xl font-black mb-4 tracking-tight text-center ' + (visibleSections.has('certificates') ? 'fade-in-up' : 'opacity-0')}>
             <span className="bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">Certificates</span>
           </h2>
 
@@ -683,7 +683,7 @@ export default function Portfolio() {
 
       <section id="contact" className="snap-section px-6 bg-zinc-900/50 flex items-center justify-center">
         <div className={'max-w-4xl mx-auto text-center ' + (visibleSections.has('contact') ? 'fade-in-up' : 'opacity-0')}>
-          <h2 className="text-5xl md:text-6xl font-black tracking-tight">
+          <h2 className="text-4xl md:text-5xl lg:text-6xl font-black tracking-tight">
             Let's <span className="bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">Connect</span>
           </h2>
           <div className="h-16"></div> {/* Explicit gap between heading and description */}
