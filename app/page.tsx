@@ -6,13 +6,17 @@ import FacebookIcon from './components/FacebookIcon';
 import GithubIcon from './components/GithubIcon';
 import LinkedInIcon from './components/LinkedInIcon';
 
+import { useDrag } from '@use-gesture/react';
+import { Menu, X } from 'lucide-react';
+
 export default function Portfolio() {
   const [mounted, setMounted] = useState(false);
   const [activeSection, setActiveSection] = useState('hero');
   const [visibleSections, setVisibleSections] = useState<Set<string>>(new Set());
   const [skillsPage, setSkillsPage] = useState('languages');
   const [pressedButton, setPressedButton] = useState<string | null>(null);
-
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  
   const projects = [
     {
       title: "Ruined Light",
@@ -69,18 +73,39 @@ export default function Portfolio() {
 
   const [currentProject, setCurrentProject] = useState(0);
   const carouselRef = useRef<HTMLDivElement>(null);
+  const [cardWidth, setCardWidth] = useState(384);
+  const [dragX, setDragX] = useState(0);
 
-  useEffect(() => {
-    if (carouselRef.current) {
-      const cardWidth = 384; // w-96
-      const margin = 16; // mx-4
-      const scrollTo = currentProject * (cardWidth + margin * 2) + cardWidth / 2 - carouselRef.current.offsetWidth / 2;
-      carouselRef.current.scrollTo({
-        left: scrollTo,
-        behavior: 'smooth',
-      });
+  const bind = useDrag(({ down, movement: [mx], cancel }) => {
+    if (down) {
+      setDragX(mx);
+    } else {
+      setDragX(0);
+      if (Math.abs(mx) > cardWidth / 2) {
+        if (mx < 0) {
+          setCurrentProject(p => Math.min(projects.length - 1, p + 1));
+        } else {
+          setCurrentProject(p => Math.max(0, p - 1));
+        }
+      }
     }
-  }, [currentProject]);
+  });
+  
+  useEffect(() => {
+    const calculateCardWidth = () => {
+      if (carouselRef.current) {
+        // Since the ref is on the container, we find the first card element within it.
+        const firstCard = carouselRef.current.querySelector('.flex-shrink-0') as HTMLDivElement;
+        if (firstCard) {
+          setCardWidth(firstCard.offsetWidth);
+        }
+      }
+    };
+
+    calculateCardWidth();
+    window.addEventListener('resize', calculateCardWidth);
+    return () => window.removeEventListener('resize', calculateCardWidth);
+  }, []);
 
   useEffect(() => {
     setMounted(true);
@@ -223,13 +248,12 @@ export default function Portfolio() {
   return (
     <div className="snap-container text-zinc-50 w-full">
       <nav className="fixed top-0 left-0 right-0 z-50 bg-zinc-950/80 backdrop-blur-xl border-b border-zinc-800 w-full">
-
         <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center w-full">
           <div className={'text-2xl font-bold tracking-tight transition-all duration-700 flex items-center gap-2 ' + (mounted ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-4')}>
             <span className="bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">Kyle's Portfolio</span>
             <Image src="/Giphy.gif" alt="Pixelated Icon" width={48} height={48} />
           </div>
-          <div className={'flex gap-8 text-sm font-medium transition-all duration-700 delay-200 ' + (mounted ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-4')}>
+          <div className="hidden md:flex gap-8 text-sm font-medium transition-all duration-700 delay-200">
             {['About', 'Projects', 'Skills', 'Education', 'Certificates', 'Contact'].map((item) => (
               <a
                 key={item}
@@ -241,7 +265,28 @@ export default function Portfolio() {
               </a>
             ))}
           </div>
+          <div className="md:hidden">
+            <button onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}>
+              {isMobileMenuOpen ? <X /> : <Menu />}
+            </button>
+          </div>
         </div>
+        {isMobileMenuOpen && (
+          <div className="md:hidden bg-zinc-950/80 backdrop-blur-xl">
+            <div className="flex flex-col items-center gap-4 py-4">
+              {['About', 'Projects', 'Skills', 'Education', 'Certificates', 'Contact'].map((item) => (
+                <a
+                  key={item}
+                  href={'#' + item.toLowerCase()}
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className={'hover:text-cyan-400 transition-colors ' + (activeSection === item.toLowerCase() ? 'text-cyan-400' : '')}
+                >
+                  {item}
+                </a>
+              ))}
+            </div>
+          </div>
+        )}
       </nav>
 
       <section id="hero" className="snap-section flex items-center justify-center relative overflow-hidden px-6">
@@ -387,15 +432,22 @@ export default function Portfolio() {
                     <div className="h-16"></div>
                     <div className="relative w-full flex flex-col items-center">
             {/* Carousel container */}
-            <div className="w-full overflow-hidden">
+            <div
+              ref={carouselRef}
+              className="w-full overflow-hidden"
+              {...bind()}
+            >
               <div
                 className="flex items-center transition-transform duration-500 ease-in-out"
-                style={{ transform: `translateX(calc(50% - ${currentProject * 384}px - 192px + 1rem))` }}
+                style={{
+                  transform: `translateX(calc(50% - ${currentProject * (cardWidth + 32)}px - ${cardWidth / 2}px + ${dragX}px))`,
+                  touchAction: 'pan-y'
+                }}
               >
                 {projects.map((project, index) => (
                   <div
                     key={project.title}
-                    className="flex-shrink-0 w-96 mx-4 cursor-pointer"
+                    className="flex-shrink-0 w-11/12 md:w-96 mx-4 cursor-pointer"
                     onClick={() => setCurrentProject(index)}
                     style={{
                       transform: `scale(${currentProject === index ? 1 : 0.8})`,
