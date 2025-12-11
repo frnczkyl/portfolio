@@ -1,0 +1,296 @@
+@media (max-width: 768px) {
+  /* Projects Section */
+  #projects .w-11\/12 {
+    width: 90%; /* Adjusted width to be more relative to viewport */
+    max-width: 220px; /* Further reduced max width for very small screens */
+  }
+
+  #projects .md\:w-96 {
+    width: 90%; /* Adjusted width */
+    max-width: 220px; /* Further reduced max width */
+  }
+
+  #projects .mx-4 {
+    margin-left: 0.125rem; /* Further reduced margin */
+    margin-right: 0.125rem; /* Further reduced margin */
+  }
+
+  #projects .p-6 {
+    padding: 0.4rem; /* Reduced padding even more */
+  }
+
+  #projects .text-2xl {
+    font-size: 0.8rem; /* Further reduced font size for title */
+  }
+
+  #projects .h-48 {
+    height: 5rem; /* Further reduced image height */
+  }
+  
+  #projects .text-zinc-400.mb-8.leading-relaxed { /* Project description */
+    font-size: 0.7rem; /* Reduced description font size */
+    margin-bottom: 0.4rem; /* Reduced margin */
+  }
+
+  #projects .text-xs { /* Small text inside project cards (e.g. "View Proof") */
+    font-size: 0.65rem; /* Reduced font size */
+  }
+
+  /* Project buttons adjustment */
+  #projects a.inline-flex {
+    padding: 0.2rem 0.5rem !important; /* Reduced button padding */
+  }
+
+  #projects a.inline-flex span {
+    font-size: 0.6rem !important; /* Reduced font size within button */
+  }
+
+  /* Certificates Section */
+  #certificates .grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  #certificates .gap-8 {
+    gap: 1rem;
+  }
+
+  #certificates .p-2 {
+    padding: 0.5rem;
+  }
+
+  #certificates .text-base {
+    font-size: 0.875rem;
+  }
+
+  /* Certificates buttons adjustment for mobile */
+  #certificates a { /* Target all anchor tags within certificates */
+    padding: 0.2rem 0.5rem !important; /* Reduced padding */
+    font-size: 0.6rem !important; /* Reduced font size */
+  }
+
+  /* About Section */
+  /* Reverting all condensing changes */
+  #about .grid {
+    grid-template-columns: repeat(1, minmax(0, 1fr)); /* Reverted to single column */
+    /* Original gap-16 from app/page.tsx */
+  }
+
+  #about .md\:grid-cols-3 {
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+  }
+
+  #about .profile-image-container {
+    width: 12rem !important; /* Restored original mobile width */
+    height: 12rem !important; /* Restored original mobile height */
+    margin: 0 auto;
+  }
+
+  #about .text-lg.leading-relaxed p {
+    font-size: 1rem !important; /* Shrink to 16px */
+    line-height: 1.5 !important; /* Adjust line height */
+  }
+
+  #about.snap-section {
+    padding-top: 5rem !important; /* Reverted to py-20 equivalent */
+    padding-bottom: 5rem !important; /* Reverted to py-20 equivalent */
+  }
+  #about .h-20 {
+    height: 1rem !important; /* Reduce spacer div height */
+  }
+  #about .mt-16.grid.sm\:grid-cols-2 { /* Target the contact info container */
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important; /* Force 3 columns */
+    gap: 0.1rem !important; /* Even smaller gap between items */
+    margin-top: 1rem !important; /* Reduce contact info block top margin */
+    overflow: hidden !important; /* Add overflow hidden to prevent horizontal scroll */
+  }
+  #about .mt-16.grid .w-12.h-12 { /* Reduce contact info icons */
+    width: 10px !important;
+    height: 10px !important;
+  }
+  #about .mt-16.grid .w-12.h-12 svg { /* Ensure SVG shrinks with its parent */
+    width: 100% !important;
+    height: 100% !important;
+  }
+  #about .mt-16.grid .text-sm { /* Reduce contact info text */
+    font-size: 0.5rem !important;
+  }
+  #about .mt-16.grid .text-zinc-200 { /* Reduce contact info details text */
+    font-size: 0.6rem !important;
+  }
+  #about .mt-16.grid .flex.items-center.justify-center { /* Reduce gap of the outer flex container of each contact item */
+    gap: 0.1rem !important;
+  }
+
+  /* General Adjustments */
+  .text-5xl {
+    font-size: 2.5rem;
+  }
+  .md\:text-7xl {
+    font-size: 3rem;
+  }
+  .lg\:text-9xl {
+    font-size: 4rem;
+  }
+  .text-4xl {
+    font-size: 2rem;
+  }
+  .md\:text-5xl {
+    font-size: 2.5rem;
+  }
+  .lg\:text-6xl {
+    font-size: 3rem;
+  }
+
+  .snap-section {
+    padding-left: 1rem;
+    padding-right: 1rem;
+    margin-bottom: 6rem; /* Huge gap for sections */
+  }
+  
+  .snap-container {
+    scroll-snap-type: none;
+  }
+
+  .snap-section {
+    scroll-snap-align: none;
+    height: auto; /* Allow sections to have their natural height */
+  }
+
+  /* Hero Section Adjustment for Mobile */
+  #hero {
+    padding-top: 8rem; /* Add padding to prevent content from being hidden behind fixed nav */
+    height: 100vh !important; /* Make hero section full viewport height */
+  }
+
+  /* Heading adjustments for mobile */
+  #about h2,
+  #projects h2,
+    #skills h2, /* Ensure skills h2 is also small */
+  #education h2,
+  #certificates h2,
+  #contact h2 {
+    font-size: 1.8rem !important; /* Smaller font size for all main headings on mobile */
+  }
+
+  /* Hero section buttons adjustment for mobile */
+  #hero a.group { /* Target the 'View My Work' and 'Get In Touch' buttons */
+    padding: 0.15rem 0.3rem !important; /* Further reduced padding */
+    width: 100% !important; /* Ensure it takes full width within max-width */
+    max-width: 140px !important; /* Aggressive max-width */
+    display: block !important; /* Force buttons to stack vertically */
+    text-align: center !important; /* Center text within the buttons */
+    margin: 0 auto !important; /* Center the buttons horizontally */
+    flex-shrink: 0 !important; /* Prevent button from growing */
+  }
+
+  #hero a.group .text-xs {
+    font-size: 0.6rem !important; /* Matched project button font size */
+  }
+
+  /* Additionally, target the inner flex container of the button to remove gap if it's contributing */
+  #hero a.group.flex { /* Target the inner flex container of the button */
+    gap: 0 !important; /* Remove gap between image and text inside button */
+    justify-content: center !important;
+  }
+
+  /* Hide mouse scroll indicator on mobile */
+  #hero > div.absolute.bottom-12 { /* Target the outer div of the mouse animation */
+    display: none !important;
+  }
+
+  /* Shrink all description texts in every section */
+  #hero p.text-zinc-400.mb-12 {
+    font-size: 0.8rem !important;
+    line-height: 1.2;
+  }
+  #skills p.text-zinc-400.text-center.mb-8 {
+    font-size: 0.8rem !important;
+    line-height: 1.2;
+  }
+  #education p.leading-relaxed {
+    font-size: 0.7rem !important;
+    line-height: 1.2;
+  }
+  #education p.text-lg.text-cyan-400 {
+    font-size: 0.7rem !important;
+  }
+  #certificates p.text-zinc-500 {
+    font-size: 0.7rem !important;
+  }
+  #certificates h3.text-base.font-bold {
+    font-size: 0.75rem !important;
+  }
+  #contact p.text-zinc-400.max-w-2xl.mx-auto {
+    font-size: 0.8rem !important;
+    line-height: 1.2;
+  }
+  #contact p.text-sm.text-zinc-500 {
+    font-size: 0.65rem !important;
+  }
+
+  /* Hero section buttons vertical arrangement adjustment for mobile */
+  #hero > div:nth-child(4) { /* Target the div containing the hero buttons */
+    flex-direction: column !important; /* Arrange buttons vertically */
+    gap: 0.5rem !important; /* Reduced gap between buttons */
+  }
+
+  /* Education section school logo mobile active state */
+  #education .group.mobile-active > div.absolute.inset-0 { /* Target the div overlay */
+    opacity: 1 !important;
+    transform: scale(1) !important; /* Force scale as well */
+    z-index: 10 !important; /* Ensure it's on top */
+    transition-property: opacity, transform !important; /* Ensure transitions are active */
+    transition-duration: 300ms !important;
+  }
+  #education .group.mobile-active > div.absolute.inset-0 > img { /* Target the Image element inside the overlay */
+    transform: scale(1) !important; /* Force scale as well */
+    transition-property: transform !important; /* Ensure transitions are active */
+    transition-duration: 300ms !important;
+  }
+
+  /* Projects section image mobile active state */
+  #projects .flex-shrink-0.mobile-active .w-full.h-48.relative > img { /* Target the Image element itself */
+    transform: scale(1.25) translateY(-8px) !important;
+    transition-property: transform !important; /* Ensure transitions are active */
+    transition-duration: 500ms !important; /* Original duration was 500ms */
+  }
+  #projects .flex-shrink-0.mobile-active .w-full.h-48.relative { /* For hover:overflow-visible and shadow */
+    overflow: visible !important;
+    box-shadow: 0_0_30px_rgba(6,182,212,0.5) !important;
+    z-index: 10 !important; /* Ensure it pops on top */
+  }
+
+  html, body {
+    overflow-x: hidden !important;
+  }
+  .snap-container {
+    overflow-x: hidden !important;
+  }
+
+  /* Technical Skills section adjustments for mobile */
+  #skills { /* Make technical skills section full viewport height */
+    height: 100vh !important;
+  }
+  #skills .min-h-\[300px\] { /* Override min-height */
+    min-height: auto !important;
+  }
+  #skills .grid { /* Adjust grid columns and gap */
+    grid-template-columns: repeat(4, minmax(0, 1fr)) !important; /* Changed to 4 columns */
+    gap: 0.2rem !important; /* Reduced gap */
+  }
+  #skills .grid .flex.flex-col.items-center.gap-3 img,
+  #skills .grid .flex.flex-col.items-center.gap-3 i { /* Shrink skill icons/images */
+    width: 24px !important; /* Reverted width */
+    height: 24px !important; /* Reverted height */
+    font-size: 1.5rem !important; /* Reverted font size */
+  }
+  #skills .grid .flex.flex-col.items-center.gap-3 span { /* Shrink skill name text */
+    font-size: 0.55rem !important;
+  }
+  #skills .grid .flex.flex-col.items-center.gap-3 { /* Reduce gap between icon/image and text */
+    gap: 0.1rem !important; /* Further reduced gap */
+  }
+  #skills .bg-zinc-900\/50.rounded-2xl.p-8 { /* Reduce padding of outer box */
+    padding: 0.25rem !important; /* Further reduced padding */
+  }
+}

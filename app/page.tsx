@@ -16,6 +16,22 @@ export default function Portfolio() {
   const [skillsPage, setSkillsPage] = useState('languages');
   const [pressedButton, setPressedButton] = useState<string | null>(null);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+  const [activeProjectHoverIndex, setActiveProjectHoverIndex] = useState<number | null>(null);
+  const [isSchoolImageHovered, setIsSchoolImageHovered] = useState(false);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+
+    handleResize(); 
+    window.addEventListener('resize', handleResize);
+
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
   
   const projects = [
     {
@@ -251,7 +267,7 @@ export default function Portfolio() {
         <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center w-full">
           <div className={'text-2xl font-bold tracking-tight transition-all duration-700 flex items-center gap-2 ' + (mounted ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-4')}>
             <span className="bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">Kyle's Portfolio</span>
-            <Image src="/Giphy.gif" alt="Pixelated Icon" width={48} height={48} />
+            <Image src="/Giphy.gif" alt="Pixelated Icon" width={isMobile ? 24 : 48} height={isMobile ? 24 : 48} />
           </div>
           <div className="hidden md:flex gap-8 text-sm font-medium transition-all duration-700 delay-200">
             {['About', 'Projects', 'Skills', 'Education', 'Certificates', 'Contact'].map((item) => (
@@ -294,7 +310,7 @@ export default function Portfolio() {
         
         <div className="relative z-10 max-w-6xl mx-auto text-center">
           <div className="typing-container">
-            <h1 className={'text-5xl md:text-7xl lg:text-9xl font-black mb-6 tracking-tighter ' + (visibleSections.has('hero') ? 'fade-in-up' : 'opacity-0')} style={{ animationDelay: '0.2s' }}>
+            <h1 className={'text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-black mb-6 tracking-tighter ' + (visibleSections.has('hero') ? 'fade-in-up' : 'opacity-0')} style={{ animationDelay: '0.2s' }}>
               <div className="typing-animation line1">
                 <span className="bg-gradient-to-b from-white to-zinc-400 bg-clip-text text-transparent">
                   FRANCIS KYLE
@@ -309,7 +325,7 @@ export default function Portfolio() {
           </div>
           
           <div className="text-center">
-            <p className={'text-xl md:text-2xl text-zinc-400 mb-12 ' + (visibleSections.has('hero') ? 'fade-in-up' : 'opacity-0')} style={{ animationDelay: '0.4s' }}>
+            <p className={'text-lg sm:text-xl md:text-2xl text-zinc-400 mb-12 ' + (visibleSections.has('hero') ? 'fade-in-up' : 'opacity-0')} style={{ animationDelay: '0.4s' }}>
               Full-Stack Developer
             </p>
           </div>
@@ -320,26 +336,26 @@ export default function Portfolio() {
             <a
               href="#projects"
               className="group flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-cyan-500 to-blue-600 text-white rounded-full font-semibold shadow-lg hover:shadow-[0_0_20px_rgba(6,182,212,0.5)] transition-all duration-300 hover:scale-105"
-              style={{ padding: '0.4rem 0.8rem' }}
+              style={{ padding: '0.5rem 1rem' }}
             >
               <Image
                 src="/GithubLogo_black.svg"
                 alt="GitHub Logo"
-                width={20}
-                height={20}
+                width={isMobile ? 15 : 20}
+                height={isMobile ? 15 : 20}
               />
               <span className="text-xs">View My Work</span>
             </a>
             <a
               href="#contact"
               className="group flex items-center gap-2 px-4 py-2 border border-zinc-700 text-white rounded-full font-semibold hover:border-cyan-500 hover:bg-cyan-500/10 transition-all duration-300 hover:scale-105"
-              style={{ padding: '0.4rem 0.8rem' }}
+              style={{ padding: '0.5rem 1rem' }}
             >
               <Image
                 src="/EmailIcon.svg"
                 alt="Email Icon"
-                width={20}
-                height={20}
+                width={isMobile ? 15 : 20}
+                height={isMobile ? 15 : 20}
               />
               <span className="text-xs">Get In Touch</span>
             </a>
@@ -357,7 +373,7 @@ export default function Portfolio() {
         <div className="max-w-6xl mx-auto">
           <div className="grid md:grid-cols-3 gap-16 items-center">
             <div className={'md:col-span-2 ' + (visibleSections.has('about') ? 'fade-in-up' : 'opacity-0')}>
-              <h2 className="text-4xl md:text-5xl lg:text-6xl font-black mb-6 tracking-tight">
+              <h2 className="text-3xl sm:text-4xl md:text-5xl font-black mb-6 tracking-tight">
                 About <span className="bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">Me</span>
               </h2>
               <div className="space-y-4 text-zinc-400 text-lg leading-relaxed">
@@ -368,7 +384,7 @@ export default function Portfolio() {
             </div>
 
             <div className={'relative flex justify-center items-center ' + (visibleSections.has('about') ? 'fade-in-up' : 'opacity-0')} style={{ animationDelay: '0.2s' }}>
-              <div className="profile-image-container w-48 h-48 md:w-72 md:h-72 overflow-hidden rounded-full">
+              <div className="profile-image-container w-40 h-40 md:w-60 md:h-60 overflow-hidden rounded-full">
                 <Image
                   src="/MeMyself.jpg"
                   alt="Francis Kyle Lorenzana"
@@ -382,53 +398,92 @@ export default function Portfolio() {
 
           <div className="h-20"></div> {/* Spacer div */}
 
-          <div className={'mt-16 grid md:grid-cols-3 gap-8 text-center ' + (visibleSections.has('about') ? 'fade-in-up' : 'opacity-0')} style={{ animationDelay: '0.4s' }}>
-            <div className="flex items-center justify-center gap-4">
-              <div className="w-12 h-12 rounded-full bg-cyan-500/20 flex items-center justify-center">
-                <svg className="w-6 h-6 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                </svg>
-              </div>
-              <div>
-                <div className="text-sm text-zinc-500">Email</div>
-                <div className="text-zinc-200">kaelexx12@gmail.com</div>
-              </div>
-            </div>
-
-            <div className="flex items-center justify-center gap-4">
-              <div className="w-12 h-12 rounded-full bg-cyan-500/20 flex items-center justify-center">
-                <svg className="w-6 h-6 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-                </svg>
-              </div>
-              <div>
-                <div className="text-sm text-zinc-500">Phone</div>
-                <div className="text-zinc-200">09458924721</div>
-              </div>
-            </div>
-
-            <div className="flex items-center justify-center gap-4">
-              <div className="w-12 h-12 rounded-full bg-cyan-500/20 flex items-center justify-center">
-                <svg className="w-6 h-6 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                </svg>
-              </div>
-              <div>
-                <div className="text-sm text-zinc-500">Location</div>
-                <div className="text-zinc-200">Talisay, Cebu</div>
-              </div>
-            </div>
-          </div>
-        </div>
+                    <div className={'mt-16 grid sm:grid-cols-2 md:grid-cols-3 gap-8 text-center ' + (visibleSections.has('about') ? 'fade-in-up' : 'opacity-0')} style={{ animationDelay: '0.4s' }}>
+                      {/* Email Contact Info */}
+                      {isMobile ? (
+                        <div className="flex flex-col items-center">
+                          <div className="flex items-center" style={{gap: '0.2rem'}}>
+                            <svg className="text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" style={{width: '10px', height: '10px'}}>
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                            </svg>
+                            <span className="text-sm text-zinc-500" style={{fontSize: '0.5rem'}}>Email</span>
+                          </div>
+                          <span className="text-zinc-200" style={{fontSize: '0.6rem'}}>kaelexx12@gmail.com</span>
+                        </div>
+                      ) : (
+                        <div className="flex items-center justify-center gap-4">
+                          <div className="w-12 h-12 rounded-full bg-cyan-500/20 flex items-center justify-center">
+                            <svg className="w-6 h-6 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                            </svg>
+                          </div>
+                          <div>
+                            <div className="text-sm text-zinc-500">Email</div>
+                            <div className="text-zinc-200">kaelexx12@gmail.com</div>
+                          </div>
+                        </div>
+                      )}
+          
+                      {/* Phone Contact Info */}
+                      {isMobile ? (
+                        <div className="flex flex-col items-center">
+                          <div className="flex items-center" style={{gap: '0.2rem'}}>
+                            <svg className="w-6 h-6 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" style={{width: '10px', height: '10px'}}>
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                            </svg>
+                            <span className="text-sm text-zinc-500" style={{fontSize: '0.6rem'}}>Phone</span>
+                          </div>
+                          <span className="text-zinc-200" style={{fontSize: '0.65rem'}}>09458924721</span>
+                        </div>
+                      ) : (
+                        <div className="flex items-center justify-center gap-4">
+                          <div className="w-12 h-12 rounded-full bg-cyan-500/20 flex items-center justify-center">
+                            <svg className="w-6 h-6 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                            </svg>
+                          </div>
+                          <div>
+                            <div className="text-sm text-zinc-500">Phone</div>
+                            <div className="text-zinc-200">09458924721</div>
+                          </div>
+                        </div>
+                      )}
+          
+                      {/* Location Contact Info */}
+                      {isMobile ? (
+                        <div className="flex flex-col items-center">
+                          <div className="flex items-center" style={{gap: '0.2rem'}}>
+                            <svg className="w-6 h-6 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" style={{width: '10px', height: '10px'}}>
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                            </svg>
+                            <span className="text-sm text-zinc-500" style={{fontSize: '0.6rem'}}>Location</span>
+                          </div>
+                          <span className="text-zinc-200" style={{fontSize: '0.65rem'}}>Talisay, Cebu</span>
+                        </div>
+                      ) : (
+                        <div className="flex items-center justify-center gap-4">
+                          <div className="w-12 h-12 rounded-full bg-cyan-500/20 flex items-center justify-center">
+                            <svg className="w-6 h-6 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                            </svg>
+                          </div>
+                          <div>
+                            <div className="text-sm text-zinc-500">Location</div>
+                            <div className="text-zinc-200">Talisay, Cebu</div>
+                          </div>
+                        </div>
+                      )}
+                    </div>        </div>
       </section>
 
       <section id="projects" className="snap-section px-6 bg-zinc-900/50 py-20">
         <div className="max-w-7xl mx-auto h-full flex flex-col items-center">
           <div className="h-16"></div>
-          <h2 className={'text-4xl md:text-5xl lg:text-6xl font-black tracking-tight text-center ' + (visibleSections.has('projects') ? 'fade-in-up' : 'opacity-0')}>
+          <h2 className={'text-3xl sm:text-4xl md:text-5xl font-black tracking-tight text-center ' + (visibleSections.has('projects') ? 'fade-in-up' : 'opacity-0')}>
             Featured <span className="bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">Projects</span>
-                    </h2>
+          </h2>
                     <div className="h-16"></div>
                     <div className="relative w-full flex flex-col items-center">
             {/* Carousel container */}
@@ -440,15 +495,21 @@ export default function Portfolio() {
               <div
                 className="flex items-center transition-transform duration-500 ease-in-out"
                 style={{
-                  transform: `translateX(calc(50% - ${currentProject * (cardWidth + 32)}px - ${cardWidth / 2}px + ${dragX}px))`,
+                  transform: `translateX(calc(50% - ${currentProject * (cardWidth + (isMobile ? 8 : 32))}px - ${cardWidth / 2}px + ${dragX}px))`,
                   touchAction: 'pan-y'
                 }}
               >
                 {projects.map((project, index) => (
                   <div
                     key={project.title}
-                    className="flex-shrink-0 w-11/12 md:w-96 mx-4 cursor-pointer"
-                    onClick={() => setCurrentProject(index)}
+                    className={"flex-shrink-0 w-full sm:w-11/12 md:w-96 mx-4 cursor-pointer" + (isMobile && activeProjectHoverIndex === index ? ' mobile-active' : '')}
+                    onClick={() => {
+                      if (isMobile) {
+                        setActiveProjectHoverIndex(activeProjectHoverIndex === index ? null : index);
+                      } else {
+                        setCurrentProject(index); // Preserve original functionality for desktop
+                      }
+                    }}
                     style={{
                       transform: `scale(${currentProject === index ? 1 : 0.8})`,
                       opacity: currentProject === index ? 1 : 0.5,
@@ -493,8 +554,8 @@ export default function Portfolio() {
                                 <Image
                                   src="/GithubLogo.png"
                                   alt="GitHub Logo"
-                                  width={20}
-                                  height={20}
+                                  width={isMobile ? 15 : 20}
+                                  height={isMobile ? 15 : 20}
                                 />
                                 <span className="text-xs">View Proof</span>
                               </a>
@@ -510,8 +571,8 @@ export default function Portfolio() {
                                 <Image
                                   src="/Books.png"
                                   alt="Book Icon"
-                                  width={20}
-                                  height={20}
+                                  width={isMobile ? 15 : 20}
+                                  height={isMobile ? 15 : 20}
                                 />
                                 <span className="text-xs">View Project</span>
                               </a>
@@ -545,10 +606,10 @@ export default function Portfolio() {
 
       <section id="skills" className="snap-section px-6 flex items-center justify-center">
         <div className="max-w-4xl w-full mx-auto">
-          <h2 className={'text-4xl md:text-5xl lg:text-6xl font-black mb-8 tracking-tight text-center ' + (visibleSections.has('skills') ? 'fade-in-up' : 'opacity-0')}>
+          <h2 className={'text-3xl sm:text-4xl md:text-5xl font-black mb-8 tracking-tight text-center ' + (visibleSections.has('skills') ? 'fade-in-up' : 'opacity-0')}>
             Technical <span className="bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">Skills</span>
           </h2>
-          <p className={'text-xl text-zinc-400 text-center mb-8 ' + (visibleSections.has('skills') ? 'fade-in-up' : 'opacity-0')} style={{ animationDelay: '100ms' }}>
+          <p className={'text-lg sm:text-xl text-zinc-400 text-center mb-8 ' + (visibleSections.has('skills') ? 'fade-in-up' : 'opacity-0')} style={{ animationDelay: '100ms' }}>
             These are the tools and languages I'm proficient in.
           </p>
 
@@ -598,7 +659,7 @@ export default function Portfolio() {
 
       <section id="education" className="snap-section px-6 flex items-center justify-center">
         <div className="max-w-6xl mx-auto w-full">
-          <h2 className={'text-4xl md:text-5xl lg:text-6xl font-black mb-8 tracking-tight text-center ' + (visibleSections.has('education') ? 'fade-in-up' : 'opacity-0')}>
+          <h2 className={'text-3xl sm:text-4xl md:text-5xl font-black mb-8 tracking-tight text-center ' + (visibleSections.has('education') ? 'fade-in-up' : 'opacity-0')}>
             My <span className="bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">Education</span>
           </h2>
 
@@ -607,7 +668,10 @@ export default function Portfolio() {
           {education.map((edu) => (
             <div key={edu.school} className={'grid md:grid-cols-2 gap-12 items-center bg-zinc-900/50 rounded-2xl p-8 border border-zinc-800 ' + (visibleSections.has('education') ? 'fade-in-up' : 'opacity-0')} style={{ animationDelay: '200ms' }}>
               {/* Left Column: Image with Hover Effect */}
-              <div className="relative group overflow-hidden rounded-xl cursor-pointer">
+              <div
+                className={"relative group overflow-hidden rounded-xl cursor-pointer" + (isMobile && isSchoolImageHovered ? ' mobile-active' : '')}
+                onClick={() => isMobile && setIsSchoolImageHovered(prev => !prev)}
+              >
                 <Image
                   src={edu.image}
                   alt={`${edu.school} Campus`}
@@ -628,7 +692,7 @@ export default function Portfolio() {
 
               {/* Right Column: Description */}
               <div className="space-y-4 text-zinc-400">
-                <h3 className="text-3xl font-bold text-zinc-50 mb-2">{edu.school}</h3>
+                <h3 className="text-2xl sm:text-3xl font-bold text-zinc-50 mb-2">{edu.school}</h3>
                 <p className="text-lg text-cyan-400">{edu.year}</p>
                 <p className="leading-relaxed">
                   {edu.description}
@@ -641,11 +705,11 @@ export default function Portfolio() {
 
       <section id="certificates" className="snap-section px-6 min-h-screen py-20">
         <div className="max-w-6xl mx-auto w-full">
-          <h2 className={'mt-16 text-4xl md:text-5xl lg:text-6xl font-black mb-4 tracking-tight text-center ' + (visibleSections.has('certificates') ? 'fade-in-up' : 'opacity-0')}>
+          <h2 className={'mt-12 sm:mt-16 text-3xl sm:text-4xl md:text-5xl font-black mb-4 tracking-tight text-center ' + (visibleSections.has('certificates') ? 'fade-in-up' : 'opacity-0')}>
             <span className="bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">Certificates</span>
           </h2>
 
-                    <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-8">
                                   {certificates.map((cert, index) => (
             <div
                 key={cert.name}
@@ -655,7 +719,7 @@ export default function Portfolio() {
                 <div className="flex flex-col justify-between h-full">
                   <div>
                     {cert.status === 'completed' ? (
-                      <Image src={cert.image} alt={cert.name} width={180} height={100} className="rounded-md mb-2 w-full object-cover mx-auto" />
+                      <Image src={cert.image} alt={cert.name} width={isMobile ? 120 : 180} height={isMobile ? 80 : 100} className="rounded-md mb-2 w-full object-cover mx-auto" />
                     ) : (
                       <div className="w-full h-[100px] bg-zinc-800 rounded-md mb-2 flex items-center justify-center mx-auto">
                         <p className="text-zinc-500">Coming Soon</p>
@@ -683,11 +747,11 @@ export default function Portfolio() {
 
       <section id="contact" className="snap-section px-6 bg-zinc-900/50 flex items-center justify-center">
         <div className={'max-w-4xl mx-auto text-center ' + (visibleSections.has('contact') ? 'fade-in-up' : 'opacity-0')}>
-          <h2 className="text-4xl md:text-5xl lg:text-6xl font-black tracking-tight">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight">
             Let's <span className="bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">Connect</span>
           </h2>
           <div className="h-16"></div> {/* Explicit gap between heading and description */}
-          <p className="text-xl text-zinc-400 max-w-2xl mx-auto" style={{ animationDelay: '0.2s' }}>
+          <p className="text-lg sm:text-xl text-zinc-400 max-w-2xl mx-auto" style={{ animationDelay: '0.2s' }}>
             I'm actively seeking OJT opportunities. Feel free to reach out if you'd like to discuss potential collaborations or just want to connect!
           </p>
 
