@@ -258,7 +258,7 @@ export default function Portfolio() {
     {
       name: "DevFest Cebu Workshop — Google Developers Cebu",
       image: "/DevFest.png",
-      link: "https://drive.google.com/drive/folders/195wRJ3ss_0bx18tJNliahxT9uTyiA_R-",
+      link: "https://drive.google.com/file/d/1o2CQwMvUmWUkuxW4bffvMq5SOnmoCAsN/view?usp=sharing",
       status: "completed"
     }
   ];
@@ -526,9 +526,8 @@ export default function Portfolio() {
                       
                       <div className="relative z-10 flex flex-col">
                         {project.image && (
-                          <div
-                            className="w-full h-48 relative hover:overflow-visible cursor-pointer"
-                            onTouchStart={() => isMobile && setActiveProjectHoverIndex(index)}
+                                                      <div
+                                                        className="w-full h-48 relative hover:overflow-visible cursor-pointer hover:scale-105 transition-transform duration-300 hover:shadow-lg hover:shadow-cyan-500/50 z-10"                            onTouchStart={() => isMobile && setActiveProjectHoverIndex(index)}
                             onTouchEnd={() => isMobile && setActiveProjectHoverIndex(null)}
                             onTouchCancel={() => isMobile && setActiveProjectHoverIndex(null)}
                           >
@@ -666,11 +665,10 @@ export default function Portfolio() {
       </section>
 
       <section id="education" className="snap-section px-6 flex items-center justify-center">
-        <div className="max-w-6xl mx-auto w-full">
-          <h2 className={'text-3xl sm:text-4xl md:text-5xl font-black mb-8 tracking-tight text-center ' + (visibleSections.has('education') ? 'fade-in-up' : 'opacity-0')}>
-            My <span className="bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">Education</span>
-          </h2>
-
+                  <div className="max-w-6xl mx-auto w-full">
+                  <h2 className={'text-3xl sm:text-4xl md:text-5xl font-black mb-8 tracking-tight text-center ' + (visibleSections.has('education') ? 'fade-in-up' : 'opacity-0')}>
+                    My <span className="bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">Education</span>
+                  </h2>
           <div className="h-16"></div> {/* Explicit gap */}
 
           {education.map((edu) => (
