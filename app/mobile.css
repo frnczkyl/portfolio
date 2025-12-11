@@ -144,7 +144,6 @@
   .snap-section {
     padding-left: 1rem;
     padding-right: 1rem;
-    margin-bottom: 6rem; /* Huge gap for sections */
   }
   
   .snap-container {
@@ -170,27 +169,6 @@
   #certificates h2,
   #contact h2 {
     font-size: 1.8rem !important; /* Smaller font size for all main headings on mobile */
-  }
-
-  /* Hero section buttons adjustment for mobile */
-  #hero a.group { /* Target the 'View My Work' and 'Get In Touch' buttons */
-    padding: 0.15rem 0.3rem !important; /* Further reduced padding */
-    width: 100% !important; /* Ensure it takes full width within max-width */
-    max-width: 140px !important; /* Aggressive max-width */
-    display: block !important; /* Force buttons to stack vertically */
-    text-align: center !important; /* Center text within the buttons */
-    margin: 0 auto !important; /* Center the buttons horizontally */
-    flex-shrink: 0 !important; /* Prevent button from growing */
-  }
-
-  #hero a.group .text-xs {
-    font-size: 0.6rem !important; /* Matched project button font size */
-  }
-
-  /* Additionally, target the inner flex container of the button to remove gap if it's contributing */
-  #hero a.group.flex { /* Target the inner flex container of the button */
-    gap: 0 !important; /* Remove gap between image and text inside button */
-    justify-content: center !important;
   }
 
   /* Hide mouse scroll indicator on mobile */
@@ -233,6 +211,14 @@
     flex-direction: column !important; /* Arrange buttons vertically */
     gap: 0.5rem !important; /* Reduced gap between buttons */
   }
+  /* Hero section buttons adjustment for mobile */
+  #hero a.group {
+    padding: 0.2rem 0.5rem !important;
+  }
+  #hero a.group .text-xs {
+    font-size: 0.6rem !important;
+  }
+
 
   /* Education section school logo mobile active state */
   #education .group.mobile-active > div.absolute.inset-0 { /* Target the div overlay */
@@ -243,7 +229,7 @@
     transition-duration: 300ms !important;
   }
   #education .group.mobile-active > div.absolute.inset-0 > img { /* Target the Image element inside the overlay */
-    transform: scale(1) !important; /* Force scale as well */
+    transform: scale(1.2) !important; /* Force scale as well */
     transition-property: transform !important; /* Ensure transitions are active */
     transition-duration: 300ms !important;
   }
@@ -252,7 +238,7 @@
   #projects .flex-shrink-0.mobile-active .w-full.h-48.relative > img { /* Target the Image element itself */
     transform: scale(1.25) translateY(-8px) !important;
     transition-property: transform !important; /* Ensure transitions are active */
-    transition-duration: 500ms !important; /* Original duration was 500ms */
+    transition-duration: 500ms !important;
   }
   #projects .flex-shrink-0.mobile-active .w-full.h-48.relative { /* For hover:overflow-visible and shadow */
     overflow: visible !important;
@@ -292,5 +278,12 @@
   }
   #skills .bg-zinc-900\/50.rounded-2xl.p-8 { /* Reduce padding of outer box */
     padding: 0.25rem !important; /* Further reduced padding */
+  }
+
+  /* About section profile image mobile active state */
+  #about .profile-image-container.mobile-active > img {
+    box-shadow: 0 0 20px 5px rgba(6, 182, 212, 0.5) !important; /* Cyan-blue glow */
+    transition-property: transform, box-shadow !important; /* Add box-shadow to transition */
+    transition-duration: 300ms !important;
   }
 }

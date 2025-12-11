@@ -19,6 +19,8 @@ export default function Portfolio() {
   const [isMobile, setIsMobile] = useState(false);
   const [activeProjectHoverIndex, setActiveProjectHoverIndex] = useState<number | null>(null);
   const [isSchoolImageHovered, setIsSchoolImageHovered] = useState(false);
+  const [isProfileImageHovered, setIsProfileImageHovered] = useState(false);
+
 
   useEffect(() => {
     const handleResize = () => {
@@ -335,8 +337,8 @@ export default function Portfolio() {
           <div className={'flex flex-col sm:flex-row gap-6 justify-center items-center ' + (visibleSections.has('hero') ? 'fade-in-up' : 'opacity-0')} style={{ animationDelay: '0.6s' }}>
             <a
               href="#projects"
-              className="group flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-cyan-500 to-blue-600 text-white rounded-full font-semibold shadow-lg hover:shadow-[0_0_20px_rgba(6,182,212,0.5)] transition-all duration-300 hover:scale-105"
-              style={{ padding: '0.5rem 1rem' }}
+              className={"group flex items-center gap-2 bg-gradient-to-r from-cyan-500 to-blue-600 text-white rounded-full font-semibold shadow-lg hover:shadow-[0_0_20px_rgba(6,182,212,0.5)] transition-all duration-300 hover:scale-105"}
+              style={isMobile ? {} : { padding: '0.4rem 0.8rem' }}
             >
               <Image
                 src="/GithubLogo_black.svg"
@@ -348,8 +350,8 @@ export default function Portfolio() {
             </a>
             <a
               href="#contact"
-              className="group flex items-center gap-2 px-4 py-2 border border-zinc-700 text-white rounded-full font-semibold hover:border-cyan-500 hover:bg-cyan-500/10 transition-all duration-300 hover:scale-105"
-              style={{ padding: '0.5rem 1rem' }}
+              className={"group flex items-center gap-2 border border-zinc-700 text-white rounded-full font-semibold hover:border-cyan-500 hover:bg-cyan-500/10 transition-all duration-300 hover:scale-105"}
+              style={isMobile ? {} : { padding: '0.4rem 0.8rem' }}
             >
               <Image
                 src="/EmailIcon.svg"
@@ -384,7 +386,10 @@ export default function Portfolio() {
             </div>
 
             <div className={'relative flex justify-center items-center ' + (visibleSections.has('about') ? 'fade-in-up' : 'opacity-0')} style={{ animationDelay: '0.2s' }}>
-              <div className="profile-image-container w-40 h-40 md:w-60 md:h-60 overflow-hidden rounded-full">
+              <div
+                className={"profile-image-container w-40 h-40 md:w-60 md:h-60 overflow-hidden rounded-full cursor-pointer" + (isMobile && isProfileImageHovered ? ' mobile-active' : '')}
+                onClick={() => isMobile && setIsProfileImageHovered(prev => !prev)}
+              >
                 <Image
                   src="/MeMyself.jpg"
                   alt="Francis Kyle Lorenzana"
@@ -493,21 +498,19 @@ export default function Portfolio() {
               {...bind()}
             >
               <div
-                className="flex items-center transition-transform duration-500 ease-in-out"
+                className="flex items-center gap-x-2 md:gap-x-8 transition-transform duration-500 ease-in-out"
                 style={{
-                  transform: `translateX(calc(50% - ${currentProject * (cardWidth + (isMobile ? 8 : 32))}px - ${cardWidth / 2}px + ${dragX}px))`,
+                  transform: `translateX(calc(50% - (${currentProject * (cardWidth + (isMobile ? 8 : 32))}px + ${cardWidth / 2}px) + ${dragX}px))`,
                   touchAction: 'pan-y'
                 }}
               >
                 {projects.map((project, index) => (
                   <div
                     key={project.title}
-                    className={"flex-shrink-0 w-full sm:w-11/12 md:w-96 mx-4 cursor-pointer" + (isMobile && activeProjectHoverIndex === index ? ' mobile-active' : '')}
+                    className={"flex-shrink-0 w-full sm:w-11/12 md:w-96 cursor-pointer" + (isMobile && activeProjectHoverIndex === index ? ' mobile-active' : '')}
                     onClick={() => {
-                      if (isMobile) {
-                        setActiveProjectHoverIndex(activeProjectHoverIndex === index ? null : index);
-                      } else {
-                        setCurrentProject(index); // Preserve original functionality for desktop
+                      if (!isMobile) { // Only for desktop, handle carousel navigation
+                        setCurrentProject(index);
                       }
                     }}
                     style={{
@@ -523,12 +526,17 @@ export default function Portfolio() {
                       
                       <div className="relative z-10 flex flex-col">
                         {project.image && (
-                          <div className="w-full h-48 relative hover:overflow-visible">
+                          <div
+                            className="w-full h-48 relative hover:overflow-visible cursor-pointer"
+                            onTouchStart={() => isMobile && setActiveProjectHoverIndex(index)}
+                            onTouchEnd={() => isMobile && setActiveProjectHoverIndex(null)}
+                            onTouchCancel={() => isMobile && setActiveProjectHoverIndex(null)}
+                          >
                             <Image
                               src={project.image}
                               alt={project.title}
                               layout="fill"
-                              className="rounded-t-2xl object-cover hover:scale-125 hover:translate-y-8 transition-all duration-500 hover:shadow-cyan-500/50 hover:shadow-2xl"
+                              className="rounded-t-2xl object-cover"
                             />
                           </div>
                         )}
@@ -670,7 +678,9 @@ export default function Portfolio() {
               {/* Left Column: Image with Hover Effect */}
               <div
                 className={"relative group overflow-hidden rounded-xl cursor-pointer" + (isMobile && isSchoolImageHovered ? ' mobile-active' : '')}
-                onClick={() => isMobile && setIsSchoolImageHovered(prev => !prev)}
+                onTouchStart={() => isMobile && setIsSchoolImageHovered(true)}
+                onTouchEnd={() => isMobile && setIsSchoolImageHovered(false)}
+                onTouchCancel={() => isMobile && setIsSchoolImageHovered(false)}
               >
                 <Image
                   src={edu.image}
