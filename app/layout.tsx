@@ -46,6 +46,8 @@ export default function RootLayout({
           autoPlay
           loop
           muted
+          playsInline
+          poster="/placeholder-video-poster.jpg"
           className="fixed inset-0 w-full h-full object-cover -z-10"
         ></video>
         {children}

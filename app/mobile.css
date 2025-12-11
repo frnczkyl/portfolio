@@ -279,7 +279,7 @@
   
   /* Technical Skills section adjustments for mobile */
   #skills .min-h-\[300px\] { /* Override min-height */
-    min-height: auto !important;
+    min-height: 250px !important; /* Set a consistent min-height for mobile */
   }
   #skills .grid { /* Adjust grid columns and gap */
     grid-template-columns: repeat(4, minmax(0, 1fr)) !important; /* Changed to 4 columns */
@@ -309,5 +309,13 @@
   
   #contact {
     margin-bottom: 0 !important; /* Remove gap after the last section */
+  }
+
+  /* Projects Section - Disable scroll-snap for smoother swiping on mobile */
+  #projects {
+    scroll-snap-type: none !important; /* Disable vertical snap */
+    overflow-y: auto !important; /* Allow normal scrolling */
+    scroll-snap-align: none !important; /* Disable snap alignment for individual items */
+    overflow-x: hidden !important; /* Explicitly hide horizontal scrollbar */
   }
 }

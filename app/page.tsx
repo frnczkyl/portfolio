@@ -20,7 +20,7 @@ export default function Portfolio() {
   const [activeProjectHoverIndex, setActiveProjectHoverIndex] = useState<number | null>(null);
   const [isSchoolImageHovered, setIsSchoolImageHovered] = useState(false);
   const [isProfileImageHovered, setIsProfileImageHovered] = useState(false);
-
+  const [isDragging, setIsDragging] = useState(false); // New state variable
 
   useEffect(() => {
     const handleResize = () => {
@@ -94,16 +94,35 @@ export default function Portfolio() {
   const [cardWidth, setCardWidth] = useState(384);
   const [dragX, setDragX] = useState(0);
 
-  const bind = useDrag(({ down, movement: [mx], cancel }) => {
-    if (down) {
-      setDragX(mx);
+  const bind = useDrag(({ down, movement: [mx], cancel, direction: [dx], velocity: [vx] }) => {
+    if (isMobile) {
+      setIsDragging(down);
+      if (down) {
+        setDragX(mx);
+      } else {
+        setDragX(0);
+        const threshold = cardWidth * 0.3; // Lower threshold for easier swipe
+        const swipeVelocityThreshold = 0.5; // Velocity threshold for quick flicks
+        if (Math.abs(mx) > threshold || Math.abs(vx) > swipeVelocityThreshold) {
+          if (mx < 0) { // Swiped left, go to next project
+            setCurrentProject(p => Math.min(projects.length - 1, p + 1));
+          } else { // Swiped right, go to previous project
+            setCurrentProject(p => Math.max(0, p - 1));
+          }
+        }
+      }
     } else {
-      setDragX(0);
-      if (Math.abs(mx) > cardWidth / 2) {
-        if (mx < 0) {
-          setCurrentProject(p => Math.min(projects.length - 1, p + 1));
-        } else {
-          setCurrentProject(p => Math.max(0, p - 1));
+      // Existing desktop logic (or default behavior)
+      if (down) {
+        setDragX(mx);
+      } else {
+        setDragX(0);
+        if (Math.abs(mx) > cardWidth / 2) {
+          if (mx < 0) {
+            setCurrentProject(p => Math.min(projects.length - 1, p + 1));
+          } else {
+            setCurrentProject(p => Math.max(0, p - 1));
+          }
         }
       }
     }
@@ -498,7 +517,7 @@ export default function Portfolio() {
               {...bind()}
             >
               <div
-                className="flex items-center gap-x-2 md:gap-x-8 transition-transform duration-500 ease-in-out"
+                className={`flex items-center gap-x-2 md:gap-x-8 ${isDragging ? '' : 'transition-transform duration-500 ease-in-out'}`}
                 style={{
                   transform: `translateX(calc(50% - (${currentProject * (cardWidth + (isMobile ? 8 : 32))}px + ${cardWidth / 2}px) + ${dragX}px))`,
                   touchAction: 'pan-y'
