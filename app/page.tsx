@@ -7,7 +7,9 @@ import GithubIcon from './components/GithubIcon';
 import LinkedInIcon from './components/LinkedInIcon';
 
 import { useDrag } from '@use-gesture/react';
-import { Menu, X } from 'lucide-react';
+import { AnimatePresence, motion } from 'framer-motion';
+import { Menu, X, ArrowRight, ArrowLeft } from 'lucide-react';
+import Link from 'next/link';
 
 export default function Portfolio() {
   const [mounted, setMounted] = useState(false);
@@ -231,7 +233,7 @@ export default function Portfolio() {
     }
   ];
 
-  const certificates = [
+  const certificates1 = [
     { 
       name: "FreeCodeCamp - Front End Development Libraries V8", 
       image: "/FreeCodeCamp.png",
@@ -281,6 +283,53 @@ export default function Portfolio() {
       status: "completed"
     }
   ];
+
+  const certificates2 = [
+    {
+      name: "SQL(Basic) Certificate",
+      image: "/SQL_Certificate.png",
+      link: "https://drive.google.com/file/d/18JkI21PouW3WoMEgWfv9ebLJIh1JisC3/view?usp=sharing",
+      status: "completed"
+    },
+    {
+      name: "Coming Soon",
+      image: "",
+      link: "",
+      status: "coming_soon"
+    },
+    {
+      name: "Coming Soon",
+      image: "",
+      link: "",
+      status: "coming_soon"
+    },
+    {
+      name: "Coming Soon",
+      image: "",
+      link: "",
+      status: "coming_soon"
+    },
+    {
+      name: "Coming Soon",
+      image: "",
+      link: "",
+      status: "coming_soon"
+    },
+    {
+      name: "Coming Soon",
+      image: "",
+      link: "",
+      status: "coming_soon"
+    },
+    {
+      name: "Coming Soon",
+      image: "",
+      link: "",
+      status: "coming_soon"
+    }
+  ];
+  
+  const [certificatePage, setCertificatePage] = useState('page1');
 
   return (
     <div className="snap-container text-zinc-50 w-full">
@@ -730,46 +779,98 @@ export default function Portfolio() {
         </div>
       </section>
 
-      <section id="certificates" className="snap-section px-6 min-h-screen py-20">
-        <div className="max-w-6xl mx-auto w-full">
-          <h2 className={'mt-12 sm:mt-16 text-3xl sm:text-4xl md:text-5xl font-black mb-4 tracking-tight text-center ' + (visibleSections.has('certificates') ? 'fade-in-up' : 'opacity-0')}>
+      <section id="certificates" className="snap-section px-6 min-h-screen py-20 flex flex-col items-center">
+        <div className="max-w-4xl mx-auto w-full">
+          <h2 className={'text-3xl sm:text-4xl md:text-5xl font-black mb-8 tracking-tight text-center ' + (visibleSections.has('certificates') ? 'fade-in-up' : 'opacity-0')}>
             <span className="bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">Certificates</span>
           </h2>
-
-                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-8">
-                                  {certificates.map((cert, index) => (
-            <div
-                key={cert.name}
-                className={`bg-zinc-900/50 rounded-2xl p-2 border border-zinc-800 transition-all duration-500 flex flex-col justify-between ${cert.status === 'completed' ? 'hover:border-cyan-500/50' : 'opacity-60'}`}
-                style={{ animationDelay: `${index * 100}ms` }}
-              >
-                <div className="flex flex-col justify-between h-full">
-                  <div>
-                    {cert.status === 'completed' ? (
-                      <Image src={cert.image} alt={cert.name} width={isMobile ? 120 : 180} height={isMobile ? 80 : 100} className="rounded-md mb-2 w-full object-cover mx-auto" />
-                    ) : (
-                      <div className="w-full h-[100px] bg-zinc-800 rounded-md mb-2 flex items-center justify-center mx-auto">
-                        <p className="text-zinc-500">Coming Soon</p>
+          <div className="min-h-[350px] mb-8">
+            <AnimatePresence mode="wait">
+              {certificatePage === 'page1' && (
+                <motion.div
+                  key="page1"
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: 20 }}
+                  transition={{ duration: 0.3 }}
+                  className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4"
+                >
+                  {certificates1.map((cert, index) => (
+                    <div
+                      key={cert.name + index}
+                      className={`bg-zinc-900/50 rounded-2xl p-2 border border-zinc-800 transition-all duration-500 flex flex-col justify-between ${cert.status === 'completed' ? 'hover:border-cyan-500/50' : 'opacity-60'}`}
+                    >
+                      <div className="flex flex-col justify-between h-full">
+                        <div>
+                          <Image src={cert.image} alt={cert.name} width={120} height={80} className="rounded-md mb-2 w-full object-cover mx-auto" />
+                          <h3 className="text-sm font-bold mb-2 text-zinc-200 text-center">{cert.name}</h3>
+                        </div>
+                        <div>
+                          <a href={cert.link} target="_blank" rel="noopener noreferrer" className="inline-block w-full text-center bg-gradient-to-r from-cyan-500 to-blue-600 text-white rounded-full font-semibold py-1 px-2 text-xs transition-all duration-300 hover:scale-105 hover:shadow-cyan-500/50">
+                            Show Credentials
+                          </a>
+                        </div>
                       </div>
-                    )}
-                    <h3 className="text-base font-bold mb-2 text-zinc-200 text-center">{cert.name}</h3>
-                  </div>
-                  
-                  <div>
-                    {cert.status === 'completed' ? (
-                        // Note: file:// URLs will only work on the user's local machine.
-                        <a href={cert.link} target="_blank" rel="noopener noreferrer" className="inline-block w-full text-center bg-gradient-to-r from-cyan-500 to-blue-600 text-white rounded-full font-semibold py-1.5 px-3 transition-all duration-300 hover:scale-105 hover:shadow-cyan-500/50">
-                          Show Credentials
-                        </a>
-                      ) : (
-                        <button disabled className="w-full text-center bg-zinc-800 text-zinc-500 rounded-full font-semibold py-1.5 px-3 cursor-not-allowed">
-                          Coming Soon
-                        </button>
-                      )}
-                  </div>
-                </div>
-              </div>
-                                  ))}                    </div>        </div>
+                    </div>
+                  ))}
+                </motion.div>
+              )}
+
+              {certificatePage === 'page2' && (
+                <motion.div
+                  key="page2"
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -20 }}
+                  transition={{ duration: 0.3 }}
+                  className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4"
+                >
+                  {certificates2.map((cert, index) => (
+                    <div
+                      key={cert.name + index}
+                      className={`bg-zinc-900/50 rounded-2xl p-2 border border-zinc-800 transition-all duration-500 flex flex-col justify-between ${cert.status === 'completed' ? 'hover:border-cyan-500/50' : 'opacity-60'}`}
+                    >
+                      <div className="flex flex-col justify-between h-full">
+                        <div>
+                          {cert.status === 'completed' ? (
+                            <Image src={cert.image} alt={cert.name} width={120} height={80} className="rounded-md mb-2 w-full object-cover mx-auto" />
+                          ) : (
+                            <div className="w-full h-[80px] bg-zinc-800 rounded-md mb-2 flex items-center justify-center mx-auto">
+                              <p className="text-zinc-500">Coming Soon</p>
+                            </div>
+                          )}
+                          <h3 className="text-sm font-bold mb-2 text-zinc-200 text-center">{cert.name}</h3>
+                        </div>
+                        <div>
+                          {cert.status === 'completed' ? (
+                            <a href={cert.link} target="_blank" rel="noopener noreferrer" className="inline-block w-full text-center bg-gradient-to-r from-cyan-500 to-blue-600 text-white rounded-full font-semibold py-1 px-2 text-xs transition-all duration-300 hover:scale-105 hover:shadow-cyan-500/50">
+                              Show Credentials
+                            </a>
+                          ) : (
+                            <button disabled className="w-full text-center bg-zinc-800 text-zinc-500 rounded-full font-semibold py-1 px-2 text-xs cursor-not-allowed">
+                              Coming Soon
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+          <div className="flex justify-center items-center mt-12 gap-4">
+            <button onClick={() => setCertificatePage('page1')} className={`p-2 rounded-full transition-colors ${certificatePage === 'page1' ? 'bg-cyan-500/50' : 'bg-zinc-800/50 hover:bg-zinc-700/50'}`}>
+              <ArrowLeft className="w-6 h-6 text-cyan-400" />
+            </button>
+            <p className="text-zinc-400 text-sm font-medium">
+              {certificatePage === 'page1' ? '1/2' : '2/2'}
+            </p>
+            <button onClick={() => setCertificatePage('page2')} className={`p-2 rounded-full transition-colors ${certificatePage === 'page2' ? 'bg-cyan-500/50' : 'bg-zinc-800/50 hover:bg-zinc-700/50'}`}>
+              <ArrowRight className="w-6 h-6 text-cyan-400" />
+            </button>
+          </div>
+        </div>
       </section>
 
       <section id="contact" className="snap-section px-6 bg-zinc-900/50 flex items-center justify-center">
