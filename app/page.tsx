@@ -308,24 +308,6 @@ export default function Portfolio() {
       image: "",
       link: "",
       status: "coming_soon"
-    },
-    {
-      name: "Coming Soon",
-      image: "",
-      link: "",
-      status: "coming_soon"
-    },
-    {
-      name: "Coming Soon",
-      image: "",
-      link: "",
-      status: "coming_soon"
-    },
-    {
-      name: "Coming Soon",
-      image: "",
-      link: "",
-      status: "coming_soon"
     }
   ];
   
@@ -587,77 +569,75 @@ export default function Portfolio() {
                       transition: 'transform 0.5s ease-in-out, opacity 0.5s ease-in-out',
                     }}
                   >
-                    <div
-                      className={'relative bg-zinc-900 rounded-2xl p-6 border border-zinc-800 hover:border-cyan-500/50 transition-all duration-500 hover:shadow-[0_0_30px_rgba(6,182,212,0.1)] w-full'}
-                    >
-                      <div className={'absolute inset-0 bg-gradient-to-br ' + project.color + ' opacity-0 transition-opacity duration-500'}></div>
-                      
-                      <div className="relative z-10 flex flex-col">
-                        {project.image && (
-                                                      <div
-                                                        className="w-full h-48 relative hover:overflow-visible cursor-pointer hover:scale-105 transition-transform duration-300 hover:shadow-lg hover:shadow-cyan-500/50 z-10"                            onTouchStart={() => isMobile && setActiveProjectHoverIndex(index)}
-                            onTouchEnd={() => isMobile && setActiveProjectHoverIndex(null)}
-                            onTouchCancel={() => isMobile && setActiveProjectHoverIndex(null)}
-                          >
-                            <Image
-                              src={project.image}
-                              alt={project.title}
-                              layout="fill"
-                              className="rounded-t-2xl object-cover"
-                            />
-                          </div>
-                        )}
-                        <h3 className="text-2xl font-bold mt-8 mb-3 transition-colors text-cyan-400">
-                          {project.title}
-                        </h3>
-                        <div>
-                          <p className="text-zinc-400 mb-8 leading-relaxed">
-                            {project.description}
-                          </p>
-                        </div>
-                        <div className="h-8"></div>
-                        <div>
-                          <div className="flex justify-center gap-4">
-                            {project.link && (
-                              <a
-                                href={project.link}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="bg-gradient-to-r from-cyan-500 to-blue-600 rounded-full font-semibold hover:shadow-[0_0_30px_rgba(6,182,212,0.5)] transition-all duration-300 hover:scale-105 inline-flex items-center gap-2 justify-center"
-                                style={{ padding: '0.4rem 0.8rem' }}
-                              >
-                                <Image
-                                  src="/GithubLogo.png"
-                                  alt="GitHub Logo"
-                                  width={isMobile ? 15 : 20}
-                                  height={isMobile ? 15 : 20}
-                                />
-                                <span className="text-xs">View Proof</span>
-                              </a>
-                            )}
-                            {project.projectLink && (
-                              <a
-                                href={project.projectLink}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="bg-gradient-to-r from-cyan-500 to-blue-600 rounded-full font-semibold hover:shadow-[0_0_30px_rgba(6,182,212,0.5)] transition-all duration-300 hover:scale-105 inline-flex items-center gap-2 justify-center"
-                                style={{ padding: '0.4rem 0.8rem' }}
-                              >
-                                <Image
-                                  src="/Books.png"
-                                  alt="Book Icon"
-                                  width={isMobile ? 15 : 20}
-                                  height={isMobile ? 15 : 20}
-                                />
-                                <span className="text-xs">View Project</span>
-                              </a>
-                            )}
-                          </div>
-                        </div>
-                        <div className="h-8"></div>
-                      </div>
-                    </div>
-                  </div>
+                  <div
+                    className={`relative bg-zinc-900 rounded-2xl p-6 border border-zinc-800 transition-all duration-500 w-full ${currentProject === index ? 'breathing-border-glow' : ''}`}
+                  >                                                                                                                                                                        <div className={'absolute inset-0 bg-gradient-to-br ' + project.color + ' opacity-0 transition-opacity duration-500'}></div>
+                                                                                                                                                                        
+                                                                                                                                                                        <div className="relative z-10 flex flex-col">
+                                                                                                                                                                          {project.image && (
+                                                                                                                                                                                      <div
+                                                                                                                                                                                        className={`w-full h-48 relative ${isMobile ? '' : 'hover:overflow-visible'} cursor-pointer transition-transform duration-300 z-10`}                                                                                                                                                                              onTouchStart={() => isMobile && setActiveProjectHoverIndex(index)}
+                                                                                                                                                                              onTouchEnd={() => isMobile && setActiveProjectHoverIndex(null)}
+                                                                                                                                                                              onTouchCancel={() => isMobile && setActiveProjectHoverIndex(null)}
+                                                                                                                                                                            >
+                                                                                                                                                                              <Image
+                                                                                                                                                                                src={project.image}
+                                                                                                                                                                                alt={project.title}
+                                                                                                                                                                                layout="fill"
+                                                                                                                                                                                className="rounded-t-2xl object-cover"
+                                                                                                                                                                              />
+                                                                                                                                                                            </div>
+                                                                                                                                                                          )}
+                                                                                                                                                                          <h3 className="text-2xl font-bold mt-8 mb-3 transition-colors text-cyan-400">
+                                                                                                                                                                            {project.title}
+                                                                                                                                                                          </h3>
+                                                                                                                                                                          <div>
+                                                                                                                                                                            <p className="text-zinc-400 mb-8 leading-relaxed">
+                                                                                                                                                                              {project.description}
+                                                                                                                                                                            </p>
+                                                                                                                                                                          </div>
+                                                                                                                                                                          <div className="h-8"></div>
+                                                                                                                                                                          <div>
+                                                                                                                                                                            <div className="flex justify-center gap-4">
+                                                                                                                                                                              {project.link && (
+                                                                                                                                                                                <a
+                                                                                                                                                                                  href={project.link}
+                                                                                                                                                                                  target="_blank"
+                                                                                                                                                                                  rel="noopener noreferrer"
+                                                                                                                                                                                  className="bg-gradient-to-r from-cyan-500 to-blue-600 rounded-full font-semibold hover:shadow-[0_0_30px_rgba(6,182,212,0.5)] transition-all duration-300 hover:scale-105 inline-flex items-center gap-2 justify-center"
+                                                                                                                                                                                  style={{ padding: '0.4rem 0.8rem' }}
+                                                                                                                                                                                >
+                                                                                                                                                                                  <Image
+                                                                                                                                                                                    src="/GithubLogo.png"
+                                                                                                                                                                                    alt="GitHub Logo"
+                                                                                                                                                                                    width={isMobile ? 15 : 20}
+                                                                                                                                                                                    height={isMobile ? 15 : 20}
+                                                                                                                                                                                  />
+                                                                                                                                                                                  <span className="text-xs">View Proof</span>
+                                                                                                                                                                                </a>
+                                                                                                                                                                              )}
+                                                                                                                                                                              {project.projectLink && (
+                                                                                                                                                                                <a
+                                                                                                                                                                                  href={project.projectLink}
+                                                                                                                                                                                  target="_blank"
+                                                                                                                                                                                  rel="noopener noreferrer"
+                                                                                                                                                                                  className="bg-gradient-to-r from-cyan-500 to-blue-600 rounded-full font-semibold hover:shadow-[0_0_30px_rgba(6,182,212,0.5)] transition-all duration-300 hover:scale-105 inline-flex items-center gap-2 justify-center"
+                                                                                                                                                                                  style={{ padding: '0.4rem 0.8rem' }}
+                                                                                                                                                                                >
+                                                                                                                                                                                  <Image
+                                                                                                                                                                                    src="/Books.png"
+                                                                                                                                                                                    alt="Book Icon"
+                                                                                                                                                                                    width={isMobile ? 15 : 20}
+                                                                                                                                                                                    height={isMobile ? 15 : 20}
+                                                                                                                                                                                  />
+                                                                                                                                                                                  <span className="text-xs">View Project</span>
+                                                                                                                                                                                </a>
+                                                                                                                                                                              )}
+                                                                                                                                                                            </div>
+                                                                                                                                                                          </div>
+                                                                                                                                                                          <div className="h-8"></div>
+                                                                                                                                                                        </div>
+                                                                                                                                                                      </div>                  </div>
                 ))}
               </div>
             </div>
@@ -781,10 +761,11 @@ export default function Portfolio() {
 
       <section id="certificates" className="snap-section px-6 min-h-screen py-20 flex flex-col items-center">
         <div className="max-w-4xl mx-auto w-full">
-          <h2 className={'text-3xl sm:text-4xl md:text-5xl font-black mb-8 tracking-tight text-center ' + (visibleSections.has('certificates') ? 'fade-in-up' : 'opacity-0')}>
+          <h2 className={'text-3xl sm:text-4xl md:text-5xl font-black tracking-tight text-center ' + (visibleSections.has('certificates') ? 'fade-in-up' : 'opacity-0')}>
             <span className="bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">Certificates</span>
           </h2>
-          <div className="min-h-[350px] mb-8">
+          <div className="h-8" />
+          <div className="min-h-[350px]">
             <AnimatePresence mode="wait">
               {certificatePage === 'page1' && (
                 <motion.div
@@ -802,8 +783,10 @@ export default function Portfolio() {
                     >
                       <div className="flex flex-col justify-between h-full">
                         <div>
-                          <Image src={cert.image} alt={cert.name} width={120} height={80} className="rounded-md mb-2 w-full object-cover mx-auto" />
-                          <h3 className="text-sm font-bold mb-2 text-zinc-200 text-center">{cert.name}</h3>
+                          <div className="w-full mb-2">
+                            <Image src={cert.image} alt={cert.name} width={120} height={80} layout="responsive" className="rounded-md" />
+                          </div>
+                          <h3 className="text-sm font-bold mb-2 text-zinc-200 text-center truncate">{cert.name}</h3>
                         </div>
                         <div>
                           <a href={cert.link} target="_blank" rel="noopener noreferrer" className="inline-block w-full text-center bg-gradient-to-r from-cyan-500 to-blue-600 text-white rounded-full font-semibold py-1 px-2 text-xs transition-all duration-300 hover:scale-105 hover:shadow-cyan-500/50">
@@ -833,13 +816,15 @@ export default function Portfolio() {
                       <div className="flex flex-col justify-between h-full">
                         <div>
                           {cert.status === 'completed' ? (
-                            <Image src={cert.image} alt={cert.name} width={120} height={80} className="rounded-md mb-2 w-full object-cover mx-auto" />
+                            <div className="w-full mb-2">
+                              <Image src={cert.image} alt={cert.name} width={120} height={80} layout="responsive" className="rounded-md" />
+                            </div>
                           ) : (
-                            <div className="w-full h-[80px] bg-zinc-800 rounded-md mb-2 flex items-center justify-center mx-auto">
+                            <div className="w-full h-32 bg-zinc-800 rounded-md mb-2 flex items-center justify-center">
                               <p className="text-zinc-500">Coming Soon</p>
                             </div>
                           )}
-                          <h3 className="text-sm font-bold mb-2 text-zinc-200 text-center">{cert.name}</h3>
+                          <h3 className="text-sm font-bold mb-2 text-zinc-200 text-center truncate">{cert.name}</h3>
                         </div>
                         <div>
                           {cert.status === 'completed' ? (
@@ -859,7 +844,8 @@ export default function Portfolio() {
               )}
             </AnimatePresence>
           </div>
-          <div className="flex justify-center items-center mt-12 gap-4">
+          <div className="h-16" />
+          <div className="flex justify-center items-center gap-4">
             <button onClick={() => setCertificatePage('page1')} className={`p-2 rounded-full transition-colors ${certificatePage === 'page1' ? 'bg-cyan-500/50' : 'bg-zinc-800/50 hover:bg-zinc-700/50'}`}>
               <ArrowLeft className="w-6 h-6 text-cyan-400" />
             </button>

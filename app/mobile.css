@@ -246,14 +246,12 @@
 
   /* Projects section image mobile active state */
   #projects .flex-shrink-0.mobile-active .w-full.h-48.relative > img { /* Target the Image element itself */
-    transform: scale(1.25) translateY(-8px) !important;
     transition-property: transform !important; /* Ensure transitions are active */
     transition-duration: 500ms !important;
   }
   #projects .flex-shrink-0.mobile-active .w-full.h-48.relative { /* For hover:overflow-visible and shadow */
-    overflow: visible !important;
-    box-shadow: 0_0_30px_rgba(6,182,212,0.5) !important;
-    z-index: 10 !important; /* Ensure it pops on top */
+    transition-property: box-shadow !important; /* Ensure transitions are active */
+    transition-duration: 500ms !important;
   }
 
   html, body {

@@ -172,3 +172,24 @@ body {
 .button-pressed {
   transform: scale(0.95);
 }
+
+.breathing-border-glow {
+  border: 2px solid rgba(6, 182, 212, 0.7); /* Base border color */
+  border-radius: 1rem;
+  box-shadow: 0 0 10px rgba(6, 182, 212, 0.4); /* Base glow */
+  animation: breath-glow 2s ease-in-out infinite alternate; /* Smooth, continuous breath */
+}
+
+@keyframes breath-glow {
+  0% {
+    box-shadow: 0 0 10px rgba(6, 182, 212, 0.4), 0 0 20px rgba(6, 182, 212, 0.2);
+    border-color: rgba(6, 182, 212, 0.7);
+  }
+  100% {
+    box-shadow: 0 0 25px #00ffff, 0 0 40px #00a1ff;
+    border-color: #00ffff;
+  }
+}
+
+
+
