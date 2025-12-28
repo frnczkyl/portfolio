@@ -292,6 +292,30 @@ export default function Portfolio() {
       status: "completed"
     },
     {
+      name: "Introduction to AI",
+      image: "/Introduction_toAI.png",
+      link: "https://drive.google.com/file/d/1-nGHVZxzndQp8nj9VNcMkFzKrPfmsqJA/view?usp=sharing",
+      status: "completed"
+    },
+    {
+      name: "Coming Soon",
+      image: "",
+      link: "",
+      status: "coming_soon"
+    },
+    {
+      name: "Coming Soon",
+      image: "",
+      link: "",
+      status: "coming_soon"
+    },
+    {
+      name: "Coming Soon",
+      image: "",
+      link: "",
+      status: "coming_soon"
+    },
+    {
       name: "Coming Soon",
       image: "",
       link: "",
@@ -774,7 +798,7 @@ export default function Portfolio() {
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: 20 }}
                   transition={{ duration: 0.3 }}
-                  className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4"
+                  className="grid grid-cols-4 gap-4"
                 >
                   {certificates1.map((cert, index) => (
                     <div
@@ -783,10 +807,12 @@ export default function Portfolio() {
                     >
                       <div className="flex flex-col justify-between h-full">
                         <div>
-                          <div className="w-full mb-2">
-                            <Image src={cert.image} alt={cert.name} width={120} height={80} layout="responsive" className="rounded-md" />
+                          <div className="relative w-full" style={{ paddingTop: '75%' }}>
+                            <div className="absolute top-0 left-0 w-full h-full">
+                              <Image src={cert.image} alt={cert.name} layout="fill" className="rounded-md object-contain" />
+                            </div>
                           </div>
-                          <h3 className="text-sm font-bold mb-2 text-zinc-200 text-center truncate">{cert.name}</h3>
+                          <h3 className="text-sm font-bold mt-2 mb-2 text-zinc-200 text-center truncate">{cert.name}</h3>
                         </div>
                         <div>
                           <a href={cert.link} target="_blank" rel="noopener noreferrer" className="inline-block w-full text-center bg-gradient-to-r from-cyan-500 to-blue-600 text-white rounded-full font-semibold py-1 px-2 text-xs transition-all duration-300 hover:scale-105 hover:shadow-cyan-500/50">
@@ -806,7 +832,7 @@ export default function Portfolio() {
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: -20 }}
                   transition={{ duration: 0.3 }}
-                  className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4"
+                  className="grid grid-cols-4 gap-4"
                 >
                   {certificates2.map((cert, index) => (
                     <div
@@ -815,16 +841,18 @@ export default function Portfolio() {
                     >
                       <div className="flex flex-col justify-between h-full">
                         <div>
-                          {cert.status === 'completed' ? (
-                            <div className="w-full mb-2">
-                              <Image src={cert.image} alt={cert.name} width={120} height={80} layout="responsive" className="rounded-md" />
+                          <div className="relative w-full" style={{ paddingTop: '75%' }}>
+                            <div className="absolute top-0 left-0 w-full h-full">
+                              {cert.status === 'completed' ? (
+                                <Image src={cert.image} alt={cert.name} layout="fill" className="rounded-md object-contain" />
+                              ) : (
+                                <div className="w-full h-full bg-zinc-800 rounded-md flex items-center justify-center">
+                                  <p className="text-zinc-500">Coming Soon</p>
+                                </div>
+                              )}
                             </div>
-                          ) : (
-                            <div className="w-full h-32 bg-zinc-800 rounded-md mb-2 flex items-center justify-center">
-                              <p className="text-zinc-500">Coming Soon</p>
-                            </div>
-                          )}
-                          <h3 className="text-sm font-bold mb-2 text-zinc-200 text-center truncate">{cert.name}</h3>
+                          </div>
+                          <h3 className="text-sm font-bold mt-2 mb-2 text-zinc-200 text-center truncate">{cert.name}</h3>
                         </div>
                         <div>
                           {cert.status === 'completed' ? (
