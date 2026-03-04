@@ -43,8 +43,8 @@ function ProjectCard({
   const isActive = displayOffset === 0;
 
   const dragX = useMotionValue(0);
-  const dragTilt = useTransform(dragX, [-260, 0, 260], [-14, 0, 14]);
-  // Card dips BEHIND the deck once dragged past ~35px — real deck-of-cards feel
+  // Skip tilt on mobile — reduces per-frame JS work during drag
+  const dragTilt = useTransform(dragX, [-260, 0, 260], isMobile ? [0, 0, 0] : [-14, 0, 14]);
   const dragZIndex = useTransform(dragX, (v) => (Math.abs(v) > 35 ? 0 : n));
 
   return (
@@ -54,11 +54,13 @@ function ProjectCard({
         scale: 1 - absOffset * 0.055,
         opacity: absOffset >= Math.ceil(n / 2) ? 0 : 1 - Math.max(0, absOffset - 1) * 0.18,
       }}
-      transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-      /* Drag — active card follows finger/cursor */
+      // Mobile: tween is far cheaper than spring (no iterative physics each frame)
+      transition={isMobile
+        ? { type: 'tween', duration: 0.18, ease: 'easeOut' }
+        : { type: 'spring', stiffness: 300, damping: 30 }}
       drag={isActive ? 'x' : false}
       dragSnapToOrigin
-      dragElastic={0.13}
+      dragElastic={isMobile ? 0.08 : 0.13}
       dragConstraints={{ left: -320, right: 320 }}
       onDragEnd={(_, info) => {
         const OFFSET = 65;
@@ -79,10 +81,12 @@ function ProjectCard({
         x: isActive ? dragX : 0,
         rotate: isActive ? dragTilt : undefined,
         zIndex: isActive ? dragZIndex : n - absOffset,
+        willChange: 'transform, opacity',
       }}
-      whileDrag={{ cursor: 'grabbing' }}
+      whileDrag={isMobile ? undefined : { cursor: 'grabbing' }}
       onClick={() => !isActive && onCardClick(index)}
-      whileHover={!isActive ? { scale: 1 - absOffset * 0.055 + 0.025 } : undefined}
+      // Skip hover scale on mobile — no hover events anyway, just wastes listeners
+      whileHover={(!isActive && !isMobile) ? { scale: 1 - absOffset * 0.055 + 0.025 } : undefined}
     >
       <div
         className={`relative bg-zinc-900 rounded-2xl border h-full flex flex-col overflow-hidden shadow-2xl transition-shadow duration-300 ${

@@ -214,6 +214,7 @@ body {
   height: 3rem;
   cursor: pointer;
   border-radius: 5rem;
+  will-change: transform;
   transition: transform 0.5s;
   text-decoration: none;
   user-select: none;
@@ -244,6 +245,18 @@ body {
 .star-btn-xs strong {
   font-size: 7.5px;
   letter-spacing: 1.5px;
+}
+
+/* xs buttons: kill the heavy star-field + blur-glow — too expensive for tiny cert buttons */
+.star-btn-xs .star-btn-stars,
+.star-btn-xs .star-btn-glow {
+  display: none;
+}
+
+/* Also kill gradient animation on xs — static gradient is enough */
+.star-btn-xs {
+  animation: none;
+  background-size: 100% 100%;
 }
 
 /* Dark fill inset by 3px — gradient peeks through as border */
