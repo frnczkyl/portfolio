@@ -43,34 +43,40 @@ function ProjectCard({
   const isActive = displayOffset === 0;
 
   const dragX = useMotionValue(0);
-  // Skip tilt on mobile — reduces per-frame JS work during drag
-  const dragTilt = useTransform(dragX, [-260, 0, 260], isMobile ? [0, 0, 0] : [-14, 0, 14]);
+  // Desktop only: tilt and dynamic zIndex via useTransform
+  const dragTilt = useTransform(dragX, [-260, 0, 260], [-14, 0, 14]);
   const dragZIndex = useTransform(dragX, (v) => (Math.abs(v) > 35 ? 0 : n));
+
+  // Skip rendering fully-hidden background cards on mobile — fewer DOM nodes = less work
+  if (isMobile && absOffset >= Math.ceil(n / 2)) return null;
 
   return (
     <motion.div
       animate={{
-        rotateZ: isActive ? 0 : displayOffset * 12,
+        rotateZ: isActive ? 0 : displayOffset * (isMobile ? 8 : 12),
         scale: 1 - absOffset * 0.055,
-        opacity: absOffset >= Math.ceil(n / 2) ? 0 : 1 - Math.max(0, absOffset - 1) * 0.18,
+        opacity: 1 - Math.max(0, absOffset - 1) * 0.18,
       }}
-      // Mobile: tween is far cheaper than spring (no iterative physics each frame)
       transition={isMobile
-        ? { type: 'tween', duration: 0.18, ease: 'easeOut' }
+        ? { type: 'tween', duration: 0.15, ease: 'easeOut' }
         : { type: 'spring', stiffness: 300, damping: 30 }}
       drag={isActive ? 'x' : false}
-      dragSnapToOrigin
-      dragElastic={isMobile ? 0.08 : 0.13}
+      // Mobile: skip dragSnapToOrigin spring physics — manually reset via dragX.set(0)
+      dragSnapToOrigin={!isMobile}
+      dragElastic={isMobile ? 0.05 : 0.13}
       dragConstraints={{ left: -320, right: 320 }}
       onDragEnd={(_, info) => {
-        const OFFSET = 65;
-        const VELOCITY = 350;
+        const OFFSET = 55;
+        const VELOCITY = 300;
         if (info.offset.x < -OFFSET || info.velocity.x < -VELOCITY) {
           dragX.set(0);
           onCardClick((index + 1) % n);
         } else if (info.offset.x > OFFSET || info.velocity.x > VELOCITY) {
           dragX.set(0);
           onCardClick((index - 1 + n) % n);
+        } else if (isMobile) {
+          // No spring snap-back on mobile — instant reset
+          dragX.set(0);
         }
       }}
       style={{
@@ -79,13 +85,13 @@ function ProjectCard({
         cursor: isActive ? 'grab' : 'pointer',
         transformOrigin: 'bottom center',
         x: isActive ? dragX : 0,
-        rotate: isActive ? dragTilt : undefined,
-        zIndex: isActive ? dragZIndex : n - absOffset,
-        willChange: 'transform, opacity',
+        // Skip rotate transform and dynamic zIndex computation on mobile
+        rotate: (isActive && !isMobile) ? dragTilt : undefined,
+        zIndex: isActive ? (isMobile ? n : dragZIndex) : n - absOffset,
+        willChange: 'transform',
       }}
       whileDrag={isMobile ? undefined : { cursor: 'grabbing' }}
       onClick={() => !isActive && onCardClick(index)}
-      // Skip hover scale on mobile — no hover events anyway, just wastes listeners
       whileHover={(!isActive && !isMobile) ? { scale: 1 - absOffset * 0.055 + 0.025 } : undefined}
     >
       <div
@@ -266,10 +272,7 @@ export default function Portfolio() {
   useEffect(() => {
     setMounted(true);
 
-    const observerOptions = {
-      threshold: 0.1,
-    };
-
+    // General observer — 10% visible is enough for most sections
     const observer = new IntersectionObserver((entries) => {
       entries.forEach((entry) => {
         if (entry.isIntersecting) {
@@ -283,13 +286,34 @@ export default function Portfolio() {
           });
         }
       });
-    }, observerOptions);
+    }, { threshold: 0.1 });
 
-    const sections = ['hero', 'about', 'projects', 'skills', 'education', 'experience', 'certificates', 'contact'];
+    const sections = ['hero', 'projects', 'skills', 'education', 'experience', 'certificates', 'contact'];
     sections.forEach(sectionId => {
       const element = document.getElementById(sectionId);
       if (element) observer.observe(element);
     });
+
+    // About section needs a higher threshold so the bento flip animation only
+    // plays when the user has actually scrolled to the section — not on a glimpse.
+    // On mobile with momentum scrolling, 0.1 fires too early (just the photo).
+    const aboutObserver = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          setVisibleSections(prev => new Set(prev).add('about'));
+          setActiveSection('about');
+        } else {
+          setVisibleSections(prev => {
+            const newSet = new Set(prev);
+            newSet.delete('about');
+            return newSet;
+          });
+        }
+      });
+    }, { threshold: 0.45 }); // 45% of section must be visible
+
+    const aboutEl = document.getElementById('about');
+    if (aboutEl) aboutObserver.observe(aboutEl);
 
     const typingInterval = setInterval(() => {
       const line1 = document.querySelector('.line1');
@@ -306,6 +330,7 @@ export default function Portfolio() {
 
     return () => {
       observer.disconnect();
+      aboutObserver.disconnect();
       clearInterval(typingInterval);
     };
   }, []);
@@ -556,8 +581,9 @@ export default function Portfolio() {
             <motion.div
               className="bento-photo col-span-2 relative rounded-2xl overflow-hidden border border-zinc-800 h-48"
               initial={{ rotateY: 90, opacity: 0 }}
-              animate={visibleSections.has('about') ? { rotateY: 0, opacity: 1 } : { rotateY: 90, opacity: 0 }}
-              transition={visibleSections.has('about') ? { delay: 0, duration: 0.5, type: 'spring', stiffness: 180, damping: 22 } : { duration: 0 }}
+              whileInView={{ rotateY: 0, opacity: 1 }}
+              viewport={{ once: false, amount: 0.2 }}
+              transition={{ delay: 0, duration: 0.5, type: 'spring', stiffness: 180, damping: 22 }}
               style={{ transformPerspective: 1000 }}
             >
               <Image src="/MeMyself.jpg" alt="Francis Kyle Lorenzana" fill className="object-cover object-center" />
@@ -572,8 +598,9 @@ export default function Portfolio() {
             <motion.div
               className="col-span-2 bg-zinc-900/80 border border-zinc-800 rounded-2xl p-4 flex items-center justify-center"
               initial={{ rotateY: 90, opacity: 0 }}
-              animate={visibleSections.has('about') ? { rotateY: 0, opacity: 1 } : { rotateY: 90, opacity: 0 }}
-              transition={visibleSections.has('about') ? { delay: 0.1, duration: 0.5, type: 'spring', stiffness: 180, damping: 22 } : { duration: 0 }}
+              whileInView={{ rotateY: 0, opacity: 1 }}
+              viewport={{ once: false, amount: 0.3 }}
+              transition={{ delay: 0.1, duration: 0.5, type: 'spring', stiffness: 180, damping: 22 }}
               style={{ transformPerspective: 1000 }}
             >
               <p className="text-zinc-400 text-xs leading-relaxed text-center">
@@ -585,8 +612,9 @@ export default function Portfolio() {
             <motion.div
               className="col-span-1 bg-zinc-900/80 border border-zinc-800 rounded-2xl p-4 flex flex-col items-center justify-center gap-1"
               initial={{ rotateY: 90, opacity: 0 }}
-              animate={visibleSections.has('about') ? { rotateY: 0, opacity: 1 } : { rotateY: 90, opacity: 0 }}
-              transition={visibleSections.has('about') ? { delay: 0.2, duration: 0.5, type: 'spring', stiffness: 180, damping: 22 } : { duration: 0 }}
+              whileInView={{ rotateY: 0, opacity: 1 }}
+              viewport={{ once: false, amount: 0.3 }}
+              transition={{ delay: 0.1, duration: 0.5, type: 'spring', stiffness: 180, damping: 22 }}
               style={{ transformPerspective: 1000 }}
             >
               <p className="text-4xl font-black text-cyan-400">6+</p>
@@ -597,20 +625,22 @@ export default function Portfolio() {
             <motion.div
               className="col-span-1 bg-zinc-900/80 border border-zinc-800 rounded-2xl p-4 flex flex-col items-center justify-center gap-1"
               initial={{ rotateY: 90, opacity: 0 }}
-              animate={visibleSections.has('about') ? { rotateY: 0, opacity: 1 } : { rotateY: 90, opacity: 0 }}
-              transition={visibleSections.has('about') ? { delay: 0.3, duration: 0.5, type: 'spring', stiffness: 180, damping: 22 } : { duration: 0 }}
+              whileInView={{ rotateY: 0, opacity: 1 }}
+              viewport={{ once: false, amount: 0.3 }}
+              transition={{ delay: 0.15, duration: 0.5, type: 'spring', stiffness: 180, damping: 22 }}
               style={{ transformPerspective: 1000 }}
             >
               <p className="text-4xl font-black text-blue-400">14+</p>
               <p className="text-[10px] text-zinc-500 uppercase tracking-widest">Technologies</p>
             </motion.div>
 
-            {/* OJT badge */}
+            {/* Hire Me badge */}
             <motion.div
               className="col-span-1 bg-green-500/10 border border-green-500/30 rounded-2xl p-4 flex flex-col items-center justify-center gap-1"
               initial={{ rotateY: 90, opacity: 0 }}
-              animate={visibleSections.has('about') ? { rotateY: 0, opacity: 1 } : { rotateY: 90, opacity: 0 }}
-              transition={visibleSections.has('about') ? { delay: 0.4, duration: 0.5, type: 'spring', stiffness: 180, damping: 22 } : { duration: 0 }}
+              whileInView={{ rotateY: 0, opacity: 1 }}
+              viewport={{ once: false, amount: 0.3 }}
+              transition={{ delay: 0.1, duration: 0.5, type: 'spring', stiffness: 180, damping: 22 }}
               style={{ transformPerspective: 1000 }}
             >
               <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
@@ -622,8 +652,9 @@ export default function Portfolio() {
             <motion.div
               className="col-span-1 bg-zinc-900/80 border border-zinc-800 rounded-2xl p-4 flex flex-col items-center justify-center gap-1"
               initial={{ rotateY: 90, opacity: 0 }}
-              animate={visibleSections.has('about') ? { rotateY: 0, opacity: 1 } : { rotateY: 90, opacity: 0 }}
-              transition={visibleSections.has('about') ? { delay: 0.5, duration: 0.5, type: 'spring', stiffness: 180, damping: 22 } : { duration: 0 }}
+              whileInView={{ rotateY: 0, opacity: 1 }}
+              viewport={{ once: false, amount: 0.3 }}
+              transition={{ delay: 0.15, duration: 0.5, type: 'spring', stiffness: 180, damping: 22 }}
               style={{ transformPerspective: 1000 }}
             >
               <p className="text-xl font-black text-purple-400">Graduate</p>
@@ -634,8 +665,9 @@ export default function Portfolio() {
             <motion.div
               className="col-span-1 md:col-span-2 aspect-square md:aspect-auto bg-zinc-900/80 border border-zinc-800 rounded-2xl p-4 flex flex-col items-center justify-center gap-2"
               initial={{ rotateY: 90, opacity: 0 }}
-              animate={visibleSections.has('about') ? { rotateY: 0, opacity: 1 } : { rotateY: 90, opacity: 0 }}
-              transition={visibleSections.has('about') ? { delay: 0.6, duration: 0.5, type: 'spring', stiffness: 180, damping: 22 } : { duration: 0 }}
+              whileInView={{ rotateY: 0, opacity: 1 }}
+              viewport={{ once: false, amount: 0.3 }}
+              transition={{ delay: 0.1, duration: 0.5, type: 'spring', stiffness: 180, damping: 22 }}
               style={{ transformPerspective: 1000 }}
             >
               <div className="w-8 h-8 rounded-xl bg-cyan-500/10 flex items-center justify-center flex-shrink-0">
@@ -651,8 +683,9 @@ export default function Portfolio() {
             <motion.div
               className="col-span-1 md:col-span-2 aspect-square md:aspect-auto bg-zinc-900/80 border border-zinc-800 rounded-2xl p-4 flex flex-col items-center justify-center gap-2"
               initial={{ rotateY: 90, opacity: 0 }}
-              animate={visibleSections.has('about') ? { rotateY: 0, opacity: 1 } : { rotateY: 90, opacity: 0 }}
-              transition={visibleSections.has('about') ? { delay: 0.7, duration: 0.5, type: 'spring', stiffness: 180, damping: 22 } : { duration: 0 }}
+              whileInView={{ rotateY: 0, opacity: 1 }}
+              viewport={{ once: false, amount: 0.3 }}
+              transition={{ delay: 0.15, duration: 0.5, type: 'spring', stiffness: 180, damping: 22 }}
               style={{ transformPerspective: 1000 }}
             >
               <div className="w-8 h-8 rounded-xl bg-cyan-500/10 flex items-center justify-center flex-shrink-0">
@@ -668,8 +701,9 @@ export default function Portfolio() {
             <motion.div
               className="bento-location col-span-2 h-16 md:h-auto bg-zinc-900/80 border border-zinc-800 rounded-2xl p-4 flex items-center justify-center gap-3"
               initial={{ rotateY: 90, opacity: 0 }}
-              animate={visibleSections.has('about') ? { rotateY: 0, opacity: 1 } : { rotateY: 90, opacity: 0 }}
-              transition={visibleSections.has('about') ? { delay: 0.8, duration: 0.5, type: 'spring', stiffness: 180, damping: 22 } : { duration: 0 }}
+              whileInView={{ rotateY: 0, opacity: 1 }}
+              viewport={{ once: false, amount: 0.3 }}
+              transition={{ delay: 0.1, duration: 0.5, type: 'spring', stiffness: 180, damping: 22 }}
               style={{ transformPerspective: 1000 }}
             >
               <div className="w-8 h-8 rounded-xl bg-cyan-500/10 flex items-center justify-center flex-shrink-0">
@@ -974,7 +1008,7 @@ export default function Portfolio() {
                   {certificates1.map((cert, index) => (
                     <div
                       key={cert.name + index}
-                      className={`bg-zinc-900/50 rounded-2xl p-2 border border-zinc-800 transition-all duration-500 flex flex-col justify-between ${cert.status === 'completed' ? 'hover:border-cyan-500/50' : 'opacity-60'}`}
+                      className={`bg-zinc-900/50 rounded-2xl p-2 border border-zinc-800 transition-colors flex flex-col justify-between ${cert.status === 'completed' ? 'hover:border-cyan-500/50' : 'opacity-60'}`}
                     >
                       <div className="flex flex-col justify-between h-full">
                         <div>
@@ -1006,7 +1040,7 @@ export default function Portfolio() {
                   {certificates2.map((cert, index) => (
                     <div
                       key={cert.name + index}
-                      className={`bg-zinc-900/50 rounded-2xl p-2 border border-zinc-800 transition-all duration-500 flex flex-col justify-between ${cert.status === 'completed' ? 'hover:border-cyan-500/50' : 'opacity-60'}`}
+                      className={`bg-zinc-900/50 rounded-2xl p-2 border border-zinc-800 transition-colors flex flex-col justify-between ${cert.status === 'completed' ? 'hover:border-cyan-500/50' : 'opacity-60'}`}
                     >
                       <div className="flex flex-col justify-between h-full">
                         <div>
