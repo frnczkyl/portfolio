@@ -1,15 +1,182 @@
 'use client';
 
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import FacebookIcon from './components/FacebookIcon';
 import GithubIcon from './components/GithubIcon';
 import LinkedInIcon from './components/LinkedInIcon';
 
-import { useDrag } from '@use-gesture/react';
-import { AnimatePresence, motion } from 'framer-motion';
-import { Menu, X, ArrowRight, ArrowLeft } from 'lucide-react';
+import { AnimatePresence, motion, useMotionValue, useTransform } from 'framer-motion';
+import { Menu, X, ArrowRight, ArrowLeft, ExternalLink } from 'lucide-react';
 import Link from 'next/link';
+
+type Project = {
+  title: string;
+  description: string;
+  tags: string[];
+  image: string;
+  link: string;
+  projectLink?: string;
+  color: string;
+};
+
+function ProjectCard({
+  project,
+  index,
+  total,
+  activeCard,
+  onCardClick,
+  isMobile,
+}: {
+  project: Project;
+  index: number;
+  total: number;
+  activeCard: number;
+  onCardClick: (index: number) => void;
+  isMobile: boolean;
+}) {
+  const n = total;
+  const raw = index - activeCard;
+  const offset = ((raw % n) + n) % n;
+  const displayOffset = offset >= Math.ceil(n / 2) ? offset - n : offset;
+  const absOffset = Math.abs(displayOffset);
+  const isActive = displayOffset === 0;
+
+  const dragX = useMotionValue(0);
+  const dragTilt = useTransform(dragX, [-260, 0, 260], [-14, 0, 14]);
+  // Card dips BEHIND the deck once dragged past ~35px — real deck-of-cards feel
+  const dragZIndex = useTransform(dragX, (v) => (Math.abs(v) > 35 ? 0 : n));
+
+  return (
+    <motion.div
+      animate={{
+        rotateZ: isActive ? 0 : displayOffset * 12,
+        scale: 1 - absOffset * 0.055,
+        opacity: absOffset >= Math.ceil(n / 2) ? 0 : 1 - Math.max(0, absOffset - 1) * 0.18,
+      }}
+      transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+      /* Drag — active card follows finger/cursor */
+      drag={isActive ? 'x' : false}
+      dragSnapToOrigin
+      dragElastic={0.13}
+      dragConstraints={{ left: -320, right: 320 }}
+      onDragEnd={(_, info) => {
+        const OFFSET = 65;
+        const VELOCITY = 350;
+        if (info.offset.x < -OFFSET || info.velocity.x < -VELOCITY) {
+          dragX.set(0);
+          onCardClick((index + 1) % n);
+        } else if (info.offset.x > OFFSET || info.velocity.x > VELOCITY) {
+          dragX.set(0);
+          onCardClick((index - 1 + n) % n);
+        }
+      }}
+      style={{
+        position: 'absolute',
+        inset: 0,
+        cursor: isActive ? 'grab' : 'pointer',
+        transformOrigin: 'bottom center',
+        x: isActive ? dragX : 0,
+        rotate: isActive ? dragTilt : undefined,
+        zIndex: isActive ? dragZIndex : n - absOffset,
+      }}
+      whileDrag={{ cursor: 'grabbing' }}
+      onClick={() => !isActive && onCardClick(index)}
+      whileHover={!isActive ? { scale: 1 - absOffset * 0.055 + 0.025 } : undefined}
+    >
+      <div
+        className={`relative bg-zinc-900 rounded-2xl border h-full flex flex-col overflow-hidden shadow-2xl transition-shadow duration-300 ${
+          isActive
+            ? 'border-cyan-500/40 shadow-[0_0_40px_rgba(6,182,212,0.12)]'
+            : 'border-zinc-800'
+        }`}
+      >
+        {/* Colored top accent bar */}
+        <div className={`h-1.5 bg-gradient-to-r ${project.color} w-full flex-shrink-0`} />
+
+        {/* Project image */}
+        {project.image && (
+          <div className="relative flex-shrink-0" style={{ height: isMobile ? '35%' : '42%' }}>
+            <Image src={project.image} alt={project.title} layout="fill" className="object-cover" />
+            <div className="absolute inset-0 bg-gradient-to-t from-zinc-900/90 via-zinc-900/30 to-transparent" />
+            <div className={`absolute inset-0 bg-gradient-to-br ${project.color} opacity-10`} />
+          </div>
+        )}
+
+        {/* Content */}
+        <div className="px-5 pt-4 flex flex-col flex-1 items-center text-center">
+          <h3 className="text-lg font-bold text-cyan-400 mb-2 w-full">{project.title}</h3>
+          <p className="text-zinc-400 text-xs leading-relaxed mb-3 line-clamp-3 w-full">{project.description}</p>
+          <div className="flex flex-wrap gap-1 justify-center">
+            {project.tags.map((tag) => (
+              <span key={tag} className="px-2 py-0.5 text-[10px] rounded-full bg-zinc-800 text-zinc-400 border border-zinc-700">
+                {tag}
+              </span>
+            ))}
+          </div>
+        </div>
+
+        {/* Buttons — circle icons with label below */}
+        <div className="flex flex-shrink-0 py-3 justify-center gap-8">
+          {project.link && (
+            <a
+              href={project.link}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex flex-col items-center gap-2 group"
+            >
+              <div className="w-14 h-14 rounded-full bg-zinc-800 border border-zinc-700 flex items-center justify-center group-hover:border-violet-500 group-hover:bg-zinc-700 transition-all duration-200">
+                <GithubIcon width={26} height={26} className="text-violet-400" />
+              </div>
+              <span className="text-[11px] text-zinc-400 group-hover:text-zinc-200 transition-colors font-medium">GitHub</span>
+            </a>
+          )}
+          {project.projectLink && (
+            <a
+              href={project.projectLink}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex flex-col items-center gap-2 group"
+            >
+              <div className="w-14 h-14 rounded-full bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center group-hover:shadow-[0_0_18px_rgba(6,182,212,0.5)] transition-all duration-200">
+                <ExternalLink className="w-6 h-6 text-white" />
+              </div>
+              <span className="text-[11px] text-zinc-400 group-hover:text-zinc-200 transition-colors font-medium">Live Demo</span>
+            </a>
+          )}
+        </div>
+      </div>
+    </motion.div>
+  );
+}
+
+function StarButton({
+  href, onClick, children, small = false, xs = false, stopProp = false, target,
+}: {
+  href?: string;
+  onClick?: (e: React.MouseEvent) => void;
+  children: React.ReactNode;
+  small?: boolean;
+  xs?: boolean;
+  stopProp?: boolean;
+  target?: string;
+}) {
+  const cls = `star-btn${xs ? ' star-btn-xs' : small ? ' star-btn-sm' : ''}`;
+  const handleClick = stopProp
+    ? (e: React.MouseEvent) => { e.stopPropagation(); onClick?.(e); }
+    : onClick;
+  const inner = (
+    <>
+      <strong>{children}</strong>
+      <div className="star-btn-stars-wrap"><div className="star-btn-stars" /></div>
+      <div className="star-btn-glow"><div className="star-btn-circle" /><div className="star-btn-circle" /></div>
+    </>
+  );
+  if (href) {
+    return <a href={href} target={target} rel={target === '_blank' ? 'noopener noreferrer' : undefined} className={cls} onClick={handleClick}>{inner}</a>;
+  }
+  return <div className={cls} role="button" onClick={handleClick}>{inner}</div>;
+}
 
 export default function Portfolio() {
   const [mounted, setMounted] = useState(false);
@@ -19,10 +186,10 @@ export default function Portfolio() {
   const [pressedButton, setPressedButton] = useState<string | null>(null);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
-  const [activeProjectHoverIndex, setActiveProjectHoverIndex] = useState<number | null>(null);
+  const [activeCard, setActiveCard] = useState(0);
   const [isSchoolImageHovered, setIsSchoolImageHovered] = useState(false);
   const [isProfileImageHovered, setIsProfileImageHovered] = useState(false);
-  const [isDragging, setIsDragging] = useState(false); // New state variable
+  const [isExperienceFlipped, setIsExperienceFlipped] = useState(false);
 
   useEffect(() => {
     const handleResize = () => {
@@ -91,60 +258,6 @@ export default function Portfolio() {
     }
   ];
 
-  const [currentProject, setCurrentProject] = useState(0);
-  const carouselRef = useRef<HTMLDivElement>(null);
-  const [cardWidth, setCardWidth] = useState(384);
-  const [dragX, setDragX] = useState(0);
-
-  const bind = useDrag(({ down, movement: [mx], cancel, direction: [dx], velocity: [vx] }) => {
-    if (isMobile) {
-      setIsDragging(down);
-      if (down) {
-        setDragX(mx);
-      } else {
-        setDragX(0);
-        const threshold = cardWidth * 0.3; // Lower threshold for easier swipe
-        const swipeVelocityThreshold = 0.5; // Velocity threshold for quick flicks
-        if (Math.abs(mx) > threshold || Math.abs(vx) > swipeVelocityThreshold) {
-          if (mx < 0) { // Swiped left, go to next project
-            setCurrentProject(p => Math.min(projects.length - 1, p + 1));
-          } else { // Swiped right, go to previous project
-            setCurrentProject(p => Math.max(0, p - 1));
-          }
-        }
-      }
-    } else {
-      // Existing desktop logic (or default behavior)
-      if (down) {
-        setDragX(mx);
-      } else {
-        setDragX(0);
-        if (Math.abs(mx) > cardWidth / 2) {
-          if (mx < 0) {
-            setCurrentProject(p => Math.min(projects.length - 1, p + 1));
-          } else {
-            setCurrentProject(p => Math.max(0, p - 1));
-          }
-        }
-      }
-    }
-  });
-  
-  useEffect(() => {
-    const calculateCardWidth = () => {
-      if (carouselRef.current) {
-        // Since the ref is on the container, we find the first card element within it.
-        const firstCard = carouselRef.current.querySelector('.flex-shrink-0') as HTMLDivElement;
-        if (firstCard) {
-          setCardWidth(firstCard.offsetWidth);
-        }
-      }
-    };
-
-    calculateCardWidth();
-    window.addEventListener('resize', calculateCardWidth);
-    return () => window.removeEventListener('resize', calculateCardWidth);
-  }, []);
 
   useEffect(() => {
     setMounted(true);
@@ -168,7 +281,7 @@ export default function Portfolio() {
       });
     }, observerOptions);
 
-    const sections = ['hero', 'about', 'projects', 'skills', 'education', 'certificates', 'contact'];
+    const sections = ['hero', 'about', 'projects', 'skills', 'education', 'experience', 'certificates', 'contact'];
     sections.forEach(sectionId => {
       const element = document.getElementById(sectionId);
       if (element) observer.observe(element);
@@ -226,8 +339,8 @@ export default function Portfolio() {
   const education = [
     {
       school: "Cebu Institute of Technology-University",
-      year: "2025-2026 present",
-      description: "Currently pursuing a Bachelor of Science in Information Technology, developing strong foundational skills in programming, software development, database management, and IT systems. As a student, I have gained hands-on experience through various academic projects, allowing me to apply technical concepts to real-world scenarios and strengthen my problem-solving and analytical abilities. I continue to build my knowledge in both frontend and backend technologies as I work toward completing my degree.",
+      year: "Graduated 2025",
+      description: "Completed a Bachelor of Science in Information Technology, building strong skills in programming, software development, database management, and IT systems. Gained hands-on experience through various academic projects, applying technical concepts to real-world scenarios and strengthening problem-solving and analytical abilities. Proficient in both frontend and backend technologies with a focus on full-stack web development.",
       image: "/GLE-Building.jpg",
       logo: "/CITLOGO.png"
     }
@@ -346,7 +459,7 @@ export default function Portfolio() {
             <Image src="/Giphy.gif" alt="Pixelated Icon" width={isMobile ? 24 : 48} height={isMobile ? 24 : 48} />
           </div>
           <div className="hidden md:flex gap-8 text-sm font-medium transition-all duration-700 delay-200">
-            {['About', 'Projects', 'Skills', 'Education', 'Certificates', 'Contact'].map((item) => (
+            {['About', 'Projects', 'Skills', 'Education', 'Experience', 'Certificates', 'Contact'].map((item) => (
               <a
                 key={item}
                 href={'#' + item.toLowerCase()}
@@ -366,7 +479,7 @@ export default function Portfolio() {
         {isMobileMenuOpen && (
           <div className="md:hidden bg-zinc-950/80 backdrop-blur-xl">
             <div className="flex flex-col items-center gap-4 py-4">
-              {['About', 'Projects', 'Skills', 'Education', 'Certificates', 'Contact'].map((item) => (
+              {['About', 'Projects', 'Skills', 'Education', 'Experience', 'Certificates', 'Contact'].map((item) => (
                 <a
                   key={item}
                   href={'#' + item.toLowerCase()}
@@ -409,32 +522,8 @@ export default function Portfolio() {
           <div className="h-24"></div>
           
           <div className={'flex flex-col sm:flex-row gap-6 justify-center items-center ' + (visibleSections.has('hero') ? 'fade-in-up' : 'opacity-0')} style={{ animationDelay: '0.6s' }}>
-            <a
-              href="#projects"
-              className={"group flex items-center gap-2 bg-gradient-to-r from-cyan-500 to-blue-600 text-white rounded-full font-semibold shadow-lg hover:shadow-[0_0_20px_rgba(6,182,212,0.5)] transition-all duration-300 hover:scale-105"}
-              style={isMobile ? {} : { padding: '0.4rem 0.8rem' }}
-            >
-              <Image
-                src="/GithubLogo_black.svg"
-                alt="GitHub Logo"
-                width={isMobile ? 15 : 20}
-                height={isMobile ? 15 : 20}
-              />
-              <span className="text-xs">View My Work</span>
-            </a>
-            <a
-              href="#contact"
-              className={"group flex items-center gap-2 border border-zinc-700 text-white rounded-full font-semibold hover:border-cyan-500 hover:bg-cyan-500/10 transition-all duration-300 hover:scale-105"}
-              style={isMobile ? {} : { padding: '0.4rem 0.8rem' }}
-            >
-              <Image
-                src="/EmailIcon.svg"
-                alt="Email Icon"
-                width={isMobile ? 15 : 20}
-                height={isMobile ? 15 : 20}
-              />
-              <span className="text-xs">Get In Touch</span>
-            </a>
+            <StarButton href="#projects">VIEW MY WORK</StarButton>
+            <StarButton href="#contact">GET IN TOUCH</StarButton>
           </div>
         </div>
 
@@ -445,241 +534,202 @@ export default function Portfolio() {
         </div>
       </section>
 
-      <section id="about" className="snap-section relative px-6 py-20">
+      <section id="about" className="snap-section relative px-6 py-16">
         <div className="max-w-6xl mx-auto">
-          <div className="grid md:grid-cols-3 gap-16 items-center">
-            <div className={'md:col-span-2 ' + (visibleSections.has('about') ? 'fade-in-up' : 'opacity-0')}>
-              <h2 className="text-3xl sm:text-4xl md:text-5xl font-black mb-6 tracking-tight">
-                About <span className="bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">Me</span>
-              </h2>
-              <div className="space-y-4 text-zinc-400 text-lg leading-relaxed">
-                <p>
-                  As a 4th-year Software Development student, I specialize in full-stack development, building robust applications from front to back. I have practical experience with technologies like React, Next.js, and Django and a strong passion for creating functional, user-friendly digital experiences. I am actively seeking an OJT opportunity to apply my skills in a professional setting and contribute to real-world projects.
-                </p>
-              </div>
-            </div>
 
-            <div className={'relative flex justify-center items-center ' + (visibleSections.has('about') ? 'fade-in-up' : 'opacity-0')} style={{ animationDelay: '0.2s' }}>
-              <div
-                className={"profile-image-container w-40 h-40 md:w-60 md:h-60 overflow-hidden rounded-full cursor-pointer" + (isMobile && isProfileImageHovered ? ' mobile-active' : '')}
-                onClick={() => isMobile && setIsProfileImageHovered(prev => !prev)}
-              >
-                <Image
-                  src="/MeMyself.jpg"
-                  alt="Francis Kyle Lorenzana"
-                  width={288}
-                  height={288}
-                  className="rounded-full object-cover"
-                />
-              </div>
-            </div>
+          {/* Section label + heading */}
+          <div className={visibleSections.has('about') ? 'fade-in-up' : 'opacity-0'}>
+            <p className="text-xs font-semibold tracking-widest text-cyan-400 uppercase mb-2">Who I Am</p>
+            <h2 className="text-3xl sm:text-4xl font-black mb-6 tracking-tight">
+              About <span className="bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">Me</span>
+            </h2>
           </div>
 
-          <div className="h-20"></div> {/* Spacer div */}
+          {/* Bento Grid — cards flip in one by one when section enters viewport */}
+          <div className="about-bento grid grid-cols-2 gap-3">
 
-                    <div className={'mt-16 grid sm:grid-cols-2 md:grid-cols-3 gap-8 text-center ' + (visibleSections.has('about') ? 'fade-in-up' : 'opacity-0')} style={{ animationDelay: '0.4s' }}>
-                      {/* Email Contact Info */}
-                      {isMobile ? (
-                        <div className="flex flex-col items-center">
-                          <div className="flex items-center" style={{gap: '0.2rem'}}>
-                            <svg className="text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" style={{width: '10px', height: '10px'}}>
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                            </svg>
-                            <span className="text-sm text-zinc-500" style={{fontSize: '0.5rem'}}>Email</span>
-                          </div>
-                          <span className="text-zinc-200" style={{fontSize: '0.6rem'}}>kaelexx12@gmail.com</span>
-                        </div>
-                      ) : (
-                        <div className="flex items-center justify-center gap-4">
-                          <div className="w-12 h-12 rounded-full bg-cyan-500/20 flex items-center justify-center">
-                            <svg className="w-6 h-6 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                            </svg>
-                          </div>
-                          <div>
-                            <div className="text-sm text-zinc-500">Email</div>
-                            <div className="text-zinc-200">kaelexx12@gmail.com</div>
-                          </div>
-                        </div>
-                      )}
-          
-                      {/* Phone Contact Info */}
-                      {isMobile ? (
-                        <div className="flex flex-col items-center">
-                          <div className="flex items-center" style={{gap: '0.2rem'}}>
-                            <svg className="w-6 h-6 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" style={{width: '10px', height: '10px'}}>
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-                            </svg>
-                            <span className="text-sm text-zinc-500" style={{fontSize: '0.6rem'}}>Phone</span>
-                          </div>
-                          <span className="text-zinc-200" style={{fontSize: '0.65rem'}}>09458924721</span>
-                        </div>
-                      ) : (
-                        <div className="flex items-center justify-center gap-4">
-                          <div className="w-12 h-12 rounded-full bg-cyan-500/20 flex items-center justify-center">
-                            <svg className="w-6 h-6 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-                            </svg>
-                          </div>
-                          <div>
-                            <div className="text-sm text-zinc-500">Phone</div>
-                            <div className="text-zinc-200">09458924721</div>
-                          </div>
-                        </div>
-                      )}
-          
-                      {/* Location Contact Info */}
-                      {isMobile ? (
-                        <div className="flex flex-col items-center">
-                          <div className="flex items-center" style={{gap: '0.2rem'}}>
-                            <svg className="w-6 h-6 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" style={{width: '10px', height: '10px'}}>
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                            </svg>
-                            <span className="text-sm text-zinc-500" style={{fontSize: '0.6rem'}}>Location</span>
-                          </div>
-                          <span className="text-zinc-200" style={{fontSize: '0.65rem'}}>Talisay, Cebu</span>
-                        </div>
-                      ) : (
-                        <div className="flex items-center justify-center gap-4">
-                          <div className="w-12 h-12 rounded-full bg-cyan-500/20 flex items-center justify-center">
-                            <svg className="w-6 h-6 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                            </svg>
-                          </div>
-                          <div>
-                            <div className="text-sm text-zinc-500">Location</div>
-                            <div className="text-zinc-200">Talisay, Cebu</div>
-                          </div>
-                        </div>
-                      )}
-                    </div>        </div>
+            {/* Profile photo */}
+            <motion.div
+              className="bento-photo col-span-2 relative rounded-2xl overflow-hidden border border-zinc-800 h-48"
+              initial={{ rotateY: 90, opacity: 0 }}
+              animate={visibleSections.has('about') ? { rotateY: 0, opacity: 1 } : { rotateY: 90, opacity: 0 }}
+              transition={visibleSections.has('about') ? { delay: 0, duration: 0.5, type: 'spring', stiffness: 180, damping: 22 } : { duration: 0 }}
+              style={{ transformPerspective: 1000 }}
+            >
+              <Image src="/MeMyself.jpg" alt="Francis Kyle Lorenzana" fill className="object-cover object-center" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent" />
+              <div className="absolute bottom-4 left-0 right-0 text-center">
+                <p className="text-white text-sm font-bold">Francis Kyle Lorenzana</p>
+                <p className="text-cyan-400 text-xs">Full-Stack Dev</p>
+              </div>
+            </motion.div>
+
+            {/* Bio card */}
+            <motion.div
+              className="col-span-2 bg-zinc-900/80 border border-zinc-800 rounded-2xl p-4 flex items-center justify-center"
+              initial={{ rotateY: 90, opacity: 0 }}
+              animate={visibleSections.has('about') ? { rotateY: 0, opacity: 1 } : { rotateY: 90, opacity: 0 }}
+              transition={visibleSections.has('about') ? { delay: 0.1, duration: 0.5, type: 'spring', stiffness: 180, damping: 22 } : { duration: 0 }}
+              style={{ transformPerspective: 1000 }}
+            >
+              <p className="text-zinc-400 text-xs leading-relaxed text-center">
+                BSIT Graduate specializing in full-stack development. Experienced with React, Next.js, and Django. Passionate about building functional, user-friendly digital experiences.
+              </p>
+            </motion.div>
+
+            {/* Projects stat */}
+            <motion.div
+              className="col-span-1 bg-zinc-900/80 border border-zinc-800 rounded-2xl p-4 flex flex-col items-center justify-center gap-1"
+              initial={{ rotateY: 90, opacity: 0 }}
+              animate={visibleSections.has('about') ? { rotateY: 0, opacity: 1 } : { rotateY: 90, opacity: 0 }}
+              transition={visibleSections.has('about') ? { delay: 0.2, duration: 0.5, type: 'spring', stiffness: 180, damping: 22 } : { duration: 0 }}
+              style={{ transformPerspective: 1000 }}
+            >
+              <p className="text-4xl font-black text-cyan-400">6+</p>
+              <p className="text-[10px] text-zinc-500 uppercase tracking-widest">Projects</p>
+            </motion.div>
+
+            {/* Technologies stat */}
+            <motion.div
+              className="col-span-1 bg-zinc-900/80 border border-zinc-800 rounded-2xl p-4 flex flex-col items-center justify-center gap-1"
+              initial={{ rotateY: 90, opacity: 0 }}
+              animate={visibleSections.has('about') ? { rotateY: 0, opacity: 1 } : { rotateY: 90, opacity: 0 }}
+              transition={visibleSections.has('about') ? { delay: 0.3, duration: 0.5, type: 'spring', stiffness: 180, damping: 22 } : { duration: 0 }}
+              style={{ transformPerspective: 1000 }}
+            >
+              <p className="text-4xl font-black text-blue-400">14+</p>
+              <p className="text-[10px] text-zinc-500 uppercase tracking-widest">Technologies</p>
+            </motion.div>
+
+            {/* OJT badge */}
+            <motion.div
+              className="col-span-1 bg-green-500/10 border border-green-500/30 rounded-2xl p-4 flex flex-col items-center justify-center gap-1"
+              initial={{ rotateY: 90, opacity: 0 }}
+              animate={visibleSections.has('about') ? { rotateY: 0, opacity: 1 } : { rotateY: 90, opacity: 0 }}
+              transition={visibleSections.has('about') ? { delay: 0.4, duration: 0.5, type: 'spring', stiffness: 180, damping: 22 } : { duration: 0 }}
+              style={{ transformPerspective: 1000 }}
+            >
+              <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
+              <p className="text-xl font-black text-green-400">Hire Me</p>
+              <p className="text-[10px] text-zinc-400">Available Now</p>
+            </motion.div>
+
+            {/* Year / School */}
+            <motion.div
+              className="col-span-1 bg-zinc-900/80 border border-zinc-800 rounded-2xl p-4 flex flex-col items-center justify-center gap-1"
+              initial={{ rotateY: 90, opacity: 0 }}
+              animate={visibleSections.has('about') ? { rotateY: 0, opacity: 1 } : { rotateY: 90, opacity: 0 }}
+              transition={visibleSections.has('about') ? { delay: 0.5, duration: 0.5, type: 'spring', stiffness: 180, damping: 22 } : { duration: 0 }}
+              style={{ transformPerspective: 1000 }}
+            >
+              <p className="text-xl font-black text-purple-400">Graduate</p>
+              <p className="text-[10px] text-zinc-500">BSIT · CIT-U</p>
+            </motion.div>
+
+            {/* Email */}
+            <motion.div
+              className="col-span-1 md:col-span-2 aspect-square md:aspect-auto bg-zinc-900/80 border border-zinc-800 rounded-2xl p-4 flex flex-col items-center justify-center gap-2"
+              initial={{ rotateY: 90, opacity: 0 }}
+              animate={visibleSections.has('about') ? { rotateY: 0, opacity: 1 } : { rotateY: 90, opacity: 0 }}
+              transition={visibleSections.has('about') ? { delay: 0.6, duration: 0.5, type: 'spring', stiffness: 180, damping: 22 } : { duration: 0 }}
+              style={{ transformPerspective: 1000 }}
+            >
+              <div className="w-8 h-8 rounded-xl bg-cyan-500/10 flex items-center justify-center flex-shrink-0">
+                <svg className="w-4 h-4 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
+              </div>
+              <div className="text-center">
+                <p className="text-[10px] text-zinc-500">Email</p>
+                <p className="text-xs text-zinc-200 font-medium">kaelexx12@gmail.com</p>
+              </div>
+            </motion.div>
+
+            {/* Phone */}
+            <motion.div
+              className="col-span-1 md:col-span-2 aspect-square md:aspect-auto bg-zinc-900/80 border border-zinc-800 rounded-2xl p-4 flex flex-col items-center justify-center gap-2"
+              initial={{ rotateY: 90, opacity: 0 }}
+              animate={visibleSections.has('about') ? { rotateY: 0, opacity: 1 } : { rotateY: 90, opacity: 0 }}
+              transition={visibleSections.has('about') ? { delay: 0.7, duration: 0.5, type: 'spring', stiffness: 180, damping: 22 } : { duration: 0 }}
+              style={{ transformPerspective: 1000 }}
+            >
+              <div className="w-8 h-8 rounded-xl bg-cyan-500/10 flex items-center justify-center flex-shrink-0">
+                <svg className="w-4 h-4 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" /></svg>
+              </div>
+              <div className="text-center">
+                <p className="text-[10px] text-zinc-500">Phone</p>
+                <p className="text-xs text-zinc-200 font-medium">09458924721</p>
+              </div>
+            </motion.div>
+
+            {/* Location */}
+            <motion.div
+              className="bento-location col-span-2 h-16 md:h-auto bg-zinc-900/80 border border-zinc-800 rounded-2xl p-4 flex items-center justify-center gap-3"
+              initial={{ rotateY: 90, opacity: 0 }}
+              animate={visibleSections.has('about') ? { rotateY: 0, opacity: 1 } : { rotateY: 90, opacity: 0 }}
+              transition={visibleSections.has('about') ? { delay: 0.8, duration: 0.5, type: 'spring', stiffness: 180, damping: 22 } : { duration: 0 }}
+              style={{ transformPerspective: 1000 }}
+            >
+              <div className="w-8 h-8 rounded-xl bg-cyan-500/10 flex items-center justify-center flex-shrink-0">
+                <svg className="w-4 h-4 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+              </div>
+              <div className="text-center">
+                <p className="text-[10px] text-zinc-500">Location</p>
+                <p className="text-xs text-zinc-200 font-medium">Talisay, Cebu</p>
+              </div>
+            </motion.div>
+
+          </div>
+        </div>
       </section>
 
-      <section id="projects" className="snap-section px-6 bg-zinc-900/50 py-20">
-        <div className="max-w-7xl mx-auto h-full flex flex-col items-center">
-          <div className="h-16"></div>
-          <h2 className={'text-3xl sm:text-4xl md:text-5xl font-black tracking-tight text-center ' + (visibleSections.has('projects') ? 'fade-in-up' : 'opacity-0')}>
+      <section id="projects" className="snap-section px-6 bg-zinc-900/50 flex flex-col items-center justify-center relative">
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_50%_40%,rgba(6,182,212,0.06)_0%,transparent_65%)] pointer-events-none" />
+
+        <div className={`text-center mb-8 relative z-10 ${visibleSections.has('projects') ? 'fade-in-up' : 'opacity-0'}`}>
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight">
             Featured <span className="bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">Projects</span>
           </h2>
-                    <div className="h-16"></div>
-                    <div className="relative w-full flex flex-col items-center">
-            {/* Carousel container */}
-            <div
-              ref={carouselRef}
-              className="w-full overflow-hidden"
-              {...bind()}
-            >
-              <div
-                className={`flex items-center gap-x-2 md:gap-x-8 ${isDragging ? '' : 'transition-transform duration-500 ease-in-out'}`}
-                style={{
-                  transform: `translateX(calc(50% - (${currentProject * (cardWidth + (isMobile ? 8 : 32))}px + ${cardWidth / 2}px) + ${dragX}px))`,
-                  touchAction: 'pan-y'
-                }}
-              >
-                {projects.map((project, index) => (
-                  <div
-                    key={project.title}
-                    className={"flex-shrink-0 w-full sm:w-11/12 md:w-96 cursor-pointer" + (isMobile && activeProjectHoverIndex === index ? ' mobile-active' : '')}
-                    onClick={() => {
-                      if (!isMobile) { // Only for desktop, handle carousel navigation
-                        setCurrentProject(index);
-                      }
-                    }}
-                    style={{
-                      transform: `scale(${currentProject === index ? 1 : 0.8})`,
-                      opacity: currentProject === index ? 1 : 0.5,
-                      transition: 'transform 0.5s ease-in-out, opacity 0.5s ease-in-out',
-                    }}
-                  >
-                  <div
-                    className={`relative bg-zinc-900 rounded-2xl p-6 border border-zinc-800 transition-all duration-500 w-full ${currentProject === index ? 'breathing-border-glow' : ''}`}
-                  >                                                                                                                                                                        <div className={'absolute inset-0 bg-gradient-to-br ' + project.color + ' opacity-0 transition-opacity duration-500'}></div>
-                                                                                                                                                                        
-                                                                                                                                                                        <div className="relative z-10 flex flex-col">
-                                                                                                                                                                          {project.image && (
-                                                                                                                                                                                      <div
-                                                                                                                                                                                        className={`w-full h-48 relative ${isMobile ? '' : 'hover:overflow-visible'} cursor-pointer transition-transform duration-300 z-10`}                                                                                                                                                                              onTouchStart={() => isMobile && setActiveProjectHoverIndex(index)}
-                                                                                                                                                                              onTouchEnd={() => isMobile && setActiveProjectHoverIndex(null)}
-                                                                                                                                                                              onTouchCancel={() => isMobile && setActiveProjectHoverIndex(null)}
-                                                                                                                                                                            >
-                                                                                                                                                                              <Image
-                                                                                                                                                                                src={project.image}
-                                                                                                                                                                                alt={project.title}
-                                                                                                                                                                                layout="fill"
-                                                                                                                                                                                className="rounded-t-2xl object-cover"
-                                                                                                                                                                              />
-                                                                                                                                                                            </div>
-                                                                                                                                                                          )}
-                                                                                                                                                                          <h3 className="text-2xl font-bold mt-8 mb-3 transition-colors text-cyan-400">
-                                                                                                                                                                            {project.title}
-                                                                                                                                                                          </h3>
-                                                                                                                                                                          <div>
-                                                                                                                                                                            <p className="text-zinc-400 mb-8 leading-relaxed">
-                                                                                                                                                                              {project.description}
-                                                                                                                                                                            </p>
-                                                                                                                                                                          </div>
-                                                                                                                                                                          <div className="h-8"></div>
-                                                                                                                                                                          <div>
-                                                                                                                                                                            <div className="flex justify-center gap-4">
-                                                                                                                                                                              {project.link && (
-                                                                                                                                                                                <a
-                                                                                                                                                                                  href={project.link}
-                                                                                                                                                                                  target="_blank"
-                                                                                                                                                                                  rel="noopener noreferrer"
-                                                                                                                                                                                  className="bg-gradient-to-r from-cyan-500 to-blue-600 rounded-full font-semibold hover:shadow-[0_0_30px_rgba(6,182,212,0.5)] transition-all duration-300 hover:scale-105 inline-flex items-center gap-2 justify-center"
-                                                                                                                                                                                  style={{ padding: '0.4rem 0.8rem' }}
-                                                                                                                                                                                >
-                                                                                                                                                                                  <Image
-                                                                                                                                                                                    src="/GithubLogo.png"
-                                                                                                                                                                                    alt="GitHub Logo"
-                                                                                                                                                                                    width={isMobile ? 15 : 20}
-                                                                                                                                                                                    height={isMobile ? 15 : 20}
-                                                                                                                                                                                  />
-                                                                                                                                                                                  <span className="text-xs">View Proof</span>
-                                                                                                                                                                                </a>
-                                                                                                                                                                              )}
-                                                                                                                                                                              {project.projectLink && (
-                                                                                                                                                                                <a
-                                                                                                                                                                                  href={project.projectLink}
-                                                                                                                                                                                  target="_blank"
-                                                                                                                                                                                  rel="noopener noreferrer"
-                                                                                                                                                                                  className="bg-gradient-to-r from-cyan-500 to-blue-600 rounded-full font-semibold hover:shadow-[0_0_30px_rgba(6,182,212,0.5)] transition-all duration-300 hover:scale-105 inline-flex items-center gap-2 justify-center"
-                                                                                                                                                                                  style={{ padding: '0.4rem 0.8rem' }}
-                                                                                                                                                                                >
-                                                                                                                                                                                  <Image
-                                                                                                                                                                                    src="/Books.png"
-                                                                                                                                                                                    alt="Book Icon"
-                                                                                                                                                                                    width={isMobile ? 15 : 20}
-                                                                                                                                                                                    height={isMobile ? 15 : 20}
-                                                                                                                                                                                  />
-                                                                                                                                                                                  <span className="text-xs">View Project</span>
-                                                                                                                                                                                </a>
-                                                                                                                                                                              )}
-                                                                                                                                                                            </div>
-                                                                                                                                                                          </div>
-                                                                                                                                                                          <div className="h-8"></div>
-                                                                                                                                                                        </div>
-                                                                                                                                                                      </div>                  </div>
-                ))}
-              </div>
-            </div>
+          <p className="text-zinc-500 text-xs mt-2 tracking-widest uppercase font-medium">{isMobile ? 'Swipe or tap to browse' : 'Click cards to browse'}</p>
+        </div>
 
-            <div className="h-16"></div>
+        <div
+          className="relative z-10"
+          style={{ width: isMobile ? '82vw' : '360px', height: isMobile ? '56vh' : '460px' }}
+        >
+          {projects.map((project, index) => (
+            <ProjectCard
+              key={project.title}
+              project={project}
+              index={index}
+              total={projects.length}
+              activeCard={activeCard}
+              onCardClick={setActiveCard}
+              isMobile={isMobile}
+            />
+          ))}
+        </div>
 
-            {/* Navigation Dots */}
-            <div className="flex gap-4">
-              {projects.map((_, index) => (
-                <div
-                  key={index}
-                  className={'cursor-pointer w-2 h-2 rounded-full transition-all duration-300 ' + (currentProject === index ? 'bg-cyan-500 scale-125' : 'bg-zinc-700')}
-                  onClick={() => setCurrentProject(index)}
-                ></div>
-              ))}
-            </div>
-            <div className="h-16"></div>
+        <div className="mt-8 flex items-center gap-5 relative z-10">
+          <button
+            onClick={() => setActiveCard(prev => (prev - 1 + projects.length) % projects.length)}
+            className="p-2.5 rounded-full bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 hover:border-cyan-500/50 transition-all duration-300"
+          >
+            <ArrowLeft className="w-4 h-4 text-cyan-400" />
+          </button>
+          <div className="flex gap-2 items-center">
+            {projects.map((_, i) => (
+              <button
+                key={i}
+                onClick={() => setActiveCard(i)}
+                className={`rounded-full transition-all duration-300 ${activeCard === i ? 'bg-cyan-400 w-6 h-2' : 'bg-zinc-700 w-2 h-2 hover:bg-zinc-500'}`}
+              />
+            ))}
           </div>
+          <button
+            onClick={() => setActiveCard(prev => (prev + 1) % projects.length)}
+            className="p-2.5 rounded-full bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 hover:border-cyan-500/50 transition-all duration-300"
+          >
+            <ArrowRight className="w-4 h-4 text-cyan-400" />
+          </button>
         </div>
       </section>
 
@@ -783,6 +833,123 @@ export default function Portfolio() {
         </div>
       </section>
 
+      <section id="experience" className="snap-section px-6 flex items-center justify-center">
+        <div className="max-w-md mx-auto w-full">
+          <h2 className={'text-3xl sm:text-4xl md:text-5xl font-black mb-4 tracking-tight text-center ' + (visibleSections.has('experience') ? 'fade-in-up' : 'opacity-0')}>
+            Work <span className="bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">Experience</span>
+          </h2>
+
+          <div className="h-10" />
+
+          {/* Flip card — preserve-3d so card never goes invisible */}
+          {/* Outer div handles fade-in-up CSS animation only */}
+          <div
+            className={visibleSections.has('experience') ? 'fade-in-up' : 'opacity-0'}
+            style={{ animationDelay: '200ms' }}
+          >
+          {/* Inner motion.div handles the bounce — no CSS animation conflict */}
+          <motion.div
+            className="cursor-pointer select-none"
+            style={{ perspective: '1200px' }}
+            onClick={() => setIsExperienceFlipped(f => !f)}
+            animate={!isExperienceFlipped ? { y: [0, -10, 0, -5, 0] } : { y: 0 }}
+            transition={!isExperienceFlipped ? {
+              duration: 0.7,
+              ease: 'easeInOut',
+              repeat: Infinity,
+              repeatDelay: 2.5,
+            } : { duration: 0.3 }}
+          >
+            <motion.div
+              animate={{ rotateY: isExperienceFlipped ? 180 : 0 }}
+              transition={{ duration: 0.7, type: 'spring', stiffness: 120, damping: 18 }}
+              style={{ transformStyle: 'preserve-3d', position: 'relative', minHeight: '460px' }}
+            >
+              {/* ── FRONT ── */}
+              <div
+                style={{ backfaceVisibility: 'hidden', WebkitBackfaceVisibility: 'hidden' }}
+                className="absolute inset-0 bg-zinc-900/80 border border-zinc-800 rounded-2xl flex flex-col items-center justify-center gap-6 p-10"
+              >
+                {/* Logo */}
+                <div className="w-24 h-24 rounded-2xl bg-white flex items-center justify-center p-2 shadow-lg">
+                  <Image
+                    src="https://bai-remit-frontend-production.up.railway.app/Loading/Bai%20logo.png"
+                    alt="BAI Finance Logo"
+                    width={80}
+                    height={80}
+                    className="object-contain"
+                  />
+                </div>
+
+                {/* Company name */}
+                <div className="text-center space-y-1">
+                  <h3 className="text-2xl font-black text-zinc-50">BAI Finance</h3>
+                  <p className="text-zinc-500 text-sm tracking-wide">Group of Companies</p>
+                </div>
+
+                <div className="w-full border-t border-zinc-800" />
+
+                {/* Role */}
+                <p className="text-lg font-bold text-cyan-400 tracking-tight">Full Stack Developer</p>
+
+                {/* Tech tags */}
+                <div className="flex flex-wrap gap-2 justify-center">
+                  {['Django', 'Python', 'Next.js', 'React', 'REST API', 'PostgreSQL'].map(tag => (
+                    <span key={tag} className="px-3 py-1 text-xs rounded-full bg-zinc-800 text-zinc-400 border border-zinc-700">{tag}</span>
+                  ))}
+                </div>
+
+                {/* Flip hint badge */}
+                <StarButton small>↻ FLIP ME</StarButton>
+              </div>
+
+              {/* ── BACK ── */}
+              <div
+                style={{ backfaceVisibility: 'hidden', WebkitBackfaceVisibility: 'hidden', transform: 'rotateY(180deg)' }}
+                className="absolute inset-0 bg-zinc-900/80 border border-zinc-800 rounded-2xl flex flex-col justify-center gap-6 p-10"
+              >
+                {/* X — absolute top-right of card */}
+                <button
+                  onClick={(e) => { e.stopPropagation(); setIsExperienceFlipped(false); }}
+                  className="absolute top-4 right-4 text-zinc-600 hover:text-zinc-300 transition-colors z-10"
+                  aria-label="Close"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+
+                {/* Centered header */}
+                <div className="text-center space-y-0.5">
+                  <p className="text-base font-bold text-zinc-50">Full Stack Developer</p>
+                  <p className="text-cyan-400 text-xs">BAI Finance Group of Companies</p>
+                </div>
+
+                <div className="w-full border-t border-zinc-800" />
+
+                {/* Description */}
+                <p className="text-zinc-400 text-sm leading-relaxed">
+                  Developed and maintained full-stack web applications, building robust backend APIs with Django and Python while delivering responsive, modern frontends using Next.js and React.
+                </p>
+
+                {/* Bullet points */}
+                <ul className="space-y-3 text-sm text-zinc-400">
+                  <li className="flex items-start gap-3"><span className="text-cyan-400 mt-0.5 flex-shrink-0">▹</span> Built RESTful APIs with Django REST Framework for internal finance systems</li>
+                  <li className="flex items-start gap-3"><span className="text-cyan-400 mt-0.5 flex-shrink-0">▹</span> Developed dynamic frontends with Next.js for seamless user experiences</li>
+                  <li className="flex items-start gap-3"><span className="text-cyan-400 mt-0.5 flex-shrink-0">▹</span> Integrated backend and frontend systems end-to-end in a full-stack workflow</li>
+                </ul>
+
+                {/* Live app link */}
+                <div className="flex justify-center">
+                  <StarButton href="https://bai-remit-frontend-production.up.railway.app/login" target="_blank" stopProp>
+                    VIEW LIVE APP
+                  </StarButton>
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+          </div>
+        </div>
+      </section>
+
       <section id="certificates" className="snap-section px-6 min-h-screen py-20 flex flex-col items-center">
         <div className="max-w-4xl mx-auto w-full">
           <h2 className={'text-3xl sm:text-4xl md:text-5xl font-black tracking-tight text-center ' + (visibleSections.has('certificates') ? 'fade-in-up' : 'opacity-0')}>
@@ -814,10 +981,8 @@ export default function Portfolio() {
                           </div>
                           <h3 className="text-sm font-bold mt-2 mb-2 text-zinc-200 text-center truncate">{cert.name}</h3>
                         </div>
-                        <div>
-                          <a href={cert.link} target="_blank" rel="noopener noreferrer" className="inline-block w-full text-center bg-gradient-to-r from-cyan-500 to-blue-600 text-white rounded-full font-semibold py-1 px-2 text-xs transition-all duration-300 hover:scale-105 hover:shadow-cyan-500/50">
-                            Show Credentials
-                          </a>
+                        <div className="flex justify-center mt-1">
+                          <StarButton href={cert.link} target="_blank" xs>CREDENTIALS</StarButton>
                         </div>
                       </div>
                     </div>
@@ -854,11 +1019,9 @@ export default function Portfolio() {
                           </div>
                           <h3 className="text-sm font-bold mt-2 mb-2 text-zinc-200 text-center truncate">{cert.name}</h3>
                         </div>
-                        <div>
+                        <div className="flex justify-center mt-1">
                           {cert.status === 'completed' ? (
-                            <a href={cert.link} target="_blank" rel="noopener noreferrer" className="inline-block w-full text-center bg-gradient-to-r from-cyan-500 to-blue-600 text-white rounded-full font-semibold py-1 px-2 text-xs transition-all duration-300 hover:scale-105 hover:shadow-cyan-500/50">
-                              Show Credentials
-                            </a>
+                            <StarButton href={cert.link} target="_blank" xs>CREDENTIALS</StarButton>
                           ) : (
                             <button disabled className="w-full text-center bg-zinc-800 text-zinc-500 rounded-full font-semibold py-1 px-2 text-xs cursor-not-allowed">
                               Coming Soon
@@ -888,13 +1051,13 @@ export default function Portfolio() {
       </section>
 
       <section id="contact" className="snap-section px-6 bg-zinc-900/50 flex items-center justify-center">
-        <div className={'max-w-4xl mx-auto text-center ' + (visibleSections.has('contact') ? 'fade-in-up' : 'opacity-0')}>
+        <div className="max-w-4xl mx-auto text-center fade-in-up">
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight">
             Let's <span className="bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">Connect</span>
           </h2>
           <div className="h-16"></div> {/* Explicit gap between heading and description */}
           <p className="text-lg sm:text-xl text-zinc-400 max-w-2xl mx-auto" style={{ animationDelay: '0.2s' }}>
-            I'm actively seeking OJT opportunities. Feel free to reach out if you'd like to discuss potential collaborations or just want to connect!
+            I'm actively seeking full-stack developer opportunities. Feel free to reach out if you'd like to discuss potential collaborations or just want to connect!
           </p>
 
           <div className="h-24"></div> {/* Explicit gap between description and icons */}

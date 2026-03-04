@@ -91,6 +91,19 @@ body {
   }
 }
 
+/* About bento grid */
+@media (min-width: 768px) {
+  .about-bento {
+    grid-template-columns: repeat(4, 1fr);
+    grid-template-rows: 180px 120px 90px 90px;
+  }
+  .about-bento .bento-photo {
+    grid-column: span 2 / span 2;
+    grid-row: span 2 / span 2;
+    height: auto;
+  }
+}
+
 .profile-image-container {
   position: relative;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
@@ -189,6 +202,164 @@ body {
     box-shadow: 0 0 25px #00ffff, 0 0 40px #00a1ff;
     border-color: #00ffff;
   }
+}
+
+/* ── Star Button (cyan/blue theme) ── */
+.star-btn {
+  position: relative;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  width: 13rem;
+  height: 3rem;
+  cursor: pointer;
+  border-radius: 5rem;
+  transition: transform 0.5s;
+  text-decoration: none;
+  user-select: none;
+  border: none;
+  outline: none;
+  /* 3px padding gap reveals gradient as the border — shows instantly */
+  padding: 3px;
+  background: linear-gradient(137.48deg, #22d3ee 10%, #06b6d4 45%, #3b82f6 67%, #1d4ed8 87%);
+  background-size: 300% 300%;
+  animation: gradient_301 5s ease infinite;
+}
+
+.star-btn-sm {
+  width: 9rem;
+  height: 2.4rem;
+}
+
+.star-btn-xs {
+  width: 7.5rem;
+  height: 1.85rem;
+  padding: 2px;
+}
+
+.star-btn-xs .star-btn-stars-wrap {
+  inset: 2px;
+}
+
+.star-btn-xs strong {
+  font-size: 7.5px;
+  letter-spacing: 1.5px;
+}
+
+/* Dark fill inset by 3px — gradient peeks through as border */
+.star-btn-stars-wrap {
+  position: absolute;
+  inset: 3px;
+  background: #1c1c1e;
+  border-radius: 5rem;
+  overflow: hidden;
+  transition: background 0.3s;
+  z-index: 0;
+}
+
+.star-btn strong {
+  position: relative;
+  z-index: 2;
+  font-size: 11px;
+  letter-spacing: 3px;
+  color: #ffffff;
+  text-shadow: 0 0 4px white;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  pointer-events: none;
+  font-weight: 700;
+}
+
+/* Stars always visible — no hover required (mobile friendly) */
+.star-btn-stars {
+  position: relative;
+  background: transparent;
+  width: 200rem;
+  height: 200rem;
+  opacity: 0.65;
+}
+
+.star-btn-stars-wrap {
+  background: #111113;
+}
+
+.star-btn:hover .star-btn-stars {
+  opacity: 1;
+}
+
+.star-btn-stars::after {
+  content: "";
+  position: absolute;
+  top: -10rem;
+  left: -100rem;
+  width: 100%;
+  height: 100%;
+  animation: animStarRotate 90s linear infinite;
+  background-image: radial-gradient(#ffffff 1px, transparent 1%);
+  background-size: 50px 50px;
+}
+
+.star-btn-stars::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -50%;
+  width: 170%;
+  height: 500%;
+  animation: animStar 60s linear infinite;
+  background-image: radial-gradient(#ffffff 1px, transparent 1%);
+  background-size: 50px 50px;
+  opacity: 0.5;
+}
+
+/* Glow behind the button */
+.star-btn-glow {
+  position: absolute;
+  display: flex;
+  width: 12rem;
+  z-index: -1;
+  pointer-events: none;
+}
+
+.star-btn-circle {
+  width: 100%;
+  height: 30px;
+  filter: blur(2rem);
+  animation: pulse_3011 4s infinite;
+}
+
+.star-btn-circle:nth-of-type(1) { background: rgba(6, 182, 212, 0.55); }
+.star-btn-circle:nth-of-type(2) { background: rgba(59, 130, 246, 0.6); }
+
+.star-btn:hover {
+  transform: scale(1.08);
+}
+
+.star-btn:active {
+  transform: scale(0.96);
+}
+
+@keyframes animStar {
+  from { transform: translateY(0); }
+  to   { transform: translateY(-135rem); }
+}
+
+@keyframes animStarRotate {
+  from { transform: rotate(360deg); }
+  to   { transform: rotate(0); }
+}
+
+@keyframes gradient_301 {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@keyframes pulse_3011 {
+  0%   { transform: scale(0.75); box-shadow: 0 0 0 0 rgba(0,0,0,0.7); }
+  70%  { transform: scale(1);    box-shadow: 0 0 0 10px rgba(0,0,0,0); }
+  100% { transform: scale(0.75); box-shadow: 0 0 0 0 rgba(0,0,0,0); }
 }
 
 
