@@ -1,12 +1,13 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { flushSync } from 'react-dom';
 import Image from 'next/image';
 import FacebookIcon from './components/FacebookIcon';
 import GithubIcon from './components/GithubIcon';
 import LinkedInIcon from './components/LinkedInIcon';
 
-import { AnimatePresence, motion, useMotionValue, useTransform } from 'framer-motion';
+import { AnimatePresence, motion } from 'framer-motion';
 import { Menu, X, ArrowRight, ArrowLeft, ExternalLink } from 'lucide-react';
 import Link from 'next/link';
 
@@ -20,143 +21,54 @@ type Project = {
   color: string;
 };
 
-function ProjectCard({
-  project,
-  index,
-  total,
-  activeCard,
-  onCardClick,
-  isMobile,
-}: {
-  project: Project;
-  index: number;
-  total: number;
-  activeCard: number;
-  onCardClick: (index: number) => void;
-  isMobile: boolean;
-}) {
-  const n = total;
-  const raw = index - activeCard;
-  const offset = ((raw % n) + n) % n;
-  const displayOffset = offset >= Math.ceil(n / 2) ? offset - n : offset;
-  const absOffset = Math.abs(displayOffset);
-  const isActive = displayOffset === 0;
-
-  const dragX = useMotionValue(0);
-  // Desktop only: tilt and dynamic zIndex via useTransform
-  const dragTilt = useTransform(dragX, [-260, 0, 260], [-14, 0, 14]);
-  const dragZIndex = useTransform(dragX, (v) => (Math.abs(v) > 35 ? 0 : n));
-
-  // Skip rendering fully-hidden background cards on mobile — fewer DOM nodes = less work
-  if (isMobile && absOffset >= Math.ceil(n / 2)) return null;
-
+function renderCard(project: Project, isMobile: boolean) {
   return (
-    <motion.div
-      animate={{
-        rotateZ: isActive ? 0 : displayOffset * (isMobile ? 8 : 12),
-        scale: 1 - absOffset * 0.055,
-        opacity: 1 - Math.max(0, absOffset - 1) * 0.18,
-      }}
-      transition={isMobile
-        ? { type: 'tween', duration: 0.15, ease: 'easeOut' }
-        : { type: 'spring', stiffness: 300, damping: 30 }}
-      drag={isActive ? 'x' : false}
-      // Mobile: skip dragSnapToOrigin spring physics — manually reset via dragX.set(0)
-      dragSnapToOrigin={!isMobile}
-      dragElastic={isMobile ? 0.05 : 0.13}
-      dragConstraints={{ left: -320, right: 320 }}
-      onDragEnd={(_, info) => {
-        const OFFSET = 55;
-        const VELOCITY = 300;
-        if (info.offset.x < -OFFSET || info.velocity.x < -VELOCITY) {
-          dragX.set(0);
-          onCardClick((index + 1) % n);
-        } else if (info.offset.x > OFFSET || info.velocity.x > VELOCITY) {
-          dragX.set(0);
-          onCardClick((index - 1 + n) % n);
-        } else if (isMobile) {
-          // No spring snap-back on mobile — instant reset
-          dragX.set(0);
-        }
-      }}
-      style={{
-        position: 'absolute',
-        inset: 0,
-        cursor: isActive ? 'grab' : 'pointer',
-        transformOrigin: 'bottom center',
-        x: isActive ? dragX : 0,
-        // Skip rotate transform and dynamic zIndex computation on mobile
-        rotate: (isActive && !isMobile) ? dragTilt : undefined,
-        zIndex: isActive ? (isMobile ? n : dragZIndex) : n - absOffset,
-        willChange: 'transform',
-      }}
-      whileDrag={isMobile ? undefined : { cursor: 'grabbing' }}
-      onClick={() => !isActive && onCardClick(index)}
-      whileHover={(!isActive && !isMobile) ? { scale: 1 - absOffset * 0.055 + 0.025 } : undefined}
-    >
-      <div
-        className={`relative bg-zinc-900 rounded-2xl border h-full flex flex-col overflow-hidden shadow-2xl transition-shadow duration-300 ${
-          isActive
-            ? 'border-cyan-500/40 shadow-[0_0_40px_rgba(6,182,212,0.12)]'
-            : 'border-zinc-800'
-        }`}
-      >
-        {/* Colored top accent bar */}
-        <div className={`h-1.5 bg-gradient-to-r ${project.color} w-full flex-shrink-0`} />
+    <div className="relative bg-zinc-900 rounded-2xl border border-cyan-500/40 shadow-[0_0_40px_rgba(6,182,212,0.12)] h-full flex flex-col overflow-hidden">
+      {/* Colored top accent bar */}
+      <div className={`h-1.5 bg-gradient-to-r ${project.color} w-full flex-shrink-0`} />
 
-        {/* Project image */}
-        {project.image && (
-          <div className="relative flex-shrink-0" style={{ height: isMobile ? '35%' : '42%' }}>
-            <Image src={project.image} alt={project.title} layout="fill" className="object-cover" />
-            <div className="absolute inset-0 bg-gradient-to-t from-zinc-900/90 via-zinc-900/30 to-transparent" />
-            <div className={`absolute inset-0 bg-gradient-to-br ${project.color} opacity-10`} />
-          </div>
-        )}
-
-        {/* Content */}
-        <div className="px-5 pt-4 flex flex-col flex-1 items-center text-center">
-          <h3 className="text-lg font-bold text-cyan-400 mb-2 w-full">{project.title}</h3>
-          <p className="text-zinc-400 text-xs leading-relaxed mb-3 line-clamp-3 w-full">{project.description}</p>
-          <div className="flex flex-wrap gap-1 justify-center">
-            {project.tags.map((tag) => (
-              <span key={tag} className="px-2 py-0.5 text-[10px] rounded-full bg-zinc-800 text-zinc-400 border border-zinc-700">
-                {tag}
-              </span>
-            ))}
-          </div>
+      {/* Project image */}
+      {project.image && (
+        <div className="relative flex-shrink-0" style={{ height: isMobile ? '35%' : '42%' }}>
+          <Image src={project.image} alt={project.title} layout="fill" className="object-cover" />
+          <div className="absolute inset-0 bg-gradient-to-t from-zinc-900/90 via-zinc-900/30 to-transparent" />
+          <div className={`absolute inset-0 bg-gradient-to-br ${project.color} opacity-10`} />
         </div>
+      )}
 
-        {/* Buttons — circle icons with label below */}
-        <div className="flex flex-shrink-0 py-3 justify-center gap-8">
-          {project.link && (
-            <a
-              href={project.link}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex flex-col items-center gap-2 group"
-            >
-              <div className="w-14 h-14 rounded-full bg-zinc-800 border border-zinc-700 flex items-center justify-center group-hover:border-violet-500 group-hover:bg-zinc-700 transition-all duration-200">
-                <GithubIcon width={26} height={26} className="text-violet-400" />
-              </div>
-              <span className="text-[11px] text-zinc-400 group-hover:text-zinc-200 transition-colors font-medium">GitHub</span>
-            </a>
-          )}
-          {project.projectLink && (
-            <a
-              href={project.projectLink}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex flex-col items-center gap-2 group"
-            >
-              <div className="w-14 h-14 rounded-full bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center group-hover:shadow-[0_0_18px_rgba(6,182,212,0.5)] transition-all duration-200">
-                <ExternalLink className="w-6 h-6 text-white" />
-              </div>
-              <span className="text-[11px] text-zinc-400 group-hover:text-zinc-200 transition-colors font-medium">Live Demo</span>
-            </a>
-          )}
+      {/* Content */}
+      <div className="px-5 pt-4 flex flex-col flex-1 items-center text-center">
+        <h3 className="text-lg font-bold text-cyan-400 mb-2 w-full">{project.title}</h3>
+        <p className="text-zinc-400 text-xs leading-relaxed mb-3 line-clamp-3 w-full">{project.description}</p>
+        <div className="flex flex-wrap gap-1 justify-center">
+          {project.tags.map((tag) => (
+            <span key={tag} className="px-2 py-0.5 text-[10px] rounded-full bg-zinc-800 text-zinc-400 border border-zinc-700">
+              {tag}
+            </span>
+          ))}
         </div>
       </div>
-    </motion.div>
+
+      {/* Buttons */}
+      <div className="flex flex-shrink-0 py-3 justify-center gap-8">
+        {project.link && (
+          <a href={project.link} target="_blank" rel="noopener noreferrer" className="flex flex-col items-center gap-2 group">
+            <div className="w-14 h-14 rounded-full bg-zinc-800 border border-zinc-700 flex items-center justify-center group-hover:border-violet-500 group-hover:bg-zinc-700 transition-all duration-200">
+              <GithubIcon width={26} height={26} className="text-violet-400" />
+            </div>
+            <span className="text-[11px] text-zinc-400 group-hover:text-zinc-200 transition-colors font-medium">GitHub</span>
+          </a>
+        )}
+        {project.projectLink && (
+          <a href={project.projectLink} target="_blank" rel="noopener noreferrer" className="flex flex-col items-center gap-2 group">
+            <div className="w-14 h-14 rounded-full bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center group-hover:shadow-[0_0_18px_rgba(6,182,212,0.5)] transition-all duration-200">
+              <ExternalLink className="w-6 h-6 text-white" />
+            </div>
+            <span className="text-[11px] text-zinc-400 group-hover:text-zinc-200 transition-colors font-medium">Live Demo</span>
+          </a>
+        )}
+      </div>
+    </div>
   );
 }
 
@@ -196,7 +108,10 @@ export default function Portfolio() {
   const [pressedButton, setPressedButton] = useState<string | null>(null);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
-  const [activeCard, setActiveCard] = useState(0);
+  const [dismissedCount, setDismissedCount] = useState(0);
+  const [exitDir, setExitDir] = useState<'left' | 'right'>('right');
+  const [isDismissing, setIsDismissing] = useState(false);
+  const [isDealing, setIsDealing] = useState(false);
   const [isSchoolImageHovered, setIsSchoolImageHovered] = useState(false);
   const [isProfileImageHovered, setIsProfileImageHovered] = useState(false);
   const [isExperienceFlipped, setIsExperienceFlipped] = useState(false);
@@ -268,6 +183,8 @@ export default function Portfolio() {
     }
   ];
 
+  const remainingProjects = projects.slice(dismissedCount);
+  const allDismissed = remainingProjects.length === 0;
 
   useEffect(() => {
     setMounted(true);
@@ -334,6 +251,41 @@ export default function Portfolio() {
       clearInterval(typingInterval);
     };
   }, []);
+
+  // Reset flashcard stack when user scrolls away from projects and comes back
+  useEffect(() => {
+    const section = document.getElementById('projects');
+    if (!section) return;
+    let hasLeft = false;
+    const obs = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (!entry.isIntersecting) {
+          hasLeft = true;
+        } else if (hasLeft) {
+          setDismissedCount(0);
+          setIsDismissing(false);
+          setIsDealing(false);
+          hasLeft = false;
+        }
+      });
+    }, { threshold: 0.3 });
+    obs.observe(section);
+    return () => obs.disconnect();
+  }, []);
+
+  // When all cards dismissed → brief pause → deal them all back in staggered
+  useEffect(() => {
+    if (!allDismissed || isDealing) return;
+    const t = setTimeout(() => {
+      setDismissedCount(0);
+      setIsDismissing(false);
+      setIsDealing(true);
+      const t2 = setTimeout(() => setIsDealing(false), projects.length * 90 + 380);
+      return () => clearTimeout(t2);
+    }, 600);
+    return () => clearTimeout(t);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [allDismissed]);
 
   const skillsData = {
     languages: [
@@ -726,45 +678,137 @@ export default function Portfolio() {
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight">
             Featured <span className="bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">Projects</span>
           </h2>
-          <p className="text-zinc-500 text-xs mt-2 tracking-widest uppercase font-medium">{isMobile ? 'Swipe or tap to browse' : 'Click cards to browse'}</p>
+          <p className="text-zinc-500 text-xs mt-2 tracking-widest uppercase font-medium">
+            {isDealing ? 'Shuffling cards back...' : allDismissed ? 'Loading...' : `${remainingProjects.length} remaining · press arrow to dismiss`}
+          </p>
         </div>
 
+        {/* Flashcard stack — overflow visible so peeking cards show */}
         <div
           className="relative z-10"
           style={{ width: isMobile ? '82vw' : '360px', height: isMobile ? '56vh' : '460px' }}
         >
-          {projects.map((project, index) => (
-            <ProjectCard
+          {/* Deal-back animation: all cards fly in staggered when resetting */}
+          {isDealing && projects.map((project, i) => {
+            // i=0 = top card (enters last), i=n-1 = bottom card (enters first)
+            const stackPos = i;
+            const delay = (projects.length - 1 - i) * 0.09;
+            return (
+              <motion.div
+                key={project.title}
+                style={{
+                  position: 'absolute',
+                  inset: 0,
+                  zIndex: projects.length - i,
+                  borderRadius: '16px',
+                  overflow: 'hidden',
+                  pointerEvents: 'none',
+                }}
+                initial={{ y: 70, x: stackPos * 10, opacity: 0, scale: 0.82 }}
+                animate={{
+                  y: stackPos * 6,
+                  x: stackPos * 10,
+                  scale: 1 - stackPos * 0.025,
+                  opacity: 1 - stackPos * 0.12,
+                }}
+                transition={{ delay, duration: 0.36, ease: [0.22, 1, 0.36, 1] }}
+              >
+                {renderCard(project, isMobile)}
+              </motion.div>
+            );
+          })}
+
+          {/* Normal stack: static CSS peek cards behind top card */}
+          {!isDealing && !allDismissed && remainingProjects.slice(1, 4).map((project, i) => (
+            <div
               key={project.title}
-              project={project}
-              index={index}
-              total={projects.length}
-              activeCard={activeCard}
-              onCardClick={setActiveCard}
-              isMobile={isMobile}
-            />
+              style={{
+                position: 'absolute',
+                inset: 0,
+                zIndex: 10 - i,
+                transform: isDismissing
+                  ? `translateX(${i * 10}px) translateY(${i * 6}px) scale(${1 - i * 0.025})`
+                  : `translateX(${(i + 1) * 10}px) translateY(${(i + 1) * 6}px) scale(${1 - (i + 1) * 0.025})`,
+                opacity: isDismissing ? 1 - i * 0.12 : 1 - (i + 1) * 0.12,
+                transition: 'transform 0.28s ease, opacity 0.28s ease',
+                pointerEvents: 'none',
+                borderRadius: '16px',
+                overflow: 'hidden',
+              }}
+            >
+              {renderCard(project, isMobile)}
+            </div>
           ))}
+
+          {/* Top card — exits with fly-off animation */}
+          {!isDealing && (
+            <AnimatePresence
+              initial={false}
+              onExitComplete={() => {
+                setDismissedCount(prev => prev + 1);
+                setIsDismissing(false);
+              }}
+            >
+              {!isDismissing && !allDismissed && (
+                <motion.div
+                  key={remainingProjects[0].title}
+                  style={{ position: 'absolute', inset: 0, zIndex: 20 }}
+                  exit={{
+                    x: exitDir === 'right' ? '160%' : '-160%',
+                    rotate: exitDir === 'right' ? 22 : -22,
+                    opacity: 0,
+                    transition: { duration: 0.38, ease: [0.4, 0, 1, 1] },
+                  }}
+                >
+                  {renderCard(remainingProjects[0], isMobile)}
+                </motion.div>
+              )}
+            </AnimatePresence>
+          )}
         </div>
 
+        {/* Navigation */}
         <div className="mt-8 flex items-center gap-5 relative z-10">
           <button
-            onClick={() => setActiveCard(prev => (prev - 1 + projects.length) % projects.length)}
-            className="p-2.5 rounded-full bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 hover:border-cyan-500/50 transition-all duration-300"
+            onClick={() => {
+              if (!allDismissed && !isDismissing && !isDealing) {
+                flushSync(() => setExitDir('left'));
+                setIsDismissing(true);
+              }
+            }}
+            disabled={allDismissed || isDismissing || isDealing}
+            className="p-2.5 rounded-full bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 hover:border-cyan-500/50 transition-all duration-300 disabled:opacity-40 disabled:cursor-not-allowed"
           >
             <ArrowLeft className="w-4 h-4 text-cyan-400" />
           </button>
+
+          {/* Progress dots */}
           <div className="flex gap-2 items-center">
             {projects.map((_, i) => (
-              <button
+              <div
                 key={i}
-                onClick={() => setActiveCard(i)}
-                className={`rounded-full transition-all duration-300 ${activeCard === i ? 'bg-cyan-400 w-6 h-2' : 'bg-zinc-700 w-2 h-2 hover:bg-zinc-500'}`}
+                className={`rounded-full transition-all duration-300 ${
+                  isDealing
+                    ? 'bg-zinc-700 w-2 h-2'
+                    : i < dismissedCount
+                    ? 'bg-zinc-600 w-2 h-2'
+                    : i === dismissedCount && !allDismissed
+                    ? 'bg-cyan-400 w-6 h-2'
+                    : 'bg-zinc-700 w-2 h-2'
+                }`}
               />
             ))}
           </div>
+
           <button
-            onClick={() => setActiveCard(prev => (prev + 1) % projects.length)}
-            className="p-2.5 rounded-full bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 hover:border-cyan-500/50 transition-all duration-300"
+            onClick={() => {
+              if (!allDismissed && !isDismissing && !isDealing) {
+                flushSync(() => setExitDir('right'));
+                setIsDismissing(true);
+              }
+            }}
+            disabled={allDismissed || isDismissing || isDealing}
+            className="p-2.5 rounded-full bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 hover:border-cyan-500/50 transition-all duration-300 disabled:opacity-40 disabled:cursor-not-allowed"
           >
             <ArrowRight className="w-4 h-4 text-cyan-400" />
           </button>
