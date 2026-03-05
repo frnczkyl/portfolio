@@ -320,7 +320,7 @@ export default function Portfolio() {
   const education = [
     {
       school: "Cebu Institute of Technology-University",
-      year: "Graduated 2025",
+      year: "Graduated 2026",
       description: "Completed a Bachelor of Science in Information Technology, building strong skills in programming, software development, database management, and IT systems. Gained hands-on experience through various academic projects, applying technical concepts to real-world scenarios and strengthening problem-solving and analytical abilities. Proficient in both frontend and backend technologies with a focus on full-stack web development.",
       image: "/GLE-Building.jpg",
       logo: "/CITLOGO.png"
