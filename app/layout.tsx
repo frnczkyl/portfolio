@@ -16,6 +16,7 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
+  icons: { icon: '/favicon.svg' },
   title: "Francis Kyle Lorenzana | Full-Stack Developer",
   description: "4th-year Software Developer student specializing in full-stack development with React.js, Django Python, and modern web technologies.",
   keywords: ["Full-Stack Developer", "Software Developer", "React.js", "Django", "Python", "Java", "Web Development"],

@@ -1,14 +1,13 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { flushSync } from 'react-dom';
+import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
 import FacebookIcon from './components/FacebookIcon';
 import GithubIcon from './components/GithubIcon';
 import LinkedInIcon from './components/LinkedInIcon';
 
 import { AnimatePresence, motion } from 'framer-motion';
-import { Menu, X, ArrowRight, ArrowLeft, ExternalLink } from 'lucide-react';
+import { Menu, X, ArrowRight, ArrowLeft, ExternalLink, Gamepad2, Heart, BookOpen, Palette, Globe } from 'lucide-react';
 import Link from 'next/link';
 
 type Project = {
@@ -20,6 +19,44 @@ type Project = {
   projectLink?: string;
   color: string;
 };
+
+function getTagIcon(tag: string) {
+  const deviconMap: Record<string, string> = {
+    'Java':         'devicon-java-plain colored',
+    'Python':       'devicon-python-plain colored',
+    'C#':           'devicon-csharp-plain colored',
+    'React.js':     'devicon-react-original colored',
+    'React':        'devicon-react-original colored',
+    'Next.js':      'devicon-nextjs-plain text-white',
+    'Django':       'devicon-django-plain text-emerald-400',
+    'Android':      'devicon-android-plain colored',
+    'Godot':        'devicon-godot-plain colored',
+    'PostgreSQL':   'devicon-postgresql-plain colored',
+  };
+
+  if (deviconMap[tag]) {
+    return <i className={`${deviconMap[tag]} text-lg leading-none`} />;
+  }
+
+  const lucideMap: Record<string, React.ReactElement> = {
+    'Game Development': <Gamepad2 className="w-4 h-4 text-orange-400" />,
+    'RPG':              <Gamepad2 className="w-4 h-4 text-yellow-400" />,
+    'Game Design':      <Palette   className="w-4 h-4 text-purple-400" />,
+    'Healthcare':       <Heart     className="w-4 h-4 text-pink-400" />,
+    'Education':        <BookOpen  className="w-4 h-4 text-green-400" />,
+    'REST API':         <Globe     className="w-4 h-4 text-cyan-400" />,
+  };
+
+  if (lucideMap[tag]) return lucideMap[tag];
+
+  // XAMPP — custom SVG
+  if (tag === 'XAMPP') {
+    return <Image src="/Xampp.svg" alt="XAMPP" width={16} height={16} className="object-contain" />;
+  }
+
+  // Fallback: first 3 letters
+  return <span className="text-[9px] font-bold text-zinc-300 leading-none">{tag.slice(0, 3)}</span>;
+}
 
 function renderCard(project: Project, isMobile: boolean) {
   return (
@@ -40,10 +77,10 @@ function renderCard(project: Project, isMobile: boolean) {
       <div className="px-5 pt-4 flex flex-col flex-1 items-center text-center">
         <h3 className="text-lg font-bold text-cyan-400 mb-2 w-full">{project.title}</h3>
         <p className="text-zinc-400 text-xs leading-relaxed mb-3 line-clamp-3 w-full">{project.description}</p>
-        <div className="flex flex-wrap gap-1 justify-center">
+        <div className="flex flex-wrap gap-1.5 justify-center">
           {project.tags.map((tag) => (
-            <span key={tag} className="px-2 py-0.5 text-[10px] rounded-full bg-zinc-800 text-zinc-400 border border-zinc-700">
-              {tag}
+            <span key={tag} title={tag} className="w-7 h-7 rounded-full bg-zinc-800 border border-zinc-700 flex items-center justify-center hover:border-zinc-500 transition-colors duration-200">
+              {getTagIcon(tag)}
             </span>
           ))}
         </div>
@@ -109,10 +146,11 @@ export default function Portfolio() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [dismissedCount, setDismissedCount] = useState(0);
-  const [exitDir, setExitDir] = useState<'left' | 'right'>('right');
   const [isDismissing, setIsDismissing] = useState(false);
+  const [isReturning, setIsReturning] = useState(false);
   const [isDealing, setIsDealing] = useState(false);
   const [isSchoolImageHovered, setIsSchoolImageHovered] = useState(false);
+  const [isGradExpanded, setIsGradExpanded] = useState(false);
   const [isProfileImageHovered, setIsProfileImageHovered] = useState(false);
   const [isExperienceFlipped, setIsExperienceFlipped] = useState(false);
 
@@ -180,6 +218,15 @@ export default function Portfolio() {
       image: "/Identity.jpg",
       link: "https://github.com/danrave1234/Godot-Project",
       color: "from-indigo-500 to-purple-600"
+    },
+    {
+      title: "BAI Finance",
+      description: "Full-stack web application for BAI Finance Group of Companies. Built robust backend APIs with Django REST Framework and delivered responsive frontends using Next.js and React.",
+      tags: ["Django", "Python", "Next.js", "React", "REST API", "PostgreSQL"],
+      image: "https://bai-remit-frontend-production.up.railway.app/Loading/Bai%20logo.png",
+      link: "",
+      projectLink: "https://bai-remit-frontend-production.up.railway.app",
+      color: "from-amber-500 to-orange-600"
     }
   ];
 
@@ -205,7 +252,7 @@ export default function Portfolio() {
       });
     }, { threshold: 0.1 });
 
-    const sections = ['hero', 'projects', 'skills', 'education', 'experience', 'certificates', 'contact'];
+    const sections = ['hero', 'projects', 'skills', 'experience', 'certificates', 'contact'];
     sections.forEach(sectionId => {
       const element = document.getElementById(sectionId);
       if (element) observer.observe(element);
@@ -264,6 +311,7 @@ export default function Portfolio() {
         } else if (hasLeft) {
           setDismissedCount(0);
           setIsDismissing(false);
+          setIsReturning(false);
           setIsDealing(false);
           hasLeft = false;
         }
@@ -287,32 +335,43 @@ export default function Portfolio() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [allDismissed]);
 
+  // Grad card: when About section is visible, wait for flip (~0.65s) + 2s pause then expand
+  useEffect(() => {
+    let timer: ReturnType<typeof setTimeout>;
+    if (visibleSections.has('about')) {
+      timer = setTimeout(() => setIsGradExpanded(true), 1200);
+    } else {
+      setIsGradExpanded(false);
+    }
+    return () => clearTimeout(timer);
+  }, [visibleSections]);
+
   const skillsData = {
     languages: [
-      { name: "Java", icon: "devicon-java-plain" },
-      { name: "Python", icon: "devicon-python-plain" },
-      { name: "C#", icon: "devicon-csharp-plain" },
-      { name: "JavaScript", icon: "devicon-javascript-plain" },
-      { name: "HTML", icon: "devicon-html5-plain" },
-      { name: "CSS", icon: "devicon-css3-plain" },
-      { name: "Kotlin", icon: "devicon-kotlin-plain" },
-      { name: "SQL (MySQL)", icon: "devicon-mysql-plain" }
+      { name: "Java", icon: "devicon-java-plain colored", desc: "Object-oriented & platform-independent" },
+      { name: "Python", icon: "devicon-python-plain colored", desc: "Versatile & readable scripting" },
+      { name: "C#", icon: "devicon-csharp-plain colored", desc: "Microsoft object-oriented language" },
+      { name: "JavaScript", icon: "devicon-javascript-plain colored", desc: "Dynamic web scripting" },
+      { name: "HTML", icon: "devicon-html5-plain colored", desc: "Web structure & markup" },
+      { name: "CSS", icon: "devicon-css3-plain colored", desc: "Styling & layout" },
+      { name: "Kotlin", icon: "devicon-kotlin-plain colored", desc: "Modern Android development" },
+      { name: "SQL (MySQL)", icon: "devicon-mysql-plain colored", desc: "Relational database queries" }
     ],
     tools: [
-      { name: "React.js", icon: "devicon-react-original" },
-      { name: "Next.js", icon: "devicon-nextjs-original-wordmark" },
-      { name: "Tailwind CSS", icon: "devicon-tailwindcss-plain" },
-      { name: "Django", icon: "devicon-django-plain" },
-      { name: "Node.js", icon: "devicon-nodejs-plain" },
-      { name: "MySQL", icon: "devicon-mysql-plain" },
-      { name: "Firebase", icon: "devicon-firebase-plain" },
-      { name: "Supabase", icon: "devicon-supabase-plain" },
-      { name: "XAMPP", custom: true, src: "/Xampp.svg" },
-      { name: "Git", icon: "devicon-git-plain" },
-      { name: "GitHub", icon: "devicon-github-plain" },
-      { name: "AWS", icon: "devicon-amazonwebservices-plain-wordmark" },
-      { name: "Godot IDE", icon: "devicon-godot-plain" },
-      { name: "Android", icon: "devicon-android-plain" }
+      { name: "React.js", icon: "devicon-react-original colored", desc: "UI component library" },
+      { name: "Next.js", icon: "devicon-nextjs-plain text-white", desc: "Full-stack React framework" },
+      { name: "Tailwind CSS", icon: "devicon-tailwindcss-plain colored", desc: "Utility-first CSS framework" },
+      { name: "Django", icon: "devicon-django-plain text-emerald-400", desc: "Python web framework" },
+      { name: "Node.js", icon: "devicon-nodejs-plain colored", desc: "Server-side JS runtime" },
+      { name: "MySQL", icon: "devicon-mysql-plain colored", desc: "Relational database system" },
+      { name: "Firebase", icon: "devicon-firebase-plain colored", desc: "Google backend-as-a-service" },
+      { name: "Supabase", icon: "devicon-supabase-plain colored", desc: "Open-source Firebase alternative" },
+      { name: "XAMPP", custom: true, src: "/Xampp.svg", desc: "Local server environment" },
+      { name: "Git", icon: "devicon-git-plain colored", desc: "Version control system" },
+      { name: "GitHub", icon: "devicon-github-plain text-white", desc: "Code hosting platform" },
+      { name: "AWS", icon: "devicon-amazonwebservices-plain-wordmark colored", desc: "Amazon cloud services" },
+      { name: "Godot IDE", icon: "devicon-godot-plain colored", desc: "Game development engine" },
+      { name: "Android", icon: "devicon-android-plain colored", desc: "Mobile OS development" }
     ]
   };
 
@@ -440,7 +499,7 @@ export default function Portfolio() {
             <Image src="/Giphy.gif" alt="Pixelated Icon" width={isMobile ? 24 : 48} height={isMobile ? 24 : 48} />
           </div>
           <div className="hidden md:flex gap-8 text-sm font-medium transition-all duration-700 delay-200">
-            {['About', 'Projects', 'Skills', 'Education', 'Experience', 'Certificates', 'Contact'].map((item) => (
+            {['About', 'Projects', 'Skills', 'Experience', 'Certificates', 'Contact'].map((item) => (
               <a
                 key={item}
                 href={'#' + item.toLowerCase()}
@@ -460,7 +519,7 @@ export default function Portfolio() {
         {isMobileMenuOpen && (
           <div className="md:hidden bg-zinc-950/80 backdrop-blur-xl">
             <div className="flex flex-col items-center gap-4 py-4">
-              {['About', 'Projects', 'Skills', 'Education', 'Experience', 'Certificates', 'Contact'].map((item) => (
+              {['About', 'Projects', 'Skills', 'Experience', 'Certificates', 'Contact'].map((item) => (
                 <a
                   key={item}
                   href={'#' + item.toLowerCase()}
@@ -548,15 +607,15 @@ export default function Portfolio() {
 
             {/* Bio card */}
             <motion.div
-              className="col-span-2 bg-zinc-900/80 border border-zinc-800 rounded-2xl p-4 flex items-center justify-center"
+              className="col-span-2 bg-zinc-900/80 border border-zinc-800 rounded-2xl p-6 flex items-center justify-center"
               initial={{ rotateY: 90, opacity: 0 }}
               whileInView={{ rotateY: 0, opacity: 1 }}
               viewport={{ once: false, amount: 0.3 }}
               transition={{ delay: 0.1, duration: 0.5, type: 'spring', stiffness: 180, damping: 22 }}
               style={{ transformPerspective: 1000 }}
             >
-              <p className="text-zinc-400 text-xs leading-relaxed text-center">
-                BSIT Graduate specializing in full-stack development. Experienced with React, Next.js, and Django. Passionate about building functional, user-friendly digital experiences.
+              <p className="text-zinc-400 text-xs leading-loose text-center">
+                BSIT Graduate specializing in full-stack development. Experienced with React, Next.js, and Django. I enjoy turning ideas into real, working products — passionate about clean code, good design, and building digital experiences that actually work.
               </p>
             </motion.div>
 
@@ -569,7 +628,7 @@ export default function Portfolio() {
               transition={{ delay: 0.1, duration: 0.5, type: 'spring', stiffness: 180, damping: 22 }}
               style={{ transformPerspective: 1000 }}
             >
-              <p className="text-4xl font-black text-cyan-400">6+</p>
+              <p className="text-4xl font-black text-cyan-400">7+</p>
               <p className="text-[10px] text-zinc-500 uppercase tracking-widest">Projects</p>
             </motion.div>
 
@@ -600,17 +659,36 @@ export default function Portfolio() {
               <p className="text-[10px] text-zinc-400">Available Now</p>
             </motion.div>
 
-            {/* Year / School */}
+            {/* Year / School — logo slides left, text shifts right after flip */}
             <motion.div
-              className="col-span-1 bg-zinc-900/80 border border-zinc-800 rounded-2xl p-4 flex flex-col items-center justify-center gap-1"
+              id="grad-card"
+              className="col-span-1 bg-zinc-900/80 border border-zinc-800 rounded-2xl p-4 flex items-center justify-center overflow-hidden"
               initial={{ rotateY: 90, opacity: 0 }}
               whileInView={{ rotateY: 0, opacity: 1 }}
-              viewport={{ once: false, amount: 0.3 }}
+              viewport={{ once: false, amount: 0.5 }}
               transition={{ delay: 0.15, duration: 0.5, type: 'spring', stiffness: 180, damping: 22 }}
               style={{ transformPerspective: 1000 }}
             >
-              <p className="text-xl font-black text-purple-400">Graduate</p>
-              <p className="text-[10px] text-zinc-500">BSIT · CIT-U</p>
+              {/* Logo — slides in from hidden (width 0) to visible on the left */}
+              <div style={{
+                width: isGradExpanded ? '40px' : '0px',
+                height: isGradExpanded ? '40px' : '0px',
+                opacity: isGradExpanded ? 1 : 0,
+                flexShrink: 0,
+                overflow: 'hidden',
+                transition: 'width 0.45s ease, height 0.45s ease, opacity 0.4s ease',
+              }}>
+                <Image src={education[0].logo} alt="CIT-U Logo" width={40} height={40} className="object-contain w-full h-full" />
+              </div>
+              {/* Text — shifts right as logo expands */}
+              <div style={{
+                marginLeft: isGradExpanded ? '10px' : '0px',
+                textAlign: isGradExpanded ? 'left' : 'center',
+                transition: 'margin-left 0.45s ease',
+              }}>
+                <p className="text-xl font-black text-purple-400">Graduate</p>
+                <p className="text-[10px] text-zinc-500">BSIT · CIT-U</p>
+              </div>
             </motion.div>
 
             {/* Email */}
@@ -649,9 +727,10 @@ export default function Portfolio() {
               </div>
             </motion.div>
 
+
             {/* Location */}
             <motion.div
-              className="bento-location col-span-2 h-16 md:h-auto bg-zinc-900/80 border border-zinc-800 rounded-2xl p-4 flex items-center justify-center gap-3"
+              className="col-span-2 bg-zinc-900/80 border border-zinc-800 rounded-2xl p-4 flex flex-col items-center justify-center gap-2"
               initial={{ rotateY: 90, opacity: 0 }}
               whileInView={{ rotateY: 0, opacity: 1 }}
               viewport={{ once: false, amount: 0.3 }}
@@ -740,8 +819,8 @@ export default function Portfolio() {
             </div>
           ))}
 
-          {/* Top card — exits with fly-off animation */}
-          {!isDealing && (
+          {/* Top card — exits right when going forward */}
+          {!isDealing && !isReturning && (
             <AnimatePresence
               initial={false}
               onExitComplete={() => {
@@ -753,17 +832,26 @@ export default function Portfolio() {
                 <motion.div
                   key={remainingProjects[0].title}
                   style={{ position: 'absolute', inset: 0, zIndex: 20 }}
-                  exit={{
-                    x: exitDir === 'right' ? '160%' : '-160%',
-                    rotate: exitDir === 'right' ? 22 : -22,
-                    opacity: 0,
-                    transition: { duration: 0.38, ease: [0.4, 0, 1, 1] },
-                  }}
+                  exit={{ x: '160%', rotate: 22, opacity: 0, transition: { duration: 0.38, ease: [0.4, 0, 1, 1] } }}
                 >
                   {renderCard(remainingProjects[0], isMobile)}
                 </motion.div>
               )}
             </AnimatePresence>
+          )}
+
+          {/* Returning card — flies back in from the right when going backward */}
+          {!isDealing && isReturning && !allDismissed && (
+            <motion.div
+              key={`returning-${remainingProjects[0].title}`}
+              initial={{ x: '110%', opacity: 0, rotate: 18 }}
+              animate={{ x: 0, opacity: 1, rotate: 0 }}
+              transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
+              onAnimationComplete={() => setIsReturning(false)}
+              style={{ position: 'absolute', inset: 0, zIndex: 20 }}
+            >
+              {renderCard(remainingProjects[0], isMobile)}
+            </motion.div>
           )}
         </div>
 
@@ -771,12 +859,12 @@ export default function Portfolio() {
         <div className="mt-8 flex items-center gap-5 relative z-10">
           <button
             onClick={() => {
-              if (!allDismissed && !isDismissing && !isDealing) {
-                flushSync(() => setExitDir('left'));
-                setIsDismissing(true);
+              if (dismissedCount > 0 && !isDismissing && !isReturning && !isDealing) {
+                setDismissedCount(prev => prev - 1);
+                setIsReturning(true);
               }
             }}
-            disabled={allDismissed || isDismissing || isDealing}
+            disabled={dismissedCount === 0 || isDismissing || isReturning || isDealing}
             className="p-2.5 rounded-full bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 hover:border-cyan-500/50 transition-all duration-300 disabled:opacity-40 disabled:cursor-not-allowed"
           >
             <ArrowLeft className="w-4 h-4 text-cyan-400" />
@@ -802,12 +890,11 @@ export default function Portfolio() {
 
           <button
             onClick={() => {
-              if (!allDismissed && !isDismissing && !isDealing) {
-                flushSync(() => setExitDir('right'));
+              if (!allDismissed && !isDismissing && !isReturning && !isDealing) {
                 setIsDismissing(true);
               }
             }}
-            disabled={allDismissed || isDismissing || isDealing}
+            disabled={allDismissed || isDismissing || isReturning || isDealing}
             className="p-2.5 rounded-full bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 hover:border-cyan-500/50 transition-all duration-300 disabled:opacity-40 disabled:cursor-not-allowed"
           >
             <ArrowRight className="w-4 h-4 text-cyan-400" />
@@ -851,67 +938,21 @@ export default function Portfolio() {
             <div className="h-8"></div> {/* Explicit gap between buttons and logos */}
 
             <div className="min-h-[300px]">
-              <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-8 text-center h-full items-start">
+              <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6 text-center h-full items-start">
                 {(skillsPage === 'languages' ? skillsData.languages : skillsData.tools).map((skill) => (
-                  <div key={skill.name} className="flex flex-col items-center gap-3">
+                  <div key={skill.name} className="flex flex-col items-center gap-2 group p-3 rounded-xl hover:bg-zinc-800/50 transition-colors duration-200">
                     {'custom' in skill && skill.custom ? (
-                      <Image src={skill.src as string} alt={skill.name} width={48} height={48} />
+                      <Image src={skill.src as string} alt={skill.name} width={48} height={48} className="mb-1" />
                     ) : (
-                      <i className={`${skill.icon} text-5xl text-zinc-400 group-hover:text-cyan-400 transition-colors`}></i>
+                      <i className={`${'icon' in skill ? skill.icon : ''} text-5xl transition-transform duration-200 group-hover:scale-110`}></i>
                     )}
-                    <span className="text-sm text-zinc-400">{skill.name}</span>
+                    <span className="text-sm font-semibold text-zinc-200">{skill.name}</span>
+                    <span className="text-[10px] text-zinc-500 leading-tight">{'desc' in skill ? skill.desc : ''}</span>
                   </div>
                 ))}
               </div>
             </div>
           </div>
-        </div>
-      </section>
-
-      <section id="education" className="snap-section px-6 flex items-center justify-center">
-                  <div className="max-w-6xl mx-auto w-full">
-                  <h2 className={'text-3xl sm:text-4xl md:text-5xl font-black mb-8 tracking-tight text-center ' + (visibleSections.has('education') ? 'fade-in-up' : 'opacity-0')}>
-                    My <span className="bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">Education</span>
-                  </h2>
-          <div className="h-16"></div> {/* Explicit gap */}
-
-          {education.map((edu) => (
-            <div key={edu.school} className={'grid md:grid-cols-2 gap-12 items-center bg-zinc-900/50 rounded-2xl p-8 border border-zinc-800 ' + (visibleSections.has('education') ? 'fade-in-up' : 'opacity-0')} style={{ animationDelay: '200ms' }}>
-              {/* Left Column: Image with Hover Effect */}
-              <div
-                className={"relative group overflow-hidden rounded-xl cursor-pointer" + (isMobile && isSchoolImageHovered ? ' mobile-active' : '')}
-                onTouchStart={() => isMobile && setIsSchoolImageHovered(true)}
-                onTouchEnd={() => isMobile && setIsSchoolImageHovered(false)}
-                onTouchCancel={() => isMobile && setIsSchoolImageHovered(false)}
-              >
-                <Image
-                  src={edu.image}
-                  alt={`${edu.school} Campus`}
-                  width={700}
-                  height={400}
-                  className="rounded-xl object-cover w-full h-full transition-transform duration-300 group-hover:scale-105"
-                />
-                <div className="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                  <Image
-                    src={edu.logo}
-                    alt={`${edu.school} Logo`}
-                    width={150}
-                    height={150}
-                    className="transition-all duration-300 transform scale-75 group-hover:scale-100"
-                  />
-                </div>
-              </div>
-
-              {/* Right Column: Description */}
-              <div className="space-y-4 text-zinc-400">
-                <h3 className="text-2xl sm:text-3xl font-bold text-zinc-50 mb-2">{edu.school}</h3>
-                <p className="text-lg text-cyan-400">{edu.year}</p>
-                <p className="leading-relaxed">
-                  {edu.description}
-                </p>
-              </div>
-            </div>
-          ))}
         </div>
       </section>
 
@@ -977,7 +1018,9 @@ export default function Portfolio() {
                 {/* Tech tags */}
                 <div className="flex flex-wrap gap-2 justify-center">
                   {['Django', 'Python', 'Next.js', 'React', 'REST API', 'PostgreSQL'].map(tag => (
-                    <span key={tag} className="px-3 py-1 text-xs rounded-full bg-zinc-800 text-zinc-400 border border-zinc-700">{tag}</span>
+                    <span key={tag} title={tag} className="w-8 h-8 rounded-full bg-zinc-800 border border-zinc-700 flex items-center justify-center hover:border-zinc-500 transition-colors duration-200">
+                      {getTagIcon(tag)}
+                    </span>
                   ))}
                 </div>
 
