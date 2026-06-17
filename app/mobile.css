@@ -1,235 +1,114 @@
 @media (max-width: 768px) {
-  /* Projects Section - card parallax cards on mobile */
-  #projects .text-xl {
-    font-size: 1rem;
-  }
 
-  #projects p.text-sm {
-    font-size: 0.7rem !important;
-  }
-
-  /* Certificates Section */
-  #certificates .grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  #certificates .gap-8 {
-    gap: 1rem;
-  }
-
-  #certificates .p-2 {
-    padding: 0.5rem;
-  }
-
-  #certificates .text-base {
-    font-size: 0.875rem;
-  }
-
-  /* Certificates buttons adjustment for mobile */
-  #certificates a { /* Target all anchor tags within certificates */
-    padding: 0.2rem 0.5rem !important; /* Reduced padding */
-    font-size: 0.6rem !important; /* Reduced font size */
-  }
-
-  /* About Section - bento grid */
-  #about.snap-section {
-    padding-top: 4rem !important;
-    padding-bottom: 2rem !important;
-  }
-  /* Bento keeps 2 columns on mobile, constrained width so squares aren't huge */
-  .about-bento {
-    grid-template-columns: repeat(2, 1fr) !important;
-    grid-template-rows: auto !important;
-    max-width: 300px !important;
-    margin-left: auto !important;
-    margin-right: auto !important;
-  }
-  .about-bento .bento-photo {
-    grid-column: span 2 / span 2 !important;
-    grid-row: span 1 / span 1 !important;
-    height: 10rem !important;
-  }
-
-  /* General Adjustments */
-  .text-5xl {
-    font-size: 2.5rem;
-  }
-  .md\:text-7xl {
-    font-size: 3rem;
-  }
-  .lg\:text-9xl {
-    font-size: 4rem;
-  }
-  .text-4xl {
-    font-size: 2rem;
-  }
-  .md\:text-5xl {
-    font-size: 2.5rem;
-  }
-  .lg\:text-6xl {
-    font-size: 3rem;
-  }
-
+  /* ── Snap: disable snapping, allow free scroll ── */
   .snap-container {
-    scroll-snap-type: none;
+    scroll-snap-type: none !important;
+    overflow-x: hidden !important;
   }
-
   .snap-section {
-    scroll-snap-align: none;
-    height: auto; /* Allow sections to have their natural height */
-    padding-left: 1rem;
-    padding-right: 1rem;
-  }
-
-  /* Hero Section Adjustment for Mobile */
-  #hero {
-    padding-top: 8rem; /* Add padding to prevent content from being hidden behind fixed nav */
-    height: 100vh !important; /* Make hero section full viewport height */
-  }
-
-  /* Heading adjustments for mobile */
-  #about h2,
-  #projects h2,
-    #skills h2, /* Ensure skills h2 is also small */
-  #education h2,
-  #experience h2,
-  #certificates h2,
-  #contact h2 {
-    font-size: 1.8rem !important; /* Smaller font size for all main headings on mobile */
-  }
-  #certificates h2 {
-    margin-bottom: 3rem !important; /* Increased gap */
-  }
-
-  /* Active states for mobile navigation links */
-  nav a:active {
-    color: #06b6d4 !important; /* cyan-400 */
-  }
-
-  /* Active states for button-like <a> elements */
-  #hero .star-btn:active, /* Hero buttons */
-  #projects a.inline-flex:active, /* Project buttons */
-  #certificates a:active, /* Certificate buttons */
-  .flex.justify-center.gap-x-16 a:active /* Social media icons */ {
-    transform: scale(0.95) !important;
-    opacity: 0.8 !important;
-    transition: all 0.2s ease-in-out !important;
-  }
-
-  /* Shrink all description texts in every section */
-  #hero p.text-zinc-400.mb-12 {
-    font-size: 0.8rem !important;
-    line-height: 1.2;
-  }
-  #skills p.text-zinc-400.text-center.mb-8 {
-    font-size: 0.8rem !important;
-    line-height: 1.2;
-  }
-  #education p.leading-relaxed {
-    font-size: 0.7rem !important;
-    line-height: 1.2;
-  }
-  #education p.text-lg.text-cyan-400 {
-    font-size: 0.7rem !important;
-  }
-  #certificates p.text-zinc-500 {
-    font-size: 0.7rem !important;
-  }
-  #certificates h3.text-base.font-bold {
-    font-size: 0.75rem !important;
-  }
-  #contact p.text-zinc-400.max-w-2xl.mx-auto {
-    font-size: 0.8rem !important;
-    line-height: 1.2;
-  }
-  #contact p.text-sm.text-zinc-500 {
-    font-size: 0.65rem !important;
-  }
-
-  /* Hero star buttons on mobile */
-  #hero .star-btn {
-    width: 10.5rem !important;
-    height: 2.6rem !important;
-  }
-  #hero .star-btn strong {
-    font-size: 9px !important;
-    letter-spacing: 2px !important;
-  }
-
-
-  /* Education section school logo mobile active state */
-  #education .group.mobile-active > div.absolute.inset-0 { /* Target the div overlay */
-    opacity: 1 !important;
-    transform: scale(1) !important; /* Force scale as well */
-    z-index: 10 !important; /* Ensure it's on top */
-    transition-property: opacity, transform !important; /* Ensure transitions are active */
-    transition-duration: 300ms !important;
-  }
-  #education .group.mobile-active > div.absolute.inset-0 > img { /* Target the Image element inside the overlay */
-    transform: scale(1.2) !important; /* Force scale as well */
-    transition-property: transform !important; /* Ensure transitions are active */
-    transition-duration: 300ms !important;
+    scroll-snap-align: none !important;
+    height: auto !important;
+    min-height: unset !important;
+    padding-left: 1.25rem !important;
+    padding-right: 1.25rem !important;
+    display: block !important;
   }
 
   html, body {
     overflow-x: hidden !important;
   }
-  .snap-container {
-    overflow-x: hidden !important;
-  }
 
-  #about,
-  #projects,
-  #skills,
-  #education,
-  #experience,
-  #certificates,
-  #contact {
-    margin-bottom: 10vh; /* Further reduced gap */
-    padding-top: 60px; /* Account for fixed header height */
-    min-height: calc(60vh - 60px); /* Further reduced min-height */
-    display: flex;
-    flex-direction: column;
-    justify-content: center; /* Vertically center content */
-  }
-  
-  /* Technical Skills section adjustments for mobile */
-  #skills .min-h-\[300px\] { /* Override min-height */
-    min-height: 250px !important; /* Set a consistent min-height for mobile */
-  }
-  #skills .grid { /* Adjust grid columns and gap */
-    grid-template-columns: repeat(4, minmax(0, 1fr)) !important; /* Changed to 4 columns */
-    gap: 0.2rem !important; /* Reduced gap */
-  }
-  #skills .grid .flex.flex-col.items-center.gap-3 img,
-  #skills .grid .flex.flex-col.items-center.gap-3 i { /* Shrink skill icons/images */
-    width: 24px !important; /* Reverted width */
-    height: 24px !important; /* Reverted height */
-    font-size: 1.5rem !important; /* Reverted font size */
-  }
-  #skills .grid .flex.flex-col.items-center.gap-3 span { /* Shrink skill name text */
-    font-size: 0.55rem !important;
-  }
-  #skills .grid .flex.flex-col.items-center.gap-3 { /* Reduce gap between icon/image and text */
-    gap: 0.1rem !important; /* Further reduced gap */
-  }
-  #skills .bg-zinc-900\/50.rounded-2xl.p-8 { /* Reduce padding of outer box */
-    padding: 0.25rem !important; /* Further reduced padding */
-  }
-  #contact {
-    margin-bottom: 0 !important; /* Remove gap after the last section */
-  }
-
-  /* Projects Section - Fan deck cards on mobile */
-  #projects {
+  /* ── Hero: keep full-screen ── */
+  #hero {
     display: flex !important;
     flex-direction: column !important;
     align-items: center !important;
     justify-content: center !important;
-    padding-top: 80px !important;
-    padding-bottom: 20px !important;
-    min-height: 100vh !important;
-    height: auto !important;
-    overflow: visible !important;
+    height: 100vh !important;
+    padding-top: 5rem !important;
+    padding-bottom: 2rem !important;
+  }
+  #hero .star-btn {
+    width: 8.5rem !important;
+    height: 2.5rem !important;
+  }
+  #hero .star-btn strong {
+    font-size: 8px !important;
+    letter-spacing: 1.5px !important;
+  }
+
+  /* ── All content sections ── */
+  #about,
+  #projects,
+  #skills,
+  #experience,
+  #certificates,
+  #contact {
+    padding-top: 5.5rem !important;
+    padding-bottom: 4rem !important;
+    padding-left: 1.25rem !important;
+    padding-right: 1.25rem !important;
+    margin-bottom: 0 !important;
+    display: block !important;
+  }
+
+  /* ── About ── */
+  #about .grid {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 2rem !important;
+  }
+
+  /* ── Projects ── */
+  #projects .grid {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 2rem !important;
+  }
+  #projects .grid > div:first-child,
+  #projects .grid > div:first-child > div {
+    width: 100% !important;
+    min-height: 200px !important;
+  }
+  #projects .grid > div:last-child {
+    width: 100% !important;
+    align-items: center !important;
+    text-align: center !important;
+  }
+
+  /* ── Skills: smaller cards on mobile ── */
+  #skills .p-4 {
+    padding: 0.625rem !important;
+  }
+
+  /* ── Experience ── */
+  #experience .max-w-lg {
+    max-width: 100% !important;
+  }
+
+  /* ── Certificates: needs a fixed height so height:100% on cc-wrap resolves ── */
+  #certificates {
+    height: 100svh !important;
+    min-height: 100svh !important;
+    padding: 0 !important;
+    position: relative !important;
+    overflow: hidden !important;
+    display: block !important;
+  }
+
+  /* ── Contact ── */
+  #contact {
+    min-height: 100svh !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    padding-top: 5rem !important;
+    padding-bottom: 3rem !important;
+  }
+
+  /* ── Nav tap ── */
+  nav a:active {
+    color: #ffffff !important;
   }
 }

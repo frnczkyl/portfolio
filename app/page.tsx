@@ -5,10 +5,11 @@ import Image from 'next/image';
 import FacebookIcon from './components/FacebookIcon';
 import GithubIcon from './components/GithubIcon';
 import LinkedInIcon from './components/LinkedInIcon';
-
 import { AnimatePresence, motion } from 'framer-motion';
-import { Menu, X, ArrowRight, ArrowLeft, ExternalLink, Gamepad2, Heart, BookOpen, Palette, Globe } from 'lucide-react';
-import Link from 'next/link';
+import { Menu, X, ExternalLink, Gamepad2, Heart, BookOpen, Palette, Globe, ChevronLeft, ChevronRight, ArrowRight, Mail } from 'lucide-react';
+import IntroAnimation from './components/IntroAnimation';
+import WorkCarousel from './components/WorkCarousel';
+import CertCarousel from './components/CertCarousel';
 
 type Project = {
   title: string;
@@ -20,110 +21,40 @@ type Project = {
   color: string;
 };
 
+type SkillItem =
+  | { name: string; icon: string; desc: string }
+  | { name: string; custom: true; src: string; desc: string };
+
 function getTagIcon(tag: string) {
-  const deviconMap: Record<string, string> = {
-    'Java':         'devicon-java-plain colored',
-    'Python':       'devicon-python-plain colored',
-    'C#':           'devicon-csharp-plain colored',
-    'React.js':     'devicon-react-original colored',
-    'React':        'devicon-react-original colored',
-    'Next.js':      'devicon-nextjs-plain text-white',
-    'Django':       'devicon-django-plain text-emerald-400',
-    'Android':      'devicon-android-plain colored',
-    'Godot':        'devicon-godot-plain colored',
-    'PostgreSQL':   'devicon-postgresql-plain colored',
+  const dm: Record<string, string> = {
+    'Java': 'devicon-java-plain colored', 'Python': 'devicon-python-plain colored',
+    'C#': 'devicon-csharp-plain colored', 'React.js': 'devicon-react-original colored',
+    'React': 'devicon-react-original colored', 'Next.js': 'devicon-nextjs-plain text-white',
+    'Django': 'devicon-django-plain text-emerald-400', 'Android': 'devicon-android-plain colored',
+    'Godot': 'devicon-godot-plain colored', 'PostgreSQL': 'devicon-postgresql-plain colored',
   };
-
-  if (deviconMap[tag]) {
-    return <i className={`${deviconMap[tag]} text-lg leading-none`} />;
-  }
-
-  const lucideMap: Record<string, React.ReactElement> = {
-    'Game Development': <Gamepad2 className="w-4 h-4 text-orange-400" />,
-    'RPG':              <Gamepad2 className="w-4 h-4 text-yellow-400" />,
-    'Game Design':      <Palette   className="w-4 h-4 text-purple-400" />,
-    'Healthcare':       <Heart     className="w-4 h-4 text-pink-400" />,
-    'Education':        <BookOpen  className="w-4 h-4 text-green-400" />,
-    'REST API':         <Globe     className="w-4 h-4 text-cyan-400" />,
+  if (dm[tag]) return <i className={`${dm[tag]} text-base leading-none`} />;
+  const lm: Record<string, React.ReactElement> = {
+    'Game Development': <Gamepad2 className="w-3.5 h-3.5 text-orange-400" />,
+    'RPG': <Gamepad2 className="w-3.5 h-3.5 text-yellow-400" />,
+    'Game Design': <Palette className="w-3.5 h-3.5 text-zinc-300" />,
+    'Healthcare': <Heart className="w-3.5 h-3.5 text-pink-400" />,
+    'Education': <BookOpen className="w-3.5 h-3.5 text-green-400" />,
+    'REST API': <Globe className="w-3.5 h-3.5 text-white" />,
   };
-
-  if (lucideMap[tag]) return lucideMap[tag];
-
-  // XAMPP — custom SVG
-  if (tag === 'XAMPP') {
-    return <Image src="/Xampp.svg" alt="XAMPP" width={16} height={16} className="object-contain" />;
-  }
-
-  // Fallback: first 3 letters
-  return <span className="text-[9px] font-bold text-zinc-300 leading-none">{tag.slice(0, 3)}</span>;
-}
-
-function renderCard(project: Project, isMobile: boolean) {
-  return (
-    <div className="relative bg-zinc-900 rounded-2xl border border-cyan-500/40 shadow-[0_0_40px_rgba(6,182,212,0.12)] h-full flex flex-col overflow-hidden">
-      {/* Colored top accent bar */}
-      <div className={`h-1.5 bg-gradient-to-r ${project.color} w-full flex-shrink-0`} />
-
-      {/* Project image */}
-      {project.image && (
-        <div className="relative flex-shrink-0" style={{ height: isMobile ? '35%' : '42%' }}>
-          <Image src={project.image} alt={project.title} layout="fill" className="object-cover" />
-          <div className="absolute inset-0 bg-gradient-to-t from-zinc-900/90 via-zinc-900/30 to-transparent" />
-          <div className={`absolute inset-0 bg-gradient-to-br ${project.color} opacity-10`} />
-        </div>
-      )}
-
-      {/* Content */}
-      <div className="px-5 pt-4 flex flex-col flex-1 items-center text-center">
-        <h3 className="text-lg font-bold text-cyan-400 mb-2 w-full">{project.title}</h3>
-        <p className="text-zinc-400 text-xs leading-relaxed mb-3 line-clamp-3 w-full">{project.description}</p>
-        <div className="flex flex-wrap gap-1.5 justify-center">
-          {project.tags.map((tag) => (
-            <span key={tag} title={tag} className="w-7 h-7 rounded-full bg-zinc-800 border border-zinc-700 flex items-center justify-center hover:border-zinc-500 transition-colors duration-200">
-              {getTagIcon(tag)}
-            </span>
-          ))}
-        </div>
-      </div>
-
-      {/* Buttons */}
-      <div className="flex flex-shrink-0 py-3 justify-center gap-8">
-        {project.link && (
-          <a href={project.link} target="_blank" rel="noopener noreferrer" className="flex flex-col items-center gap-2 group">
-            <div className="w-14 h-14 rounded-full bg-zinc-800 border border-zinc-700 flex items-center justify-center group-hover:border-violet-500 group-hover:bg-zinc-700 transition-all duration-200">
-              <GithubIcon width={26} height={26} className="text-violet-400" />
-            </div>
-            <span className="text-[11px] text-zinc-400 group-hover:text-zinc-200 transition-colors font-medium">GitHub</span>
-          </a>
-        )}
-        {project.projectLink && (
-          <a href={project.projectLink} target="_blank" rel="noopener noreferrer" className="flex flex-col items-center gap-2 group">
-            <div className="w-14 h-14 rounded-full bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center group-hover:shadow-[0_0_18px_rgba(6,182,212,0.5)] transition-all duration-200">
-              <ExternalLink className="w-6 h-6 text-white" />
-            </div>
-            <span className="text-[11px] text-zinc-400 group-hover:text-zinc-200 transition-colors font-medium">Live Demo</span>
-          </a>
-        )}
-      </div>
-    </div>
-  );
+  if (lm[tag]) return lm[tag];
+  if (tag === 'XAMPP') return <Image src="/Xampp.svg" alt="XAMPP" width={14} height={14} className="object-contain" />;
+  return <span className="text-[8px] font-bold text-zinc-300">{tag.slice(0, 3)}</span>;
 }
 
 function StarButton({
   href, onClick, children, small = false, xs = false, stopProp = false, target,
 }: {
-  href?: string;
-  onClick?: (e: React.MouseEvent) => void;
-  children: React.ReactNode;
-  small?: boolean;
-  xs?: boolean;
-  stopProp?: boolean;
-  target?: string;
+  href?: string; onClick?: (e: React.MouseEvent) => void; children: React.ReactNode;
+  small?: boolean; xs?: boolean; stopProp?: boolean; target?: string;
 }) {
   const cls = `star-btn${xs ? ' star-btn-xs' : small ? ' star-btn-sm' : ''}`;
-  const handleClick = stopProp
-    ? (e: React.MouseEvent) => { e.stopPropagation(); onClick?.(e); }
-    : onClick;
+  const handleClick = stopProp ? (e: React.MouseEvent) => { e.stopPropagation(); onClick?.(e); } : onClick;
   const inner = (
     <>
       <strong>{children}</strong>
@@ -131,9 +62,7 @@ function StarButton({
       <div className="star-btn-glow"><div className="star-btn-circle" /><div className="star-btn-circle" /></div>
     </>
   );
-  if (href) {
-    return <a href={href} target={target} rel={target === '_blank' ? 'noopener noreferrer' : undefined} className={cls} onClick={handleClick}>{inner}</a>;
-  }
+  if (href) return <a href={href} target={target} rel={target === '_blank' ? 'noopener noreferrer' : undefined} className={cls} onClick={handleClick}>{inner}</a>;
   return <div className={cls} role="button" onClick={handleClick}>{inner}</div>;
 }
 
@@ -141,1115 +70,584 @@ export default function Portfolio() {
   const [mounted, setMounted] = useState(false);
   const [activeSection, setActiveSection] = useState('hero');
   const [visibleSections, setVisibleSections] = useState<Set<string>>(new Set());
-  const [skillsPage, setSkillsPage] = useState('languages');
-  const [pressedButton, setPressedButton] = useState<string | null>(null);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
-  const [dismissedCount, setDismissedCount] = useState(0);
-  const [isDismissing, setIsDismissing] = useState(false);
-  const [isReturning, setIsReturning] = useState(false);
-  const [isDealing, setIsDealing] = useState(false);
-  const [isSchoolImageHovered, setIsSchoolImageHovered] = useState(false);
-  const [isGradExpanded, setIsGradExpanded] = useState(false);
-  const [isProfileImageHovered, setIsProfileImageHovered] = useState(false);
-  const [isExperienceFlipped, setIsExperienceFlipped] = useState(false);
+  const [projectIndex, setProjectIndex] = useState(0);
+  const [introComplete, setIntroComplete] = useState(false);
 
   useEffect(() => {
-    const handleResize = () => {
-      setIsMobile(window.innerWidth <= 768);
-    };
-
-    handleResize(); 
-    window.addEventListener('resize', handleResize);
-
-    return () => {
-      window.removeEventListener('resize', handleResize);
-    };
+    const onResize = () => setIsMobile(window.innerWidth <= 768);
+    onResize();
+    window.addEventListener('resize', onResize);
+    return () => window.removeEventListener('resize', onResize);
   }, []);
-  
-  const projects = [
-    {
-      title: "Ruined Light",
-      description: "A game developed using only Java alone. This is an RPG game where you have to defeat each level to reach the boss level. It also has different characters.",
-      tags: ["Java", "Game Development", "RPG"],
-      image: "/RuinedLight.png",
-      link: "https://github.com/frnczkyl/Ruined_Light_OOP1_PROJECT",
-      color: "from-gray-400 to-gray-600"
-    },
-    {
-      title: "ChipIn",
-      description: "Collaborative expense tracking platform with expense input system, participant management, and automated cost-splitting calculations. Clean, user-friendly interface for group events.",
-      tags: ["Java", "React.js", "Android"],
-      image: "/ChipIn.png",
-      link: "https://github.com/Jeskunnn/ChipIn",
-      projectLink: "https://chip-in-phi.vercel.app/",
-      color: "from-blue-500 to-cyan-600"
-    },
-    {
-      title: "Sleepsync",
-      description: "Full-stack sleep tracking web application with pattern monitoring, personalized relaxation tips, optimal bedtime calculations, and customizable alarm scheduling.",
-      tags: ["Django", "Python", "Healthcare"],
-      image: "/SleepSync.png",
-      link: "https://github.com/ciddysed/IT342_SleepSync",
-      projectLink: "https://sleepsyncapp.netlify.app",
-      color: "from-purple-500 to-pink-600"
-    },
-    {
-      title: "Wildlitz",
-      description: "Grade 3 learning platform with interactive educational activities. Full-stack development for assigned modules to enhance student engagement.",
-      tags: ["Django", "Python", "React.js", "Education"],
-      image: "/WildLitz.png",
-      link: "https://github.com/Nokitaki/WildLitz-Capstone",
-      projectLink: "https://wildlitz-capstone-raeg.onrender.com/",
-      color: "from-green-500 to-teal-600"
-    },
-    {
-      title: "Russian Roulette",
-      description: "Turn-based Java game with XAMPP database management, featuring data persistence and game state tracking throughout gameplay.",
-      tags: ["Java", "XAMPP", "Game Development"],
-      image: "/RussianRoulette.jpg",
-      link: "https://github.com/danrave1234/OOP2_FinalProj",
-      color: "from-red-500 to-rose-600"
-    },
-    {
-      title: "Identity: Fragments of Me",
-      description: "Turn-based 2D game developed for GDAP gamified event. Created visual assets and contributed to main concept using Godot IDE.",
-      tags: ["Godot", "C#", "Game Design"],
-      image: "/Identity.jpg",
-      link: "https://github.com/danrave1234/Godot-Project",
-      color: "from-indigo-500 to-purple-600"
-    },
-    {
-      title: "BAI Finance",
-      description: "Full-stack web application for BAI Finance Group of Companies. Built robust backend APIs with Django REST Framework and delivered responsive frontends using Next.js and React.",
-      tags: ["Django", "Python", "Next.js", "React", "REST API", "PostgreSQL"],
-      image: "https://bai-remit-frontend-production.up.railway.app/Loading/Bai%20logo.png",
-      link: "",
-      projectLink: "https://bai-remit-frontend-production.up.railway.app",
-      color: "from-amber-500 to-orange-600"
-    }
+
+  const projects: Project[] = [
+    { title: 'Ruined Light', description: 'A game developed using only Java alone. An RPG where you defeat each level to reach the boss. Features different playable characters and combat mechanics.', tags: ['Java', 'Game Development', 'RPG'], image: '/RuinedLight.png', link: 'https://github.com/frnczkyl/Ruined_Light_OOP1_PROJECT', color: 'from-gray-400 to-gray-600' },
+    { title: 'ChipIn', description: 'Collaborative expense tracking platform with expense input system, participant management, and automated cost-splitting calculations for group events.', tags: ['Java', 'React.js', 'Android'], image: '/ChipIn.png', link: 'https://github.com/Jeskunnn/ChipIn', projectLink: 'https://chip-in-phi.vercel.app/', color: 'from-zinc-300 to-zinc-500' },
+    { title: 'Sleepsync', description: 'Full-stack sleep tracking web app with pattern monitoring, personalized relaxation tips, optimal bedtime calculations, and customizable alarm scheduling.', tags: ['Django', 'Python', 'Healthcare'], image: '/SleepSync.png', link: 'https://github.com/ciddysed/IT342_SleepSync', projectLink: 'https://sleepsyncapp.netlify.app', color: 'from-zinc-200 to-zinc-500' },
+    { title: 'Wildlitz', description: 'Grade 3 educational learning platform with interactive activities. Built full-stack modules to enhance student engagement and learning outcomes.', tags: ['Django', 'Python', 'React.js', 'Education'], image: '/WildLitz.png', link: 'https://github.com/Nokitaki/WildLitz-Capstone', projectLink: 'https://wildlitz-capstone-raeg.onrender.com/', color: 'from-zinc-300 to-zinc-600' },
+    { title: 'Russian Roulette', description: 'Turn-based Java game with XAMPP database integration, featuring complete data persistence and game state tracking throughout gameplay sessions.', tags: ['Java', 'XAMPP', 'Game Development'], image: '/RussianRoulette.jpg', link: 'https://github.com/danrave1234/OOP2_FinalProj', color: 'from-zinc-200 to-zinc-600' },
+    { title: 'Identity: Fragments of Me', description: 'Turn-based 2D RPG developed for a GDAP gamified event. Created visual assets and contributed to the main concept and gameplay using Godot Engine.', tags: ['Godot', 'C#', 'Game Design'], image: '/Identity.jpg', link: 'https://github.com/danrave1234/Godot-Project', color: 'from-zinc-400 to-zinc-600' },
   ];
 
-  const remainingProjects = projects.slice(dismissedCount);
-  const allDismissed = remainingProjects.length === 0;
+  const workProjects = [
+    {
+      title: 'BAI HR System',
+      subtitle: 'Human Resources Platform',
+      description: 'Internal HR management system for BAI Finance Group. Built comprehensive modules for employee records, attendance tracking, and payroll processing using Django REST Framework and React.',
+      link: 'https://bai-hr-forkproduction-production.up.railway.app/',
+      tags: ['Django', 'React', 'PostgreSQL', 'REST API'],
+      accent: '#818cf8',
+      bg: 'from-indigo-950/80 to-zinc-950',
+      cardBg: 'linear-gradient(145deg, #1e1b4b 0%, #312e81 55%, #4c1d95 100%)',
+      glowBg: 'radial-gradient(circle, rgba(99,102,241,0.55) 0%, transparent 70%)',
+      image: '/bai-hr.png',
+    },
+    {
+      title: 'BAI Remittance',
+      subtitle: 'International Remittance App',
+      description: 'Production full-stack remittance web application. Built robust backend APIs with Django REST Framework and dynamic frontends with Next.js for seamless cross-border money transfers.',
+      link: 'https://bai-remit-frontend-production.up.railway.app/landingpage',
+      tags: ['Django', 'Python', 'Next.js', 'React', 'REST API', 'PostgreSQL'],
+      accent: '#e4e4e7',
+      bg: 'from-zinc-700/50 to-zinc-950',
+      cardBg: 'linear-gradient(145deg, #0f0f0f 0%, #1c1c1e 55%, #3a3a3c 100%)',
+      glowBg: 'radial-gradient(circle, rgba(113,113,122,0.5) 0%, transparent 70%)',
+      image: '/bai-remit.png',
+    },
+    {
+      title: 'BAI Finance Website',
+      subtitle: 'Official Corporate Website',
+      description: 'Official corporate website for BAI Finance Group of Companies. Developed a modern, fully-responsive platform with Next.js showcasing company services, leadership, and client engagement.',
+      link: 'https://bai-website-forkproduction-production.up.railway.app/',
+      tags: ['Next.js', 'React', 'Tailwind CSS'],
+      accent: '#fbbf24',
+      bg: 'from-amber-950/60 to-zinc-950',
+      cardBg: 'linear-gradient(145deg, #1c1007 0%, #78350f 60%, #92400e 100%)',
+      glowBg: 'radial-gradient(circle, rgba(251,191,36,0.45) 0%, transparent 70%)',
+      image: '/bai-website.png',
+    },
+  ];
+
+  const skillsData: { languages: SkillItem[]; tools: SkillItem[] } = {
+    languages: [
+      { name: 'Java', icon: 'devicon-java-plain colored', desc: '' },
+      { name: 'Python', icon: 'devicon-python-plain colored', desc: '' },
+      { name: 'C', icon: 'devicon-c-plain colored', desc: '' },
+      { name: 'C++', icon: 'devicon-cplusplus-plain colored', desc: '' },
+      { name: 'C#', icon: 'devicon-csharp-plain colored', desc: '' },
+      { name: 'JavaScript', icon: 'devicon-javascript-plain colored', desc: '' },
+      { name: 'TypeScript', icon: 'devicon-typescript-plain colored', desc: '' },
+      { name: 'HTML', icon: 'devicon-html5-plain colored', desc: '' },
+      { name: 'CSS', icon: 'devicon-css3-plain colored', desc: '' },
+      { name: 'Kotlin', icon: 'devicon-kotlin-plain colored', desc: '' },
+      { name: 'SQL', icon: 'devicon-mysql-plain colored', desc: '' },
+    ],
+    tools: [
+      { name: 'React.js', icon: 'devicon-react-original colored', desc: '' },
+      { name: 'Next.js', icon: 'devicon-nextjs-plain text-white', desc: '' },
+      { name: 'Tailwind CSS', icon: 'devicon-tailwindcss-plain colored', desc: '' },
+      { name: 'Django', icon: 'devicon-django-plain text-emerald-400', desc: '' },
+      { name: 'Node.js', icon: 'devicon-nodejs-plain colored', desc: '' },
+      { name: 'Firebase', icon: 'devicon-firebase-plain colored', desc: '' },
+      { name: 'Supabase', icon: 'devicon-supabase-plain colored', desc: '' },
+      { name: 'XAMPP', custom: true, src: '/Xampp.svg', desc: '' },
+      { name: 'Git', icon: 'devicon-git-plain colored', desc: '' },
+      { name: 'GitHub', icon: 'devicon-github-plain text-white', desc: '' },
+      { name: 'AWS', icon: 'devicon-amazonwebservices-plain-wordmark colored', desc: '' },
+      { name: 'Android', icon: 'devicon-android-plain colored', desc: '' },
+      { name: 'Vercel', icon: 'devicon-vercel-plain text-white', desc: '' },
+      { name: 'Railway', icon: 'devicon-railway-original colored', desc: '' },
+      { name: 'Godot', icon: 'devicon-godot-plain colored', desc: '' },
+      { name: 'Postman', icon: 'devicon-postman-plain colored', desc: '' },
+      { name: 'Bash', icon: 'devicon-bash-plain colored', desc: '' },
+      { name: 'PowerShell', icon: 'devicon-powershell-plain colored', desc: '' },
+    ],
+  };
+
+  const certificates = [
+    { name: 'FreeCodeCamp — Front End Development Libraries V8', image: '/FreeCodeCamp.png', link: 'https://www.freecodecamp.org/certification/franciskylelorenzana/front-end-development-libraries' },
+    { name: 'AWS Academy Cloud Foundations', image: '/AWS.png', link: 'https://drive.google.com/file/d/1fCfX2trjn4fW2SG6a2I0iA83Xu8QAKrt/view?usp=drive_link' },
+    { name: 'Data Visualization — Kaggle', image: '/Data Visualization.png', link: 'https://drive.google.com/file/d/10JjnTdPeY67tvnqvLvlf4VUpIPViPjgb/view?usp=drive_link' },
+    { name: 'Webinar on Intellectual Property Rights', image: '/Webinar.png', link: 'https://drive.google.com/file/d/1XOIgO-XjMlA-wylJwX-TfIn6LnetsS8O/view?usp=drive_link' },
+    { name: 'Introduction to HTML — Sololearn', image: '/SoloLearn HTML.png', link: 'https://drive.google.com/file/d/1B7jYS0LnZhYkRSqGZPweCBUurowOaFFT/view?usp=drive_link' },
+    { name: 'Introduction to JavaScript — Sololearn', image: '/SoloLearn Javascript.png', link: 'https://drive.google.com/file/d/1WtGUzpd1R6GxXitp0CUWcaKQfb30c5PT/view?usp=drive_link' },
+    { name: 'AWS Academy Cloud Architecting', image: '/AwsArchitecting.png', link: 'https://drive.google.com/file/d/1hYegeloVsDd1Wd1hA7760M36DuSFxSdt/view?usp=sharing' },
+    { name: 'DevFest Cebu Workshop — Google Developers', image: '/DevFest.png', link: 'https://drive.google.com/file/d/1o2CQwMvUmWUkuxW4bffvMq5SOnmoCAsN/view?usp=sharing' },
+    { name: 'SQL (Basic) Certificate', image: '/SQL_Certificate.png', link: 'https://drive.google.com/file/d/18JkI21PouW3WoMEgWfv9ebLJIh1JisC3/view?usp=sharing' },
+    { name: 'Introduction to AI', image: '/Introduction_toAI.png', link: 'https://drive.google.com/file/d/1-nGHVZxzndQp8nj9VNcMkFzKrPfmsqJA/view?usp=sharing' },
+  ];
 
   useEffect(() => {
     setMounted(true);
-
-    // General observer — 10% visible is enough for most sections
     const observer = new IntersectionObserver((entries) => {
       entries.forEach((entry) => {
         if (entry.isIntersecting) {
-          setVisibleSections(prev => new Set(prev).add(entry.target.id));
+          setVisibleSections((p) => new Set(p).add(entry.target.id));
           setActiveSection(entry.target.id);
         } else {
-          setVisibleSections(prev => {
-            const newSet = new Set(prev);
-            newSet.delete(entry.target.id);
-            return newSet;
-          });
+          setVisibleSections((p) => { const n = new Set(p); n.delete(entry.target.id); return n; });
         }
       });
-    }, { threshold: 0.1 });
-
-    const sections = ['hero', 'projects', 'skills', 'experience', 'certificates', 'contact'];
-    sections.forEach(sectionId => {
-      const element = document.getElementById(sectionId);
-      if (element) observer.observe(element);
+    }, { threshold: 0.15 });
+    ['hero', 'about', 'experience', 'projects', 'skills', 'certificates', 'contact'].forEach((id) => {
+      const el = document.getElementById(id);
+      if (el) observer.observe(el);
     });
-
-    // About section needs a higher threshold so the bento flip animation only
-    // plays when the user has actually scrolled to the section — not on a glimpse.
-    // On mobile with momentum scrolling, 0.1 fires too early (just the photo).
-    const aboutObserver = new IntersectionObserver((entries) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          setVisibleSections(prev => new Set(prev).add('about'));
-          setActiveSection('about');
-        } else {
-          setVisibleSections(prev => {
-            const newSet = new Set(prev);
-            newSet.delete('about');
-            return newSet;
-          });
-        }
-      });
-    }, { threshold: 0.45 }); // 45% of section must be visible
-
-    const aboutEl = document.getElementById('about');
-    if (aboutEl) aboutObserver.observe(aboutEl);
-
-    const typingInterval = setInterval(() => {
-      const line1 = document.querySelector('.line1');
-      const line2 = document.querySelector('.line2');
-      if (line1 && line2) {
-        line1.classList.remove('typing-animation');
-        line2.classList.remove('typing-animation');
-        setTimeout(() => {
-          line1.classList.add('typing-animation');
-          line2.classList.add('typing-animation');
-        }, 100);
-      }
-    }, 13500);
-
-    return () => {
-      observer.disconnect();
-      aboutObserver.disconnect();
-      clearInterval(typingInterval);
-    };
+    return () => observer.disconnect();
   }, []);
 
-  // Reset flashcard stack when user scrolls away from projects and comes back
-  useEffect(() => {
-    const section = document.getElementById('projects');
-    if (!section) return;
-    let hasLeft = false;
-    const obs = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (!entry.isIntersecting) {
-          hasLeft = true;
-        } else if (hasLeft) {
-          setDismissedCount(0);
-          setIsDismissing(false);
-          setIsReturning(false);
-          setIsDealing(false);
-          hasLeft = false;
-        }
-      });
-    }, { threshold: 0.3 });
-    obs.observe(section);
-    return () => obs.disconnect();
-  }, []);
+  const nextProject = () => setProjectIndex((i) => (i + 1) % projects.length);
+  const prevProject = () => setProjectIndex((i) => (i - 1 + projects.length) % projects.length);
 
-  // When all cards dismissed → brief pause → deal them all back in staggered
-  useEffect(() => {
-    if (!allDismissed || isDealing) return;
-    const t = setTimeout(() => {
-      setDismissedCount(0);
-      setIsDismissing(false);
-      setIsDealing(true);
-      const t2 = setTimeout(() => setIsDealing(false), projects.length * 90 + 380);
-      return () => clearTimeout(t2);
-    }, 600);
-    return () => clearTimeout(t);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [allDismissed]);
+  const NAV = ['About', 'Experience', 'Projects', 'Skills', 'Certificates', 'Contact'];
+  const p = projects[projectIndex];
 
-  // Grad card: when About section is visible, wait for flip (~0.65s) + 2s pause then expand
-  useEffect(() => {
-    let timer: ReturnType<typeof setTimeout>;
-    if (visibleSections.has('about')) {
-      timer = setTimeout(() => setIsGradExpanded(true), 1200);
-    } else {
-      setIsGradExpanded(false);
-    }
-    return () => clearTimeout(timer);
-  }, [visibleSections]);
-
-  const skillsData = {
-    languages: [
-      { name: "Java", icon: "devicon-java-plain colored", desc: "Object-oriented & platform-independent" },
-      { name: "Python", icon: "devicon-python-plain colored", desc: "Versatile & readable scripting" },
-      { name: "C#", icon: "devicon-csharp-plain colored", desc: "Microsoft object-oriented language" },
-      { name: "JavaScript", icon: "devicon-javascript-plain colored", desc: "Dynamic web scripting" },
-      { name: "HTML", icon: "devicon-html5-plain colored", desc: "Web structure & markup" },
-      { name: "CSS", icon: "devicon-css3-plain colored", desc: "Styling & layout" },
-      { name: "Kotlin", icon: "devicon-kotlin-plain colored", desc: "Modern Android development" },
-      { name: "SQL (MySQL)", icon: "devicon-mysql-plain colored", desc: "Relational database queries" }
-    ],
-    tools: [
-      { name: "React.js", icon: "devicon-react-original colored", desc: "UI component library" },
-      { name: "Next.js", icon: "devicon-nextjs-plain text-white", desc: "Full-stack React framework" },
-      { name: "Tailwind CSS", icon: "devicon-tailwindcss-plain colored", desc: "Utility-first CSS framework" },
-      { name: "Django", icon: "devicon-django-plain text-emerald-400", desc: "Python web framework" },
-      { name: "Node.js", icon: "devicon-nodejs-plain colored", desc: "Server-side JS runtime" },
-      { name: "MySQL", icon: "devicon-mysql-plain colored", desc: "Relational database system" },
-      { name: "Firebase", icon: "devicon-firebase-plain colored", desc: "Google backend-as-a-service" },
-      { name: "Supabase", icon: "devicon-supabase-plain colored", desc: "Open-source Firebase alternative" },
-      { name: "XAMPP", custom: true, src: "/Xampp.svg", desc: "Local server environment" },
-      { name: "Git", icon: "devicon-git-plain colored", desc: "Version control system" },
-      { name: "GitHub", icon: "devicon-github-plain text-white", desc: "Code hosting platform" },
-      { name: "AWS", icon: "devicon-amazonwebservices-plain-wordmark colored", desc: "Amazon cloud services" },
-      { name: "Godot IDE", icon: "devicon-godot-plain colored", desc: "Game development engine" },
-      { name: "Android", icon: "devicon-android-plain colored", desc: "Mobile OS development" }
-    ]
-  };
-
-
-  const education = [
-    {
-      school: "Cebu Institute of Technology-University",
-      year: "Graduated 2026",
-      description: "Completed a Bachelor of Science in Information Technology, building strong skills in programming, software development, database management, and IT systems. Gained hands-on experience through various academic projects, applying technical concepts to real-world scenarios and strengthening problem-solving and analytical abilities. Proficient in both frontend and backend technologies with a focus on full-stack web development.",
-      image: "/GLE-Building.jpg",
-      logo: "/CITLOGO.png"
-    }
-  ];
-
-  const certificates1 = [
-    { 
-      name: "FreeCodeCamp - Front End Development Libraries V8", 
-      image: "/FreeCodeCamp.png",
-      link: "https://www.freecodecamp.org/certification/franciskylelorenzana/front-end-development-libraries",
-      status: "completed"
-    },
-    { 
-      name: "AWS Academy Cloud Foundations", 
-      image: "/AWS.png",
-      link: "https://drive.google.com/file/d/1fCfX2trjn4fW2SG6a2I0iA83Xu8QAKrt/view?usp=drive_link",
-      status: "completed"
-    },
-    { 
-      name: "Data Visualization — Kaggle", 
-      image: "/Data Visualization.png",
-      link: "https://drive.google.com/file/d/10JjnTdPeY67tvnqvLvlf4VUpIPViPjgb/view?usp=drive_link",
-      status: "completed"
-    },
-    { 
-      name: "Webinar on Intellectual Property Rights for CCS", 
-      image: "/Webinar.png",
-      link: "https://drive.google.com/file/d/1XOIgO-XjMlA-wylJwX-TfIn6LnetsS8O/view?usp=drive_link",
-      status: "completed"
-    },
-    { 
-      name: "Introduction to HTML — Sololearn", 
-      image: "/SoloLearn HTML.png",
-      link: "https://drive.google.com/file/d/1B7jYS0LnZhYkRSqGZPweCBUurowOaFFT/view?usp=drive_link",
-      status: "completed"
-    },
-    { 
-      name: "Introduction to JavaScript — Sololearn", 
-      image: "/SoloLearn Javascript.png",
-      link: "https://drive.google.com/file/d/1WtGUzpd1R6GxXitp0CUWcaKQfb30c5PT/view?usp=drive_link",
-      status: "completed"
-    },
-    {
-      name: "AWS Academy Cloud Architecting",
-      image: "/AwsArchitecting.png",
-      link: "https://drive.google.com/file/d/1hYegeloVsDd1Wd1hA7760M36DuSFxSdt/view?usp=sharing",
-      status: "completed"
-    },
-    {
-      name: "DevFest Cebu Workshop — Google Developers Cebu",
-      image: "/DevFest.png",
-      link: "https://drive.google.com/file/d/1o2CQwMvUmWUkuxW4bffvMq5SOnmoCAsN/view?usp=sharing",
-      status: "completed"
-    }
-  ];
-
-  const certificates2 = [
-    {
-      name: "SQL(Basic) Certificate",
-      image: "/SQL_Certificate.png",
-      link: "https://drive.google.com/file/d/18JkI21PouW3WoMEgWfv9ebLJIh1JisC3/view?usp=sharing",
-      status: "completed"
-    },
-    {
-      name: "Introduction to AI",
-      image: "/Introduction_toAI.png",
-      link: "https://drive.google.com/file/d/1-nGHVZxzndQp8nj9VNcMkFzKrPfmsqJA/view?usp=sharing",
-      status: "completed"
-    },
-    {
-      name: "Coming Soon",
-      image: "",
-      link: "",
-      status: "coming_soon"
-    },
-    {
-      name: "Coming Soon",
-      image: "",
-      link: "",
-      status: "coming_soon"
-    },
-    {
-      name: "Coming Soon",
-      image: "",
-      link: "",
-      status: "coming_soon"
-    },
-    {
-      name: "Coming Soon",
-      image: "",
-      link: "",
-      status: "coming_soon"
-    },
-    {
-      name: "Coming Soon",
-      image: "",
-      link: "",
-      status: "coming_soon"
-    },
-    {
-      name: "Coming Soon",
-      image: "",
-      link: "",
-      status: "coming_soon"
-    }
-  ];
-  
-  const [certificatePage, setCertificatePage] = useState('page1');
+  function SectionLabel({ n, label }: { n: string; label: string }) {
+    return (
+      <div className="flex items-center gap-3 mb-6 md:mb-8">
+        <span className="text-[10px] font-bold tracking-[0.25em] text-zinc-600 uppercase">{n}</span>
+        <div className="flex-1 h-px bg-zinc-800" />
+        <span className="text-[10px] font-bold tracking-[0.25em] text-zinc-600 uppercase">{label}</span>
+      </div>
+    );
+  }
 
   return (
-    <div className="snap-container text-zinc-50 w-full">
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-zinc-950/80 backdrop-blur-xl border-b border-zinc-800 w-full">
-        <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center w-full">
-          <div className={'text-2xl font-bold tracking-tight transition-all duration-700 flex items-center gap-2 ' + (mounted ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-4')}>
-            <span className="bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">Kyle's Portfolio</span>
-            <Image src="/Giphy.gif" alt="Pixelated Icon" width={isMobile ? 24 : 48} height={isMobile ? 24 : 48} />
-          </div>
-          <div className="hidden md:flex gap-8 text-sm font-medium transition-all duration-700 delay-200">
-            {['About', 'Projects', 'Skills', 'Experience', 'Certificates', 'Contact'].map((item) => (
-              <a
-                key={item}
-                href={'#' + item.toLowerCase()}
-                className={'hover:text-cyan-400 transition-colors relative group ' + (activeSection === item.toLowerCase() ? 'text-cyan-400' : '')}
-              >
-                {item}
-                <span className={'absolute -bottom-1 left-0 h-0.5 bg-cyan-400 transition-all duration-300 ' + (activeSection === item.toLowerCase() ? 'w-full' : 'w-0 group-hover:w-full')}></span>
-              </a>
-            ))}
-          </div>
-          <div className="md:hidden">
-            <button onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}>
-              {isMobileMenuOpen ? <X /> : <Menu />}
-            </button>
-          </div>
-        </div>
-        {isMobileMenuOpen && (
-          <div className="md:hidden bg-zinc-950/80 backdrop-blur-xl">
-            <div className="flex flex-col items-center gap-4 py-4">
-              {['About', 'Projects', 'Skills', 'Experience', 'Certificates', 'Contact'].map((item) => (
-                <a
-                  key={item}
-                  href={'#' + item.toLowerCase()}
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className={'hover:text-cyan-400 transition-colors ' + (activeSection === item.toLowerCase() ? 'text-cyan-400' : '')}
-                >
+    <>
+      <IntroAnimation onDone={() => setIntroComplete(true)} />
+      <div
+        className="snap-container text-zinc-50 w-full"
+        style={{ opacity: introComplete ? 1 : 0, transition: introComplete ? 'opacity 0.9s ease' : 'none', pointerEvents: introComplete ? 'auto' : 'none' }}
+      >
+
+        {/* ─── NAV ─── */}
+        <nav className="fixed top-0 left-0 right-0 z-50 bg-black/80 backdrop-blur-2xl border-b border-white/[0.06] w-full">
+          <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+            <div className={`flex items-center gap-2 transition-all duration-700 ${mounted ? 'opacity-100' : 'opacity-0 -translate-x-4'}`}>
+              <span className="text-lg font-black text-white tracking-tight">Kyle's Portfolio</span>
+              <Image src="/Giphy.gif" alt="icon" width={isMobile ? 20 : 36} height={isMobile ? 20 : 36} />
+            </div>
+            <div className="hidden md:flex gap-8 text-sm font-medium">
+              {NAV.map((item) => (
+                <a key={item} href={`#${item.toLowerCase()}`}
+                  className={`relative group transition-colors duration-200 ${activeSection === item.toLowerCase() ? 'text-white' : 'text-zinc-500 hover:text-zinc-200'}`}>
                   {item}
+                  <span className={`absolute -bottom-0.5 left-0 h-px bg-white transition-all duration-300 ${activeSection === item.toLowerCase() ? 'w-full' : 'w-0 group-hover:w-full'}`} />
                 </a>
               ))}
             </div>
+            <button className="md:hidden text-zinc-400" onClick={() => setIsMobileMenuOpen((v) => !v)}>
+              {isMobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
+            </button>
           </div>
-        )}
-      </nav>
-
-      <section id="hero" className="snap-section flex items-center justify-center relative overflow-hidden px-6">
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,#111111_1px,transparent_1px),linear-gradient(to_bottom,#111111_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_80%_50%_at_50%_50%,#000_70%,transparent_100%)]"></div>
-        
-        <div className="relative z-10 max-w-6xl mx-auto text-center">
-          <div className="typing-container">
-            <h1 className={'text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-black mb-6 tracking-tighter ' + (visibleSections.has('hero') ? 'fade-in-up' : 'opacity-0')} style={{ animationDelay: '0.2s' }}>
-              <div className="typing-animation line1">
-                <span className="bg-gradient-to-b from-white to-zinc-400 bg-clip-text text-transparent">
-                  FRANCIS KYLE
-                </span>
-              </div>
-              <div className="typing-animation line2">
-                <span className="bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-600 bg-clip-text text-transparent">
-                  LORENZANA
-                </span>
-              </div>
-            </h1>
-          </div>
-          
-          <div className="text-center">
-            <p className={'text-lg sm:text-xl md:text-2xl text-zinc-400 mb-12 ' + (visibleSections.has('hero') ? 'fade-in-up' : 'opacity-0')} style={{ animationDelay: '0.4s' }}>
-              Full-Stack Developer
-            </p>
-          </div>
-
-          <div className="h-24"></div>
-          
-          <div className={'flex flex-col sm:flex-row gap-6 justify-center items-center ' + (visibleSections.has('hero') ? 'fade-in-up' : 'opacity-0')} style={{ animationDelay: '0.6s' }}>
-            <StarButton href="#projects">VIEW MY WORK</StarButton>
-            <StarButton href="#contact">GET IN TOUCH</StarButton>
-          </div>
-        </div>
-
-        <div className={'absolute bottom-12 left-1/2 -translate-x-1/2 ' + (visibleSections.has('hero') ? 'fade-in-up' : 'opacity-0')} style={{ animationDelay: '1s' }}>
-          <div className="w-6 h-10 border-2 border-zinc-700 rounded-full flex justify-center p-2">
-            <div className="w-1 h-3 bg-cyan-400 rounded-full animate-bounce"></div>
-          </div>
-        </div>
-      </section>
-
-      <section id="about" className="snap-section relative px-6 py-16">
-        <div className="max-w-6xl mx-auto">
-
-          {/* Section label + heading */}
-          <div className={visibleSections.has('about') ? 'fade-in-up' : 'opacity-0'}>
-            <p className="text-xs font-semibold tracking-widest text-cyan-400 uppercase mb-2">Who I Am</p>
-            <h2 className="text-3xl sm:text-4xl font-black mb-6 tracking-tight">
-              About <span className="bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">Me</span>
-            </h2>
-          </div>
-
-          {/* Bento Grid — cards flip in one by one when section enters viewport */}
-          <div className="about-bento grid grid-cols-2 gap-3">
-
-            {/* Profile photo */}
-            <motion.div
-              className="bento-photo col-span-2 relative rounded-2xl overflow-hidden border border-zinc-800 h-48"
-              initial={{ rotateY: 90, opacity: 0 }}
-              whileInView={{ rotateY: 0, opacity: 1 }}
-              viewport={{ once: false, amount: 0.2 }}
-              transition={{ delay: 0, duration: 0.5, type: 'spring', stiffness: 180, damping: 22 }}
-              style={{ transformPerspective: 1000 }}
-            >
-              <Image src="/MeMyself.jpg" alt="Francis Kyle Lorenzana" fill className="object-cover object-center" />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent" />
-              <div className="absolute bottom-4 left-0 right-0 text-center">
-                <p className="text-white text-sm font-bold">Francis Kyle Lorenzana</p>
-                <p className="text-cyan-400 text-xs">Full-Stack Dev</p>
-              </div>
-            </motion.div>
-
-            {/* Bio card */}
-            <motion.div
-              className="col-span-2 bg-zinc-900/80 border border-zinc-800 rounded-2xl p-6 flex items-center justify-center"
-              initial={{ rotateY: 90, opacity: 0 }}
-              whileInView={{ rotateY: 0, opacity: 1 }}
-              viewport={{ once: false, amount: 0.3 }}
-              transition={{ delay: 0.1, duration: 0.5, type: 'spring', stiffness: 180, damping: 22 }}
-              style={{ transformPerspective: 1000 }}
-            >
-              <p className="text-zinc-400 text-xs leading-loose text-center">
-                BSIT Graduate specializing in full-stack development. Experienced with React, Next.js, and Django. I enjoy turning ideas into real, working products — passionate about clean code, good design, and building digital experiences that actually work.
-              </p>
-            </motion.div>
-
-            {/* Projects stat */}
-            <motion.div
-              className="col-span-1 bg-zinc-900/80 border border-zinc-800 rounded-2xl p-4 flex flex-col items-center justify-center gap-1"
-              initial={{ rotateY: 90, opacity: 0 }}
-              whileInView={{ rotateY: 0, opacity: 1 }}
-              viewport={{ once: false, amount: 0.3 }}
-              transition={{ delay: 0.1, duration: 0.5, type: 'spring', stiffness: 180, damping: 22 }}
-              style={{ transformPerspective: 1000 }}
-            >
-              <p className="text-4xl font-black text-cyan-400">7+</p>
-              <p className="text-[10px] text-zinc-500 uppercase tracking-widest">Projects</p>
-            </motion.div>
-
-            {/* Technologies stat */}
-            <motion.div
-              className="col-span-1 bg-zinc-900/80 border border-zinc-800 rounded-2xl p-4 flex flex-col items-center justify-center gap-1"
-              initial={{ rotateY: 90, opacity: 0 }}
-              whileInView={{ rotateY: 0, opacity: 1 }}
-              viewport={{ once: false, amount: 0.3 }}
-              transition={{ delay: 0.15, duration: 0.5, type: 'spring', stiffness: 180, damping: 22 }}
-              style={{ transformPerspective: 1000 }}
-            >
-              <p className="text-4xl font-black text-blue-400">14+</p>
-              <p className="text-[10px] text-zinc-500 uppercase tracking-widest">Technologies</p>
-            </motion.div>
-
-            {/* Hire Me badge */}
-            <motion.div
-              className="col-span-1 bg-green-500/10 border border-green-500/30 rounded-2xl p-4 flex flex-col items-center justify-center gap-1"
-              initial={{ rotateY: 90, opacity: 0 }}
-              whileInView={{ rotateY: 0, opacity: 1 }}
-              viewport={{ once: false, amount: 0.3 }}
-              transition={{ delay: 0.1, duration: 0.5, type: 'spring', stiffness: 180, damping: 22 }}
-              style={{ transformPerspective: 1000 }}
-            >
-              <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
-              <p className="text-xl font-black text-green-400">Hire Me</p>
-              <p className="text-[10px] text-zinc-400">Available Now</p>
-            </motion.div>
-
-            {/* Year / School — logo slides left, text shifts right after flip */}
-            <motion.div
-              id="grad-card"
-              className="col-span-1 bg-zinc-900/80 border border-zinc-800 rounded-2xl p-4 flex items-center justify-center overflow-hidden"
-              initial={{ rotateY: 90, opacity: 0 }}
-              whileInView={{ rotateY: 0, opacity: 1 }}
-              viewport={{ once: false, amount: 0.5 }}
-              transition={{ delay: 0.15, duration: 0.5, type: 'spring', stiffness: 180, damping: 22 }}
-              style={{ transformPerspective: 1000 }}
-            >
-              {/* Logo — slides in from hidden (width 0) to visible on the left */}
-              <div style={{
-                width: isGradExpanded ? '40px' : '0px',
-                height: isGradExpanded ? '40px' : '0px',
-                opacity: isGradExpanded ? 1 : 0,
-                flexShrink: 0,
-                overflow: 'hidden',
-                transition: 'width 0.45s ease, height 0.45s ease, opacity 0.4s ease',
-              }}>
-                <Image src={education[0].logo} alt="CIT-U Logo" width={40} height={40} className="object-contain w-full h-full" />
-              </div>
-              {/* Text — shifts right as logo expands */}
-              <div style={{
-                marginLeft: isGradExpanded ? '10px' : '0px',
-                textAlign: isGradExpanded ? 'left' : 'center',
-                transition: 'margin-left 0.45s ease',
-              }}>
-                <p className="text-xl font-black text-purple-400">Graduate</p>
-                <p className="text-[10px] text-zinc-500">BSIT · CIT-U</p>
-              </div>
-            </motion.div>
-
-            {/* Email */}
-            <motion.div
-              className="col-span-1 md:col-span-2 aspect-square md:aspect-auto bg-zinc-900/80 border border-zinc-800 rounded-2xl p-4 flex flex-col items-center justify-center gap-2"
-              initial={{ rotateY: 90, opacity: 0 }}
-              whileInView={{ rotateY: 0, opacity: 1 }}
-              viewport={{ once: false, amount: 0.3 }}
-              transition={{ delay: 0.1, duration: 0.5, type: 'spring', stiffness: 180, damping: 22 }}
-              style={{ transformPerspective: 1000 }}
-            >
-              <div className="w-8 h-8 rounded-xl bg-cyan-500/10 flex items-center justify-center flex-shrink-0">
-                <svg className="w-4 h-4 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
-              </div>
-              <div className="text-center">
-                <p className="text-[10px] text-zinc-500">Email</p>
-                <p className="text-xs text-zinc-200 font-medium">kaelexx12@gmail.com</p>
-              </div>
-            </motion.div>
-
-            {/* Phone */}
-            <motion.div
-              className="col-span-1 md:col-span-2 aspect-square md:aspect-auto bg-zinc-900/80 border border-zinc-800 rounded-2xl p-4 flex flex-col items-center justify-center gap-2"
-              initial={{ rotateY: 90, opacity: 0 }}
-              whileInView={{ rotateY: 0, opacity: 1 }}
-              viewport={{ once: false, amount: 0.3 }}
-              transition={{ delay: 0.15, duration: 0.5, type: 'spring', stiffness: 180, damping: 22 }}
-              style={{ transformPerspective: 1000 }}
-            >
-              <div className="w-8 h-8 rounded-xl bg-cyan-500/10 flex items-center justify-center flex-shrink-0">
-                <svg className="w-4 h-4 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" /></svg>
-              </div>
-              <div className="text-center">
-                <p className="text-[10px] text-zinc-500">Phone</p>
-                <p className="text-xs text-zinc-200 font-medium">09458924721</p>
-              </div>
-            </motion.div>
-
-
-            {/* Location */}
-            <motion.div
-              className="col-span-2 bg-zinc-900/80 border border-zinc-800 rounded-2xl p-4 flex flex-col items-center justify-center gap-2"
-              initial={{ rotateY: 90, opacity: 0 }}
-              whileInView={{ rotateY: 0, opacity: 1 }}
-              viewport={{ once: false, amount: 0.3 }}
-              transition={{ delay: 0.1, duration: 0.5, type: 'spring', stiffness: 180, damping: 22 }}
-              style={{ transformPerspective: 1000 }}
-            >
-              <div className="w-8 h-8 rounded-xl bg-cyan-500/10 flex items-center justify-center flex-shrink-0">
-                <svg className="w-4 h-4 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
-              </div>
-              <div className="text-center">
-                <p className="text-[10px] text-zinc-500">Location</p>
-                <p className="text-xs text-zinc-200 font-medium">Talisay, Cebu</p>
-              </div>
-            </motion.div>
-
-          </div>
-        </div>
-      </section>
-
-      <section id="projects" className="snap-section px-6 bg-zinc-900/50 flex flex-col items-center justify-center relative">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_50%_40%,rgba(6,182,212,0.06)_0%,transparent_65%)] pointer-events-none" />
-
-        <div className={`text-center mb-8 relative z-10 ${visibleSections.has('projects') ? 'fade-in-up' : 'opacity-0'}`}>
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight">
-            Featured <span className="bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">Projects</span>
-          </h2>
-          <p className="text-zinc-500 text-xs mt-2 tracking-widest uppercase font-medium">
-            {isDealing ? 'Shuffling cards back...' : allDismissed ? 'Loading...' : `${remainingProjects.length} remaining · press arrow to dismiss`}
-          </p>
-        </div>
-
-        {/* Flashcard stack — overflow visible so peeking cards show */}
-        <div
-          className="relative z-10"
-          style={{ width: isMobile ? '82vw' : '360px', height: isMobile ? '56vh' : '460px' }}
-        >
-          {/* Deal-back animation: all cards fly in staggered when resetting */}
-          {isDealing && projects.map((project, i) => {
-            // i=0 = top card (enters last), i=n-1 = bottom card (enters first)
-            const stackPos = i;
-            const delay = (projects.length - 1 - i) * 0.09;
-            return (
-              <motion.div
-                key={project.title}
-                style={{
-                  position: 'absolute',
-                  inset: 0,
-                  zIndex: projects.length - i,
-                  borderRadius: '16px',
-                  overflow: 'hidden',
-                  pointerEvents: 'none',
-                }}
-                initial={{ y: 70, x: stackPos * 10, opacity: 0, scale: 0.82 }}
-                animate={{
-                  y: stackPos * 6,
-                  x: stackPos * 10,
-                  scale: 1 - stackPos * 0.025,
-                  opacity: 1 - stackPos * 0.12,
-                }}
-                transition={{ delay, duration: 0.36, ease: [0.22, 1, 0.36, 1] }}
-              >
-                {renderCard(project, isMobile)}
-              </motion.div>
-            );
-          })}
-
-          {/* Normal stack: static CSS peek cards behind top card */}
-          {!isDealing && !allDismissed && remainingProjects.slice(1, 4).map((project, i) => (
-            <div
-              key={project.title}
-              style={{
-                position: 'absolute',
-                inset: 0,
-                zIndex: 10 - i,
-                transform: isDismissing
-                  ? `translateX(${i * 10}px) translateY(${i * 6}px) scale(${1 - i * 0.025})`
-                  : `translateX(${(i + 1) * 10}px) translateY(${(i + 1) * 6}px) scale(${1 - (i + 1) * 0.025})`,
-                opacity: isDismissing ? 1 - i * 0.12 : 1 - (i + 1) * 0.12,
-                transition: 'transform 0.28s ease, opacity 0.28s ease',
-                pointerEvents: 'none',
-                borderRadius: '16px',
-                overflow: 'hidden',
-              }}
-            >
-              {renderCard(project, isMobile)}
-            </div>
-          ))}
-
-          {/* Top card — exits right when going forward */}
-          {!isDealing && !isReturning && (
-            <AnimatePresence
-              initial={false}
-              onExitComplete={() => {
-                setDismissedCount(prev => prev + 1);
-                setIsDismissing(false);
-              }}
-            >
-              {!isDismissing && !allDismissed && (
-                <motion.div
-                  key={remainingProjects[0].title}
-                  style={{ position: 'absolute', inset: 0, zIndex: 20 }}
-                  exit={{ x: '160%', rotate: 22, opacity: 0, transition: { duration: 0.38, ease: [0.4, 0, 1, 1] } }}
-                >
-                  {renderCard(remainingProjects[0], isMobile)}
-                </motion.div>
-              )}
-            </AnimatePresence>
-          )}
-
-          {/* Returning card — flies back in from the right when going backward */}
-          {!isDealing && isReturning && !allDismissed && (
-            <motion.div
-              key={`returning-${remainingProjects[0].title}`}
-              initial={{ x: '110%', opacity: 0, rotate: 18 }}
-              animate={{ x: 0, opacity: 1, rotate: 0 }}
-              transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
-              onAnimationComplete={() => setIsReturning(false)}
-              style={{ position: 'absolute', inset: 0, zIndex: 20 }}
-            >
-              {renderCard(remainingProjects[0], isMobile)}
-            </motion.div>
-          )}
-        </div>
-
-        {/* Navigation */}
-        <div className="mt-8 flex items-center gap-5 relative z-10">
-          <button
-            onClick={() => {
-              if (dismissedCount > 0 && !isDismissing && !isReturning && !isDealing) {
-                setDismissedCount(prev => prev - 1);
-                setIsReturning(true);
-              }
-            }}
-            disabled={dismissedCount === 0 || isDismissing || isReturning || isDealing}
-            className="p-2.5 rounded-full bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 hover:border-cyan-500/50 transition-all duration-300 disabled:opacity-40 disabled:cursor-not-allowed"
-          >
-            <ArrowLeft className="w-4 h-4 text-cyan-400" />
-          </button>
-
-          {/* Progress dots */}
-          <div className="flex gap-2 items-center">
-            {projects.map((_, i) => (
-              <div
-                key={i}
-                className={`rounded-full transition-all duration-300 ${
-                  isDealing
-                    ? 'bg-zinc-700 w-2 h-2'
-                    : i < dismissedCount
-                    ? 'bg-zinc-600 w-2 h-2'
-                    : i === dismissedCount && !allDismissed
-                    ? 'bg-cyan-400 w-6 h-2'
-                    : 'bg-zinc-700 w-2 h-2'
-                }`}
-              />
-            ))}
-          </div>
-
-          <button
-            onClick={() => {
-              if (!allDismissed && !isDismissing && !isReturning && !isDealing) {
-                setIsDismissing(true);
-              }
-            }}
-            disabled={allDismissed || isDismissing || isReturning || isDealing}
-            className="p-2.5 rounded-full bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 hover:border-cyan-500/50 transition-all duration-300 disabled:opacity-40 disabled:cursor-not-allowed"
-          >
-            <ArrowRight className="w-4 h-4 text-cyan-400" />
-          </button>
-        </div>
-      </section>
-
-      <section id="skills" className="snap-section px-6 flex items-center justify-center">
-        <div className="max-w-4xl w-full mx-auto">
-          <h2 className={'text-3xl sm:text-4xl md:text-5xl font-black mb-8 tracking-tight text-center ' + (visibleSections.has('skills') ? 'fade-in-up' : 'opacity-0')}>
-            Technical <span className="bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">Skills</span>
-          </h2>
-          <p className={'text-lg sm:text-xl text-zinc-400 text-center mb-8 ' + (visibleSections.has('skills') ? 'fade-in-up' : 'opacity-0')} style={{ animationDelay: '100ms' }}>
-            These are the tools and languages I'm proficient in.
-          </p>
-
-          <div className="h-16"></div> {/* Explicit gap between heading and box */}
-
-          <div className={'bg-zinc-900/50 rounded-2xl p-8 border border-zinc-800 transition-all duration-500 w-full ' + (visibleSections.has('skills') ? 'fade-in-up' : 'opacity-0')} style={{ animationDelay: '200ms' }}>
-            <div className="flex justify-center mb-8">
-              <div className="bg-zinc-800 rounded-full p-1 flex gap-2">
-                <button
-                  onMouseDown={() => setPressedButton('languages')}
-                  onMouseUp={() => setPressedButton(null)}
-                  onClick={() => setSkillsPage('languages')}
-                  className={`transform px-6 py-2 rounded-full text-sm font-semibold transition-transform duration-200 ease-in-out ${skillsPage === 'languages' ? 'bg-cyan-500 text-white' : 'text-zinc-400 hover:bg-zinc-700'} ${pressedButton === 'languages' ? 'button-pressed' : ''}`}
-                >
-                  Languages
-                </button>
-                <button
-                  onMouseDown={() => setPressedButton('tools')}
-                  onMouseUp={() => setPressedButton(null)}
-                  onClick={() => setSkillsPage('tools')}
-                  className={`transform px-6 py-2 rounded-full text-sm font-semibold transition-transform duration-200 ease-in-out ${skillsPage === 'tools' ? 'bg-cyan-500 text-white' : 'text-zinc-400 hover:bg-zinc-700'} ${pressedButton === 'tools' ? 'button-pressed' : ''}`}
-                >
-                  Tools
-                </button>
-              </div>
-            </div>
-            
-            <div className="h-8"></div> {/* Explicit gap between buttons and logos */}
-
-            <div className="min-h-[300px]">
-              <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6 text-center h-full items-start">
-                {(skillsPage === 'languages' ? skillsData.languages : skillsData.tools).map((skill) => (
-                  <div key={skill.name} className="flex flex-col items-center gap-2 group p-3 rounded-xl hover:bg-zinc-800/50 transition-colors duration-200">
-                    {'custom' in skill && skill.custom ? (
-                      <Image src={skill.src as string} alt={skill.name} width={48} height={48} className="mb-1" />
-                    ) : (
-                      <i className={`${'icon' in skill ? skill.icon : ''} text-5xl transition-transform duration-200 group-hover:scale-110`}></i>
-                    )}
-                    <span className="text-sm font-semibold text-zinc-200">{skill.name}</span>
-                    <span className="text-[10px] text-zinc-500 leading-tight">{'desc' in skill ? skill.desc : ''}</span>
-                  </div>
+          {isMobileMenuOpen && (
+            <div className="md:hidden bg-black/95 border-t border-white/[0.06]">
+              <div className="flex flex-col items-center gap-5 py-6">
+                {NAV.map((item) => (
+                  <a key={item} href={`#${item.toLowerCase()}`} onClick={() => setIsMobileMenuOpen(false)}
+                    className={`text-sm font-medium transition-colors ${activeSection === item.toLowerCase() ? 'text-white' : 'text-zinc-500'}`}>{item}</a>
                 ))}
               </div>
             </div>
-          </div>
-        </div>
-      </section>
+          )}
+        </nav>
 
-      <section id="experience" className="snap-section px-6 flex items-center justify-center">
-        <div className="max-w-md mx-auto w-full">
-          <h2 className={'text-3xl sm:text-4xl md:text-5xl font-black mb-4 tracking-tight text-center ' + (visibleSections.has('experience') ? 'fade-in-up' : 'opacity-0')}>
-            Work <span className="bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">Experience</span>
-          </h2>
+        {/* ─── HERO ─── */}
+        <section id="hero" className="snap-section flex items-center justify-center relative overflow-hidden px-5 sm:px-6">
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_60%_at_50%_40%,rgba(255,255,255,0.03)_0%,transparent_100%)]" />
 
-          <div className="h-10" />
-
-          {/* Flip card — preserve-3d so card never goes invisible */}
-          {/* Outer div handles fade-in-up CSS animation only */}
-          <div
-            className={visibleSections.has('experience') ? 'fade-in-up' : 'opacity-0'}
-            style={{ animationDelay: '200ms' }}
-          >
-          {/* Inner motion.div handles the bounce — no CSS animation conflict */}
-          <motion.div
-            className="cursor-pointer select-none"
-            style={{ perspective: '1200px' }}
-            onClick={() => setIsExperienceFlipped(f => !f)}
-            animate={!isExperienceFlipped ? { y: [0, -10, 0, -5, 0] } : { y: 0 }}
-            transition={!isExperienceFlipped ? {
-              duration: 0.7,
-              ease: 'easeInOut',
-              repeat: Infinity,
-              repeatDelay: 2.5,
-            } : { duration: 0.3 }}
-          >
-            <motion.div
-              animate={{ rotateY: isExperienceFlipped ? 180 : 0 }}
-              transition={{ duration: 0.7, type: 'spring', stiffness: 120, damping: 18 }}
-              style={{ transformStyle: 'preserve-3d', position: 'relative', minHeight: '460px' }}
+          <div className="relative z-10 text-center max-w-5xl mx-auto w-full flex flex-col items-center" style={{ gap: '3.5rem' }}>
+            <motion.p
+              initial={{ opacity: 0, y: 12 }}
+              animate={introComplete ? { opacity: 1, y: 0 } : { opacity: 0, y: 12 }}
+              transition={{ delay: 0.2, duration: 0.7 }}
+              className="text-[10px] sm:text-xs tracking-[0.4em] uppercase text-zinc-500"
             >
-              {/* ── FRONT ── */}
-              <div
-                style={{ backfaceVisibility: 'hidden', WebkitBackfaceVisibility: 'hidden' }}
-                className="absolute inset-0 bg-zinc-900/80 border border-zinc-800 rounded-2xl flex flex-col items-center justify-center gap-6 p-10"
+              Full-Stack Developer
+            </motion.p>
+
+            <div className={`typing-container ${introComplete ? 'fade-in-up' : 'opacity-0'}`}>
+              <h1 className="text-[2.6rem] sm:text-7xl md:text-8xl lg:text-[7rem] font-black tracking-tighter leading-[0.88]">
+                <div className="typing-animation line1 block">
+                  <span className="text-white">FRANCIS KYLE</span>
+                </div>
+                <div className="typing-animation line2 block">
+                  <span className="bg-gradient-to-r from-white via-zinc-300 to-zinc-600 bg-clip-text text-transparent">LORENZANA</span>
+                </div>
+              </h1>
+            </div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 16 }}
+              animate={introComplete ? { opacity: 1, y: 0 } : { opacity: 0, y: 16 }}
+              transition={{ delay: 0.9, duration: 0.6 }}
+              className="flex flex-row gap-3 sm:gap-4 justify-center items-center"
+            >
+              <StarButton href="#projects">VIEW MY WORK</StarButton>
+              <StarButton href="#contact">GET IN TOUCH</StarButton>
+            </motion.div>
+          </div>
+
+          {/* Scroll hint */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={introComplete ? { opacity: 1 } : { opacity: 0 }}
+            transition={{ delay: 1.4, duration: 0.6 }}
+            className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2"
+          >
+            <span className="text-[9px] tracking-[0.3em] uppercase text-zinc-600">Scroll</span>
+            <div className="w-px h-8 bg-gradient-to-b from-zinc-600 to-transparent" />
+          </motion.div>
+        </section>
+
+        {/* ─── ABOUT ─── */}
+        <section id="about" className="snap-section px-6 py-20 flex items-center">
+          <div className="max-w-5xl mx-auto w-full">
+            <SectionLabel n="01" label="About Me" />
+
+            <div className="grid grid-cols-1 md:grid-cols-[5fr_7fr] gap-6 md:gap-10 items-stretch">
+
+              {/* Photo */}
+              <motion.div
+                className="relative rounded-2xl overflow-hidden"
+                style={{ minHeight: 320 }}
+                initial={{ opacity: 0, x: -20 }} whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: false, amount: 0.2 }} transition={{ duration: 0.55 }}
               >
-                {/* Logo */}
-                <div className="w-24 h-24 rounded-2xl bg-white flex items-center justify-center p-2 shadow-lg">
-                  <Image
-                    src="https://bai-remit-frontend-production.up.railway.app/Loading/Bai%20logo.png"
-                    alt="BAI Finance Logo"
-                    width={80}
-                    height={80}
-                    className="object-contain"
-                  />
+                <Image src="/MeMyself.jpg" alt="Francis Kyle Lorenzana" fill className="object-cover object-top" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/30 to-transparent" />
+                {/* Name over photo */}
+                <div className="absolute bottom-0 left-0 right-0 p-5">
+                  <p className="text-2xl font-black text-white leading-tight">Francis Kyle</p>
+                  <p className="text-2xl font-black text-zinc-500 leading-tight">Lorenzana</p>
+                  <div className="flex items-center gap-1.5 mt-2">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                    <span className="text-xs text-emerald-400 font-semibold tracking-wide">Available for hire</span>
+                  </div>
                 </div>
+              </motion.div>
 
-                {/* Company name */}
-                <div className="text-center space-y-1">
-                  <h3 className="text-2xl font-black text-zinc-50">BAI Finance</h3>
-                  <p className="text-zinc-500 text-sm tracking-wide">Group of Companies</p>
-                </div>
-
-                <div className="w-full border-t border-zinc-800" />
-
-                {/* Role */}
-                <p className="text-lg font-bold text-cyan-400 tracking-tight">Full Stack Developer</p>
-
-                {/* Tech tags */}
-                <div className="flex flex-wrap gap-2 justify-center">
-                  {['Django', 'Python', 'Next.js', 'React', 'REST API', 'PostgreSQL'].map(tag => (
-                    <span key={tag} title={tag} className="w-8 h-8 rounded-full bg-zinc-800 border border-zinc-700 flex items-center justify-center hover:border-zinc-500 transition-colors duration-200">
-                      {getTagIcon(tag)}
-                    </span>
-                  ))}
-                </div>
-
-                {/* Flip hint badge */}
-                <StarButton small>↻ FLIP ME</StarButton>
-              </div>
-
-              {/* ── BACK ── */}
-              <div
-                style={{ backfaceVisibility: 'hidden', WebkitBackfaceVisibility: 'hidden', transform: 'rotateY(180deg)' }}
-                className="absolute inset-0 bg-zinc-900/80 border border-zinc-800 rounded-2xl flex flex-col justify-center gap-6 p-10"
+              {/* Info */}
+              <motion.div
+                className="flex flex-col justify-between gap-5"
+                initial={{ opacity: 0, x: 20 }} whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: false, amount: 0.2 }} transition={{ duration: 0.55, delay: 0.08 }}
               >
-                {/* X — absolute top-right of card */}
-                <button
-                  onClick={(e) => { e.stopPropagation(); setIsExperienceFlipped(false); }}
-                  className="absolute top-4 right-4 text-zinc-600 hover:text-zinc-300 transition-colors z-10"
-                  aria-label="Close"
-                >
-                  <X className="w-4 h-4" />
-                </button>
-
-                {/* Centered header */}
-                <div className="text-center space-y-0.5">
-                  <p className="text-base font-bold text-zinc-50">Full Stack Developer</p>
-                  <p className="text-cyan-400 text-xs">BAI Finance Group of Companies</p>
+                <div className="text-center md:text-left">
+                  <p className="text-xs tracking-[0.25em] text-zinc-500 uppercase mb-1.5">Full-Stack Developer</p>
+                  <h2 className="text-3xl font-black text-white leading-tight">
+                    Building things<br />for the web.
+                  </h2>
                 </div>
 
-                <div className="w-full border-t border-zinc-800" />
-
-                {/* Description */}
-                <p className="text-zinc-400 text-sm leading-relaxed">
-                  Developed and maintained full-stack web applications, building robust backend APIs with Django and Python while delivering responsive, modern frontends using Next.js and React.
+                <p className="text-zinc-400 text-sm leading-relaxed text-center md:text-left">
+                  BSIT Graduate from Cebu Institute of Technology-University. I build full-stack applications with React, Next.js, and Django. Passionate about clean architecture, thoughtful UI, and shipping products that actually solve problems.
                 </p>
 
-                {/* Bullet points */}
-                <ul className="space-y-3 text-sm text-zinc-400">
-                  <li className="flex items-start gap-3"><span className="text-cyan-400 mt-0.5 flex-shrink-0">▹</span> Built RESTful APIs with Django REST Framework for internal finance systems</li>
-                  <li className="flex items-start gap-3"><span className="text-cyan-400 mt-0.5 flex-shrink-0">▹</span> Developed dynamic frontends with Next.js for seamless user experiences</li>
-                  <li className="flex items-start gap-3"><span className="text-cyan-400 mt-0.5 flex-shrink-0">▹</span> Integrated backend and frontend systems end-to-end in a full-stack workflow</li>
-                </ul>
+                {/* Stats */}
+                <div className="grid grid-cols-3 divide-x divide-zinc-800 border border-zinc-800 rounded-xl overflow-hidden">
+                  {[['7+', 'Projects'], ['14+', 'Technologies'], ['2026', 'Graduate']].map(([v, l]) => (
+                    <div key={l} className="flex flex-col items-center py-4 bg-zinc-900/40">
+                      <span className="text-2xl sm:text-3xl font-black text-white">{v}</span>
+                      <span className="text-[9px] tracking-widest text-zinc-500 uppercase mt-0.5">{l}</span>
+                    </div>
+                  ))}
+                </div>
 
-                {/* Live app link */}
-                <div className="flex justify-center">
-                  <StarButton href="https://bai-remit-frontend-production.up.railway.app/login" target="_blank" stopProp>
-                    VIEW LIVE APP
-                  </StarButton>
+                {/* Contact details */}
+                <div className="space-y-2">
+                  {[
+                    { icon: 'M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z', text: 'kaelexx12@gmail.com' },
+                    { icon: 'M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z', text: '09458924721' },
+                    { icon: 'M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0zM15 11a3 3 0 11-6 0 3 3 0 016 0z', text: 'Talisay, Cebu' },
+                  ].map(({ icon, text }) => (
+                    <div key={text} className="flex items-center gap-3 text-sm text-zinc-400">
+                      <div className="w-7 h-7 rounded-lg bg-zinc-900 border border-zinc-800 flex items-center justify-center flex-shrink-0">
+                        <svg className="w-3.5 h-3.5 text-zinc-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d={icon} />
+                        </svg>
+                      </div>
+                      {text}
+                    </div>
+                  ))}
+                </div>
+
+                {/* Education */}
+                <div className="flex items-center gap-3">
+                  <div className="w-9 h-9 rounded-lg bg-white p-0.5 flex-shrink-0">
+                    <Image src="/CITLOGO.png" alt="CIT-U" width={28} height={28} className="w-full h-full object-contain" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-bold text-white">Cebu Institute of Technology - U</p>
+                    <p className="text-xs text-zinc-500">BSIT · Graduated 2026</p>
+                  </div>
+                </div>
+              </motion.div>
+            </div>
+          </div>
+        </section>
+
+        {/* ─── EXPERIENCE ─── */}
+        <section id="experience" className="snap-section px-6 pt-24 pb-6 flex items-start justify-center lg:items-center lg:py-10">
+          <div className="max-w-6xl mx-auto w-full">
+            <SectionLabel n="02" label="Work Experience" />
+
+            <h2 className="text-3xl sm:text-4xl font-black text-white tracking-tight leading-tight mb-5">
+              Work<br />
+              <span className="bg-gradient-to-r from-white via-zinc-300 to-zinc-600 bg-clip-text text-transparent">Experience</span>
+            </h2>
+
+            <WorkCarousel projects={workProjects} getTagIcon={getTagIcon} />
+          </div>
+        </section>
+
+        {/* ─── PROJECTS ─── */}
+        <section id="projects" className="snap-section px-6 py-10 flex flex-col items-center justify-center">
+          <div className="max-w-6xl mx-auto w-full">
+            <SectionLabel n="03" label="University Projects" />
+
+            <h2 className="text-4xl sm:text-5xl font-black text-white tracking-tight leading-tight mb-8">
+              University<br />
+              <span className="bg-gradient-to-r from-white via-zinc-300 to-zinc-600 bg-clip-text text-transparent">Projects</span>
+            </h2>
+
+            <div className="grid grid-cols-1 lg:grid-cols-[1.3fr_1fr] gap-6 lg:gap-10 items-start">
+
+              {/* Project image */}
+              <div className="w-full relative rounded-2xl overflow-hidden bg-zinc-900 border border-zinc-800/60" style={{ minHeight: '200px' }}>
+                <div className="relative w-full" style={{ aspectRatio: '16/10', minHeight: '200px' }}>
+                  <AnimatePresence mode="wait" initial={false}>
+                    <motion.div
+                      key={projectIndex} className="absolute inset-0"
+                      initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                      transition={{ duration: 0.4 }}
+                    >
+                      <Image src={p.image} alt={p.title} fill className="object-cover" />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
+                    </motion.div>
+                  </AnimatePresence>
+                  <div className="absolute bottom-3 right-4 text-6xl font-black text-white/8 leading-none select-none pointer-events-none">
+                    {String(projectIndex + 1).padStart(2, '0')}
+                  </div>
                 </div>
               </div>
-            </motion.div>
-          </motion.div>
+
+              {/* Project details */}
+              <div className="flex flex-col gap-4 items-center lg:items-start text-center lg:text-left">
+                <div className="w-full relative" style={{ minHeight: '8rem' }}>
+                  <p className="text-[10px] tracking-[0.3em] uppercase text-zinc-500 mb-2">
+                    {String(projectIndex + 1).padStart(2, '0')} / {String(projects.length).padStart(2, '0')}
+                  </p>
+                  <AnimatePresence mode="wait" initial={false}>
+                    <motion.h3
+                      key={`title-${projectIndex}`}
+                      initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}
+                      transition={{ duration: 0.25 }}
+                      className="absolute left-0 right-0 text-3xl sm:text-4xl font-black text-white leading-tight"
+                      style={{ top: '1.5rem' }}
+                    >
+                      {p.title}
+                    </motion.h3>
+                  </AnimatePresence>
+                </div>
+
+                <AnimatePresence mode="wait" initial={false}>
+                  <motion.p
+                    key={`desc-${projectIndex}`}
+                    initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                    transition={{ duration: 0.25, delay: 0.05 }}
+                    className="text-zinc-400 text-sm leading-relaxed w-full"
+                    style={{ minHeight: isMobile ? '8rem' : '8.5rem' }}
+                  >
+                    {p.description}
+                  </motion.p>
+                </AnimatePresence>
+
+                {/* Tags */}
+                <AnimatePresence mode="wait" initial={false}>
+                  <motion.div
+                    key={`tags-${projectIndex}`}
+                    initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                    transition={{ duration: 0.25, delay: 0.1 }}
+                    className="flex flex-wrap gap-2 justify-center lg:justify-start content-start w-full"
+                    style={{ minHeight: isMobile ? '5rem' : '6rem' }}
+                  >
+                    {p.tags.map((tag) => (
+                      <span key={tag} className="flex items-center gap-1.5 text-xs text-zinc-400">
+                        {getTagIcon(tag)}<span>{tag}</span>
+                      </span>
+                    ))}
+                  </motion.div>
+                </AnimatePresence>
+
+                {/* CTA buttons */}
+                <div className="flex gap-3 mt-1 justify-center lg:justify-start w-full">
+                  {p.link && (
+                    <a href={p.link} target="_blank" rel="noopener noreferrer"
+                      className="inline-flex items-center justify-center gap-2 h-11 min-w-[9rem] px-5 rounded-lg bg-zinc-800 border border-zinc-700 text-sm font-semibold text-zinc-200 hover:bg-zinc-700 hover:border-zinc-500 hover:text-white transition-all duration-200">
+                      <GithubIcon width={16} height={16} />GitHub
+                    </a>
+                  )}
+                  {p.projectLink && (
+                    <a href={p.projectLink} target="_blank" rel="noopener noreferrer"
+                      className="inline-flex items-center justify-center gap-2 h-11 min-w-[9rem] px-5 rounded-lg bg-white text-black text-sm font-semibold hover:bg-zinc-200 transition-all duration-200">
+                      <ExternalLink className="w-4 h-4 flex-shrink-0" />Live Demo
+                    </a>
+                  )}
+                  {!p.link && !p.projectLink && (
+                    <span className="inline-flex items-center justify-center h-11 min-w-[9rem] px-5 rounded-lg border border-zinc-800 text-sm text-zinc-600">Private Project</span>
+                  )}
+                </div>
+
+                {/* Navigation */}
+                <div className="flex items-center gap-4 pt-4 border-t border-zinc-800/60 w-full justify-center lg:justify-start">
+                  <button onClick={prevProject} className="p-2 rounded-full bg-zinc-900 border border-zinc-800 hover:border-zinc-600 hover:bg-zinc-800 transition-all">
+                    <ChevronLeft className="w-4 h-4 text-white" />
+                  </button>
+                  <div className="flex gap-1.5 items-center">
+                    {projects.map((_, i) => (
+                      <button key={i} onClick={() => setProjectIndex(i)}
+                        className={`rounded-full transition-all duration-300 ${i === projectIndex ? 'bg-white w-5 h-1.5' : 'bg-zinc-700 w-1.5 h-1.5 hover:bg-zinc-500'}`}
+                      />
+                    ))}
+                  </div>
+                  <button onClick={nextProject} className="p-2 rounded-full bg-zinc-900 border border-zinc-800 hover:border-zinc-600 hover:bg-zinc-800 transition-all">
+                    <ChevronRight className="w-4 h-4 text-white" />
+                  </button>
+                </div>
+              </div>
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      <section id="certificates" className="snap-section px-6 min-h-screen py-20 flex flex-col items-center">
-        <div className="max-w-4xl mx-auto w-full">
-          <h2 className={'text-3xl sm:text-4xl md:text-5xl font-black tracking-tight text-center ' + (visibleSections.has('certificates') ? 'fade-in-up' : 'opacity-0')}>
-            <span className="bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">Certificates</span>
-          </h2>
-          <div className="h-8" />
-          <div className="min-h-[350px]">
-            <AnimatePresence mode="wait">
-              {certificatePage === 'page1' && (
-                <motion.div
-                  key="page1"
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: 20 }}
-                  transition={{ duration: 0.3 }}
-                  className="grid grid-cols-4 gap-4"
-                >
-                  {certificates1.map((cert, index) => (
-                    <div
-                      key={cert.name + index}
-                      className={`bg-zinc-900/50 rounded-2xl p-2 border border-zinc-800 transition-colors flex flex-col justify-between ${cert.status === 'completed' ? 'hover:border-cyan-500/50' : 'opacity-60'}`}
-                    >
-                      <div className="flex flex-col justify-between h-full">
-                        <div>
-                          <div className="relative w-full" style={{ paddingTop: '75%' }}>
-                            <div className="absolute top-0 left-0 w-full h-full">
-                              <Image src={cert.image} alt={cert.name} layout="fill" className="rounded-md object-contain" />
-                            </div>
-                          </div>
-                          <h3 className="text-sm font-bold mt-2 mb-2 text-zinc-200 text-center truncate">{cert.name}</h3>
-                        </div>
-                        <div className="flex justify-center mt-1">
-                          <StarButton href={cert.link} target="_blank" xs>CREDENTIALS</StarButton>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </motion.div>
-              )}
+        {/* ─── SKILLS ─── */}
+        <section id="skills" className="snap-section px-6 py-20 flex items-center justify-center">
+          <div className="max-w-5xl mx-auto w-full">
+            <SectionLabel n="04" label="Technical Skills" />
 
-              {certificatePage === 'page2' && (
-                <motion.div
-                  key="page2"
-                  initial={{ opacity: 0, x: 20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: -20 }}
-                  transition={{ duration: 0.3 }}
-                  className="grid grid-cols-4 gap-4"
-                >
-                  {certificates2.map((cert, index) => (
-                    <div
-                      key={cert.name + index}
-                      className={`bg-zinc-900/50 rounded-2xl p-2 border border-zinc-800 transition-colors flex flex-col justify-between ${cert.status === 'completed' ? 'hover:border-cyan-500/50' : 'opacity-60'}`}
-                    >
-                      <div className="flex flex-col justify-between h-full">
-                        <div>
-                          <div className="relative w-full" style={{ paddingTop: '75%' }}>
-                            <div className="absolute top-0 left-0 w-full h-full">
-                              {cert.status === 'completed' ? (
-                                <Image src={cert.image} alt={cert.name} layout="fill" className="rounded-md object-contain" />
-                              ) : (
-                                <div className="w-full h-full bg-zinc-800 rounded-md flex items-center justify-center">
-                                  <p className="text-zinc-500">Coming Soon</p>
-                                </div>
-                              )}
-                            </div>
-                          </div>
-                          <h3 className="text-sm font-bold mt-2 mb-2 text-zinc-200 text-center truncate">{cert.name}</h3>
-                        </div>
-                        <div className="flex justify-center mt-1">
-                          {cert.status === 'completed' ? (
-                            <StarButton href={cert.link} target="_blank" xs>CREDENTIALS</StarButton>
+            <div className="flex flex-col gap-8">
+              {(['languages', 'tools'] as const).map((cat, ci) => {
+                const cols = cat === 'languages'
+                  ? 'grid-cols-4 sm:grid-cols-6'
+                  : 'grid-cols-4 sm:grid-cols-9';
+                return (
+                  <motion.div
+                    key={cat}
+                    initial={{ opacity: 0 }} whileInView={{ opacity: 1 }}
+                    viewport={{ once: false, amount: 0.1 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    <p className="text-xs font-bold tracking-[0.3em] uppercase text-zinc-600 mb-3">
+                      {cat === 'languages' ? 'Languages' : 'Tools & Frameworks'}
+                    </p>
+                    <div className={`grid ${cols} gap-3`}>
+                      {skillsData[cat].map((skill, idx) => (
+                        <motion.div
+                          key={skill.name}
+                          initial={{ opacity: 0, y: 14, scale: 0.88 }}
+                          whileInView={{ opacity: 1, y: 0, scale: 1 }}
+                          viewport={{ once: false, amount: 0.1 }}
+                          transition={{ duration: 0.28, delay: ci * 0.08 + idx * 0.045, ease: [0.16, 1, 0.3, 1] }}
+                          className="group flex flex-col items-center gap-2.5 p-5 rounded-xl bg-zinc-900/50 border border-zinc-800/80 hover:border-zinc-500 hover:bg-zinc-800/60 transition-all duration-200 cursor-default"
+                        >
+                          {'custom' in skill && skill.custom ? (
+                            <Image src={(skill as { src: string }).src} alt={skill.name} width={38} height={38} className="object-contain" />
                           ) : (
-                            <button disabled className="w-full text-center bg-zinc-800 text-zinc-500 rounded-full font-semibold py-1 px-2 text-xs cursor-not-allowed">
-                              Coming Soon
-                            </button>
+                            <i className={`${'icon' in skill ? (skill as { icon: string }).icon : ''} text-[38px] leading-none transition-transform duration-200 group-hover:scale-110`} />
                           )}
-                        </div>
-                      </div>
+                          <span className="text-[11px] font-semibold text-zinc-600 group-hover:text-zinc-300 text-center leading-tight transition-colors">{skill.name}</span>
+                        </motion.div>
+                      ))}
                     </div>
-                  ))}
-                </motion.div>
-              )}
-            </AnimatePresence>
+                  </motion.div>
+                );
+              })}
+            </div>
           </div>
-          <div className="h-16" />
-          <div className="flex justify-center items-center gap-4">
-            <button onClick={() => setCertificatePage('page1')} className={`p-2 rounded-full transition-colors ${certificatePage === 'page1' ? 'bg-cyan-500/50' : 'bg-zinc-800/50 hover:bg-zinc-700/50'}`}>
-              <ArrowLeft className="w-6 h-6 text-cyan-400" />
-            </button>
-            <p className="text-zinc-400 text-sm font-medium">
-              {certificatePage === 'page1' ? '1/2' : '2/2'}
-            </p>
-            <button onClick={() => setCertificatePage('page2')} className={`p-2 rounded-full transition-colors ${certificatePage === 'page2' ? 'bg-cyan-500/50' : 'bg-zinc-800/50 hover:bg-zinc-700/50'}`}>
-              <ArrowRight className="w-6 h-6 text-cyan-400" />
-            </button>
+        </section>
+
+        {/* ─── CERTIFICATES ─── */}
+        <section id="certificates" className="snap-section relative overflow-hidden">
+          <div className="absolute inset-0">
+            <CertCarousel certs={certificates} />
           </div>
-        </div>
-      </section>
+          <div className="absolute top-8 inset-x-0 z-20 pointer-events-none flex justify-center px-6">
+            <div className="max-w-5xl w-full">
+              <SectionLabel n="05" label="Certificates" />
+            </div>
+          </div>
+        </section>
 
-      <section id="contact" className="snap-section px-6 bg-zinc-900/50 flex items-center justify-center">
-        <div className="max-w-4xl mx-auto text-center fade-in-up">
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight">
-            Let's <span className="bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">Connect</span>
-          </h2>
-          <div className="h-16"></div> {/* Explicit gap between heading and description */}
-          <p className="text-lg sm:text-xl text-zinc-400 max-w-2xl mx-auto" style={{ animationDelay: '0.2s' }}>
-            I'm actively seeking full-stack developer opportunities. Feel free to reach out if you'd like to discuss potential collaborations or just want to connect!
-          </p>
+        {/* ─── CONTACT ─── */}
+        <section id="contact" className="snap-section flex flex-col items-center px-8 py-16">
 
-          <div className="h-24"></div> {/* Explicit gap between description and icons */}
+          {/* Main content — flex-1 so it fills remaining height and centers itself */}
+          <div className="flex-1 flex flex-col items-center justify-center w-full max-w-xl text-center gap-12">
 
-          <div className="flex justify-center gap-x-16" style={{ animationDelay: '0.4s' }}>
-            <a href="https://www.facebook.com/kyle.lorenzana.967522" target="_blank" rel="noopener noreferrer" className="block transform hover:scale-110 transition-transform duration-300 text-blue-600">
-              <FacebookIcon />
-            </a>
-            <a href="https://github.com/frnczkyl" target="_blank" rel="noopener noreferrer" className="block transform hover:scale-110 transition-transform duration-300 text-white">
-              <GithubIcon />
-            </a>
-            <a href="https://www.linkedin.com/in/francis-kyle-lorenzana-a94777397/" target="_blank" rel="noopener noreferrer" className="block transform hover:scale-110 transition-transform duration-300 text-blue-500">
-              <LinkedInIcon />
-            </a>
+            {/* Label + headline */}
+            <motion.div
+              initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: false }} transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+            >
+              <SectionLabel n="06" label="Get In Touch" />
+              <h2 className="text-5xl sm:text-6xl md:text-7xl font-black tracking-tighter leading-tight mt-2">
+                Let's build<br />
+                <span className="bg-gradient-to-r from-white via-zinc-300 to-zinc-600 bg-clip-text text-transparent">
+                  something great.
+                </span>
+              </h2>
+              <p className="text-zinc-500 text-sm mt-6">
+                Open to full-stack roles, freelance, and creative collabs.
+              </p>
+            </motion.div>
+
+            {/* Email button */}
+            <motion.a
+              href="mailto:kaelexx12@gmail.com"
+              initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: false }} transition={{ duration: 0.55, delay: 0.12, ease: [0.16, 1, 0.3, 1] }}
+              className="group w-full flex items-center justify-center h-14 rounded-2xl border border-zinc-700 hover:border-zinc-400 bg-zinc-900/40 hover:bg-zinc-800 transition-all duration-200 text-base sm:text-lg font-bold text-white"
+            >
+              kaelexx12@gmail.com
+            </motion.a>
+
+            {/* Socials */}
+            <div className="flex gap-10 justify-center">
+              {[
+                { href: 'https://github.com/frnczkyl', icon: <GithubIcon width={22} height={22} />, label: 'GitHub', delay: 0.2 },
+                { href: 'https://www.linkedin.com/in/francis-kyle-lorenzana-a94777397/', icon: <LinkedInIcon width={22} height={22} />, label: 'LinkedIn', delay: 0.28 },
+                { href: 'https://www.facebook.com/kyle.lorenzana.967522', icon: <FacebookIcon width={22} height={22} />, label: 'Facebook', delay: 0.36 },
+              ].map(({ href, icon, label, delay }) => (
+                <motion.a
+                  key={label} href={href} target="_blank" rel="noopener noreferrer"
+                  initial={{ opacity: 0, y: 16, scale: 0.85 }}
+                  whileInView={{ opacity: 1, y: 0, scale: 1 }}
+                  viewport={{ once: false }}
+                  transition={{ duration: 0.45, delay, ease: [0.16, 1, 0.3, 1] }}
+                  className="group flex flex-col items-center gap-3"
+                >
+                  <div className="w-16 h-16 rounded-2xl border border-zinc-800 group-hover:border-white group-hover:bg-white flex items-center justify-center text-zinc-500 group-hover:text-black transition-all duration-200">
+                    {icon}
+                  </div>
+                  <span className="text-[10px] tracking-widest text-zinc-600 group-hover:text-zinc-300 transition-colors uppercase">{label}</span>
+                </motion.a>
+              ))}
+            </div>
           </div>
 
-          <div className="h-24"></div> {/* Explicit gap between icons and copyright */}
+          {/* Copyright — sits naturally at the bottom of the flex column */}
+          <motion.p
+            initial={{ opacity: 0 }} whileInView={{ opacity: 1 }}
+            viewport={{ once: false }} transition={{ duration: 0.5, delay: 0.45 }}
+            className="text-[11px] text-zinc-700 pt-8"
+          >
+            © 2025 Francis Kyle Lorenzana · All rights reserved
+          </motion.p>
+        </section>
 
-          <p className="text-sm text-zinc-500">© 2025 Francis Kyle Lorenzana. All rights reserved.</p>
-        </div>
-      </section>
-
-      <style jsx>{`
-        @keyframes fadeInUp {
-          from {
-            opacity: 0;
-            transform: translateY(30px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-        
-        @keyframes slideInLeft {
-          from {
-            opacity: 0;
-            transform: translateX(-30px);
-          }
-          to {
-            opacity: 1;
-            transform: translateX(0);
-          }
-        }
-        
-        @keyframes slideInRight {
-          from {
-            opacity: 0;
-            transform: translateX(30px);
-          }
-          to {
-            opacity: 1;
-            transform: translateX(0);
-          }
-        }
-        
-        @keyframes scaleIn {
-          from {
-            opacity: 0;
-            transform: scale(0.9);
-          }
-          to {
-            opacity: 1;
-            transform: scale(1);
-          }
-        }
-      `}</style>
-    </div>
+      </div>
+    </>
   );
 }

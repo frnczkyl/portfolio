@@ -1,29 +1,24 @@
 import type { Metadata } from "next";
-import { Space_Grotesk, JetBrains_Mono } from "next/font/google";
+import { Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 import "./mobile.css";
+import DotBackground from "./components/DotBackground";
 
-const spaceGrotesk = Space_Grotesk({
-  variable: "--font-space-grotesk",
+const plusJakartaSans = Plus_Jakarta_Sans({
+  variable: "--font-jakarta",
   subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700"],
-});
-
-const jetbrainsMono = JetBrains_Mono({
-  variable: "--font-jetbrains-mono",
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
+  weight: ["300", "400", "500", "600", "700", "800"],
 });
 
 export const metadata: Metadata = {
   icons: { icon: '/favicon.svg' },
   title: "Francis Kyle Lorenzana | Full-Stack Developer",
-  description: "4th-year Software Developer student specializing in full-stack development with React.js, Django Python, and modern web technologies.",
+  description: "BSIT Graduate specializing in full-stack development with React.js, Next.js, Django, and modern web technologies.",
   keywords: ["Full-Stack Developer", "Software Developer", "React.js", "Django", "Python", "Java", "Web Development"],
   authors: [{ name: "Francis Kyle Lorenzana" }],
   openGraph: {
     title: "Francis Kyle Lorenzana | Full-Stack Developer",
-    description: "4th-year Software Developer student specializing in full-stack development",
+    description: "BSIT Graduate specializing in full-stack development",
     type: "website",
   },
 };
@@ -39,18 +34,8 @@ export default function RootLayout({
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="stylesheet" type='text/css' href="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/devicon.min.css" />
       </head>
-      <body
-        className={`${spaceGrotesk.variable} ${jetbrainsMono.variable} antialiased`}
-      >
-        <video
-          src="/Background2.mp4"
-          autoPlay
-          loop
-          muted
-          playsInline
-          poster="/placeholder-video-poster.jpg"
-          className="fixed inset-0 w-full h-full object-cover -z-10"
-        ></video>
+      <body className={`${plusJakartaSans.variable} antialiased`}>
+        <DotBackground />
         {children}
       </body>
     </html>
