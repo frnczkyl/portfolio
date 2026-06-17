@@ -233,35 +233,61 @@ export default function Portfolio() {
       >
 
         {/* ─── NAV ─── */}
-        <nav className="fixed top-0 left-0 right-0 z-50 bg-black/80 backdrop-blur-2xl border-b border-white/[0.06] w-full">
-          <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+        <nav className="fixed top-0 left-0 right-0 z-50 backdrop-blur-xl bg-black/40">
+          <div className="max-w-5xl mx-auto w-full px-8 h-14 flex items-center justify-between">
+            {/* Logo */}
             <div className={`flex items-center gap-2 transition-all duration-700 ${mounted ? 'opacity-100' : 'opacity-0 -translate-x-4'}`}>
-              <span className="text-lg font-black text-white tracking-tight">Kyle's Portfolio</span>
-              <Image src="/Giphy.gif" alt="icon" width={isMobile ? 20 : 36} height={isMobile ? 20 : 36} />
+              <span className="text-sm font-black text-white tracking-tight">Kyle's Portfolio</span>
+              <Image src="/Giphy.gif" alt="icon" width={isMobile ? 18 : 22} height={isMobile ? 18 : 22} />
             </div>
-            <div className="hidden md:flex gap-8 text-sm font-medium">
+
+            {/* Links */}
+            <div className="hidden md:flex items-center gap-7">
               {NAV.map((item) => (
                 <a key={item} href={`#${item.toLowerCase()}`}
-                  className={`relative group transition-colors duration-200 ${activeSection === item.toLowerCase() ? 'text-white' : 'text-zinc-500 hover:text-zinc-200'}`}>
+                  className={`text-[11px] font-semibold tracking-widest uppercase transition-colors duration-200 ${
+                    activeSection === item.toLowerCase() ? 'text-white' : 'text-zinc-500 hover:text-zinc-300'
+                  }`}>
                   {item}
-                  <span className={`absolute -bottom-0.5 left-0 h-px bg-white transition-all duration-300 ${activeSection === item.toLowerCase() ? 'w-full' : 'w-0 group-hover:w-full'}`} />
                 </a>
               ))}
             </div>
-            <button className="md:hidden text-zinc-400" onClick={() => setIsMobileMenuOpen((v) => !v)}>
-              {isMobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
+
+            {/* Mobile hamburger */}
+            <button className="md:hidden text-zinc-400 hover:text-white transition-colors" onClick={() => setIsMobileMenuOpen((v) => !v)}>
+              {isMobileMenuOpen ? <X size={18} /> : <Menu size={18} />}
             </button>
           </div>
-          {isMobileMenuOpen && (
-            <div className="md:hidden bg-black/95 border-t border-white/[0.06]">
-              <div className="flex flex-col items-center gap-5 py-6">
-                {NAV.map((item) => (
-                  <a key={item} href={`#${item.toLowerCase()}`} onClick={() => setIsMobileMenuOpen(false)}
-                    className={`text-sm font-medium transition-colors ${activeSection === item.toLowerCase() ? 'text-white' : 'text-zinc-500'}`}>{item}</a>
-                ))}
-              </div>
-            </div>
-          )}
+
+          {/* Mobile menu */}
+          <AnimatePresence>
+            {isMobileMenuOpen && (
+              <motion.div
+                key="mobile-menu"
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: 'auto', opacity: 1 }}
+                exit={{ height: 0, opacity: 0 }}
+                transition={{ duration: 0.3, ease: [0.25, 0.46, 0.45, 0.94] }}
+                className="md:hidden overflow-hidden border-t border-white/5 bg-black/80 backdrop-blur-xl"
+              >
+                <div className="flex flex-col items-center gap-5 py-6">
+                  {NAV.map((item, i) => (
+                    <motion.a
+                      key={item}
+                      href={`#${item.toLowerCase()}`}
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      initial={{ opacity: 0, y: -8 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: i * 0.05 + 0.1, duration: 0.2 }}
+                      className={`text-xs font-semibold tracking-widest uppercase transition-colors ${activeSection === item.toLowerCase() ? 'text-white' : 'text-zinc-500'}`}
+                    >
+                      {item}
+                    </motion.a>
+                  ))}
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </nav>
 
         {/* ─── HERO ─── */}
@@ -321,21 +347,21 @@ export default function Portfolio() {
 
               {/* Photo */}
               <motion.div
-                className="relative rounded-2xl overflow-hidden"
-                style={{ minHeight: 320 }}
+                className="flex flex-col gap-2"
                 initial={{ opacity: 0, x: -20 }} whileInView={{ opacity: 1, x: 0 }}
                 viewport={{ once: false, amount: 0.2 }} transition={{ duration: 0.55 }}
               >
-                <Image src="/MeMyself.jpg" alt="Francis Kyle Lorenzana" fill className="object-cover object-top" />
-                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/30 to-transparent" />
-                {/* Name over photo */}
-                <div className="absolute bottom-0 left-0 right-0 p-5">
-                  <p className="text-2xl font-black text-white leading-tight">Francis Kyle</p>
-                  <p className="text-2xl font-black text-zinc-500 leading-tight">Lorenzana</p>
-                  <div className="flex items-center gap-1.5 mt-2">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                    <span className="text-xs text-emerald-400 font-semibold tracking-wide">Available for hire</span>
+                <div className="relative rounded-2xl overflow-hidden" style={{ minHeight: 320, flex: 1 }}>
+                  <Image src="/MeMyself.jpg" alt="Francis Kyle Lorenzana" fill className="object-cover object-top" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
+                  <div className="absolute bottom-0 left-0 right-0 p-5">
+                    <p className="text-2xl font-black text-white leading-tight">Francis Kyle</p>
+                    <p className="text-2xl font-black text-zinc-500 leading-tight">Lorenzana</p>
                   </div>
+                </div>
+                <div className="flex items-center gap-1.5 px-1">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                  <span className="text-xs text-emerald-400 font-semibold tracking-wide">Available for hire</span>
                 </div>
               </motion.div>
 
@@ -374,11 +400,9 @@ export default function Portfolio() {
                     { icon: 'M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0zM15 11a3 3 0 11-6 0 3 3 0 016 0z', text: 'Talisay, Cebu' },
                   ].map(({ icon, text }) => (
                     <div key={text} className="flex items-center gap-3 text-sm text-zinc-400">
-                      <div className="w-7 h-7 rounded-lg bg-zinc-900 border border-zinc-800 flex items-center justify-center flex-shrink-0">
-                        <svg className="w-3.5 h-3.5 text-zinc-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d={icon} />
-                        </svg>
-                      </div>
+                      <svg className="w-3.5 h-3.5 text-zinc-500 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d={icon} />
+                      </svg>
                       {text}
                     </div>
                   ))}
