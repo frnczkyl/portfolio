@@ -32,6 +32,10 @@ function getTagIcon(tag: string) {
     'React': 'devicon-react-original colored', 'Next.js': 'devicon-nextjs-plain text-white',
     'Django': 'devicon-django-plain text-emerald-400', 'Android': 'devicon-android-plain colored',
     'Godot': 'devicon-godot-plain colored', 'PostgreSQL': 'devicon-postgresql-plain colored',
+    'Tailwind CSS': 'devicon-tailwindcss-plain colored', 'Prisma': 'devicon-prisma-original text-white',
+    'Docker': 'devicon-docker-plain colored', 'MySQL': 'devicon-mysql-plain colored',
+    'TypeScript': 'devicon-typescript-plain colored', 'PostgreSQL + Prisma': 'devicon-postgresql-plain colored',
+    'lucide-react': 'devicon-react-original colored',
   };
   if (dm[tag]) return <i className={`${dm[tag]} text-base leading-none`} />;
   const lm: Record<string, React.ReactElement> = {
@@ -44,6 +48,7 @@ function getTagIcon(tag: string) {
   };
   if (lm[tag]) return lm[tag];
   if (tag === 'XAMPP') return <Image src="/Xampp.svg" alt="XAMPP" width={14} height={14} className="object-contain" />;
+  if (tag === 'Go High Level') return <Image src="/GoHighLevel.svg" alt="Go High Level" width={14} height={14} className="object-contain" />;
   return <span className="text-[8px] font-bold text-zinc-300">{tag.slice(0, 3)}</span>;
 }
 
@@ -97,7 +102,7 @@ export default function Portfolio() {
       subtitle: 'Human Resources Platform',
       description: 'Internal HR management system for BAI Finance Group. Built comprehensive modules for employee records, attendance tracking, and payroll processing using Django REST Framework and React.',
       link: 'https://bai-hr-forkproduction-production.up.railway.app/',
-      tags: ['Django', 'React', 'PostgreSQL', 'REST API'],
+      tags: ['TypeScript', 'Next.js', 'PostgreSQL + Prisma', 'Tailwind CSS', 'lucide-react'],
       accent: '#818cf8',
       bg: 'from-indigo-950/80 to-zinc-950',
       cardBg: 'linear-gradient(145deg, #1e1b4b 0%, #312e81 55%, #4c1d95 100%)',
@@ -121,7 +126,7 @@ export default function Portfolio() {
       subtitle: 'Official Corporate Website',
       description: 'Official corporate website for BAI Finance Group of Companies. Developed a modern, fully-responsive platform with Next.js showcasing company services, leadership, and client engagement.',
       link: 'https://bai-website-forkproduction-production.up.railway.app/',
-      tags: ['Next.js', 'React', 'Tailwind CSS'],
+      tags: ['Next.js', 'Tailwind CSS', 'Go High Level'],
       accent: '#fbbf24',
       bg: 'from-amber-950/60 to-zinc-950',
       cardBg: 'linear-gradient(145deg, #1c1007 0%, #78350f 60%, #92400e 100%)',
@@ -163,6 +168,11 @@ export default function Portfolio() {
       { name: 'Postman', icon: 'devicon-postman-plain colored', desc: '' },
       { name: 'Bash', icon: 'devicon-bash-plain colored', desc: '' },
       { name: 'PowerShell', icon: 'devicon-powershell-plain colored', desc: '' },
+      { name: 'Prisma', icon: 'devicon-prisma-original text-white', desc: '' },
+      { name: 'Go High Level', custom: true, src: '/GoHighLevel.svg', desc: '' },
+      { name: 'Docker', icon: 'devicon-docker-plain colored', desc: '' },
+      { name: 'MySQL', icon: 'devicon-mysql-plain colored', desc: '' },
+      { name: 'PostgreSQL', icon: 'devicon-postgresql-plain colored', desc: '' },
     ],
   };
 
@@ -376,8 +386,13 @@ export default function Portfolio() {
 
                 {/* Education */}
                 <div className="flex items-center gap-3">
-                  <div className="w-9 h-9 rounded-lg bg-white p-0.5 flex-shrink-0">
-                    <Image src="/CITLOGO.png" alt="CIT-U" width={28} height={28} className="w-full h-full object-contain" />
+                  <div className="relative w-9 h-9 flex-shrink-0">
+                    <div className="absolute inset-0 rounded-lg overflow-hidden">
+                      <div className="cit-ring" />
+                    </div>
+                    <div className="absolute inset-[2px] rounded-md bg-[#111] flex items-center justify-center overflow-hidden">
+                      <Image src="/CITLOGO.png" alt="CIT-U" width={28} height={28} className="w-full h-full object-contain" />
+                    </div>
                   </div>
                   <div>
                     <p className="text-sm font-bold text-white">Cebu Institute of Technology - U</p>
