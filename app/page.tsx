@@ -304,16 +304,24 @@ export default function Portfolio() {
               Full-Stack Developer
             </motion.p>
 
-            <div className={`typing-container ${introComplete ? 'fade-in-up' : 'opacity-0'}`}>
-              <h1 className="text-[2.6rem] sm:text-7xl md:text-8xl lg:text-[7rem] font-black tracking-tighter leading-[0.88]">
-                <div className="typing-animation line1 block">
-                  <span className="text-white">FRANCIS KYLE</span>
-                </div>
-                <div className="typing-animation line2 block">
-                  <span className="bg-gradient-to-r from-white via-zinc-300 to-zinc-600 bg-clip-text text-transparent">LORENZANA</span>
-                </div>
-              </h1>
-            </div>
+            <h1 className="text-[2.6rem] sm:text-7xl md:text-8xl lg:text-[7rem] font-black tracking-tighter leading-[0.88]">
+              <motion.div
+                className="block"
+                initial={{ opacity: 0, y: 10 }}
+                animate={introComplete ? { opacity: 1, y: 0 } : { opacity: 0, y: 10 }}
+                transition={{ delay: 0.3, duration: 0.7 }}
+              >
+                <span className="text-white">FRANCIS KYLE</span>
+              </motion.div>
+              <motion.div
+                className="block"
+                initial={{ opacity: 0, y: 10 }}
+                animate={introComplete ? { opacity: 1, y: 0 } : { opacity: 0, y: 10 }}
+                transition={{ delay: 0.55, duration: 0.7 }}
+              >
+                <span className="bg-gradient-to-r from-white via-zinc-300 to-zinc-600 bg-clip-text text-transparent">LORENZANA</span>
+              </motion.div>
+            </h1>
 
             <motion.div
               initial={{ opacity: 0, y: 16 }}
@@ -321,7 +329,7 @@ export default function Portfolio() {
               transition={{ delay: 0.9, duration: 0.6 }}
               className="flex flex-row gap-3 sm:gap-4 justify-center items-center"
             >
-              <StarButton href="#projects">VIEW MY WORK</StarButton>
+              <StarButton href="#experience">VIEW MY WORK</StarButton>
               <StarButton href="#contact">GET IN TOUCH</StarButton>
             </motion.div>
           </div>
@@ -612,7 +620,7 @@ export default function Portfolio() {
           <div className="absolute inset-0">
             <CertCarousel certs={certificates} />
           </div>
-          <div className="absolute top-8 inset-x-0 z-20 pointer-events-none flex justify-center px-6">
+          <div className="absolute top-8 md:top-16 inset-x-0 z-20 pointer-events-none flex justify-center px-6">
             <div className="max-w-5xl w-full">
               <SectionLabel n="05" label="Certificates" />
             </div>

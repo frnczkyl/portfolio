@@ -3,17 +3,17 @@
 import { useEffect, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 
-const TOTAL_DOTS = 160;
-const APPEAR_STAGGER = 18;
-const HOLD_MS = 2800;
-const DISAPPEAR_STAGGER = 16;
-const FADE_IN_RATE = 0.045;
-const FADE_OUT_RATE = 0.055;
+const TOTAL_DOTS = 120;
+const APPEAR_STAGGER = 13;
+const HOLD_MS = 1100;
+const DISAPPEAR_STAGGER = 13;
+const FADE_IN_RATE = 0.05;
+const FADE_OUT_RATE = 0.065;
 
-// Dots start disappearing at ~6180ms — start letter exit just before so they fade together
-const TEXT_IN_MS = 700;
-const TEXT_EXIT_MS = 5900;
-const TEXT_GONE_MS = TEXT_EXIT_MS + 1800;
+// Dots start disappearing at ~3160ms — start letter exit just before so they fade together
+const TEXT_IN_MS = 500;
+const TEXT_EXIT_MS = 2900;
+const TEXT_GONE_MS = TEXT_EXIT_MS + 1500;
 
 const LINE1 = 'Welcome to my';
 const LINE2 = 'Portfolio';
