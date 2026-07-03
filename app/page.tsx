@@ -177,16 +177,17 @@ export default function Portfolio() {
   };
 
   const certificates = [
-    { name: 'FreeCodeCamp — Front End Development Libraries V8', image: '/FreeCodeCamp.png', link: 'https://www.freecodecamp.org/certification/franciskylelorenzana/front-end-development-libraries' },
+    { name: 'Introduction to AI', image: '/Introduction_toAI.png', link: 'https://drive.google.com/file/d/1-nGHVZxzndQp8nj9VNcMkFzKrPfmsqJA/view?usp=sharing' },
+    { name: 'Intro to AI Ethics', image: '/Intro to AI Ethics.png', link: 'https://drive.google.com/file/d/1ojS87Ba0QX5PPmeYn1GSqLtoHXU-nACd/view?usp=drive_link' },
     { name: 'AWS Academy Cloud Foundations', image: '/AWS.png', link: 'https://drive.google.com/file/d/1fCfX2trjn4fW2SG6a2I0iA83Xu8QAKrt/view?usp=drive_link' },
+    { name: 'AWS Academy Cloud Architecting', image: '/AwsArchitecting.png', link: 'https://drive.google.com/file/d/1hYegeloVsDd1Wd1hA7760M36DuSFxSdt/view?usp=sharing' },
+    { name: 'FreeCodeCamp — Front End Development Libraries V8', image: '/FreeCodeCamp.png', link: 'https://www.freecodecamp.org/certification/franciskylelorenzana/front-end-development-libraries' },
+    { name: 'SQL (Basic) Certificate', image: '/SQL_Certificate.png', link: 'https://drive.google.com/file/d/18JkI21PouW3WoMEgWfv9ebLJIh1JisC3/view?usp=sharing' },
     { name: 'Data Visualization — Kaggle', image: '/Data Visualization.png', link: 'https://drive.google.com/file/d/10JjnTdPeY67tvnqvLvlf4VUpIPViPjgb/view?usp=drive_link' },
-    { name: 'Webinar on Intellectual Property Rights', image: '/Webinar.png', link: 'https://drive.google.com/file/d/1XOIgO-XjMlA-wylJwX-TfIn6LnetsS8O/view?usp=drive_link' },
     { name: 'Introduction to HTML — Sololearn', image: '/SoloLearn HTML.png', link: 'https://drive.google.com/file/d/1B7jYS0LnZhYkRSqGZPweCBUurowOaFFT/view?usp=drive_link' },
     { name: 'Introduction to JavaScript — Sololearn', image: '/SoloLearn Javascript.png', link: 'https://drive.google.com/file/d/1WtGUzpd1R6GxXitp0CUWcaKQfb30c5PT/view?usp=drive_link' },
-    { name: 'AWS Academy Cloud Architecting', image: '/AwsArchitecting.png', link: 'https://drive.google.com/file/d/1hYegeloVsDd1Wd1hA7760M36DuSFxSdt/view?usp=sharing' },
     { name: 'DevFest Cebu Workshop — Google Developers', image: '/DevFest.png', link: 'https://drive.google.com/file/d/1o2CQwMvUmWUkuxW4bffvMq5SOnmoCAsN/view?usp=sharing' },
-    { name: 'SQL (Basic) Certificate', image: '/SQL_Certificate.png', link: 'https://drive.google.com/file/d/18JkI21PouW3WoMEgWfv9ebLJIh1JisC3/view?usp=sharing' },
-    { name: 'Introduction to AI', image: '/Introduction_toAI.png', link: 'https://drive.google.com/file/d/1-nGHVZxzndQp8nj9VNcMkFzKrPfmsqJA/view?usp=sharing' },
+    { name: 'Webinar on Intellectual Property Rights', image: '/Webinar.png', link: 'https://drive.google.com/file/d/1XOIgO-XjMlA-wylJwX-TfIn6LnetsS8O/view?usp=drive_link' },
   ];
 
   useEffect(() => {
