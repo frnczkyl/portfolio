@@ -135,15 +135,15 @@ export default function Portfolio() {
     },
     {
       title: 'BAI Group of Companies — Landing Page',
-      subtitle: 'Interactive 3D Corporate Landing Page',
-      description: 'Frontend-only landing page unifying BAI Group\'s finance, legal, migration, education, remittance, and business divisions under one brand. Built with Next.js and an interactive 3D coin centerpiece, featuring scroll-driven animations and orbital motion design to visualize the group\'s "constellation of companies."',
+      subtitle: 'Corporate Landing Page',
+      description: 'Frontend-only landing page unifying BAI Group\'s eight specialist divisions — Finance, Academy, Remittance, Business Hub, Baikada Studios, Finance Korea, and more — under one brand. Built with Svelte, a compiler-based reactive framework, using JavaScript/TypeScript to keep the UI fast and lightweight, with scroll-driven animations showcasing what BAI has to offer.',
       link: 'https://bai-group-of-companies-landing-page-fork-deplo-production.up.railway.app/',
-      tags: ['Next.js', 'Three.js', 'React Three Fiber', 'Framer Motion', 'Tailwind CSS'],
+      tags: ['Svelte', 'TypeScript', 'JavaScript', 'CSS'],
       accent: '#facc15',
       bg: 'from-yellow-950/60 to-zinc-950',
       cardBg: 'linear-gradient(145deg, #1c1a07 0%, #713f12 55%, #a16207 100%)',
       glowBg: 'radial-gradient(circle, rgba(250,204,21,0.5) 0%, transparent 70%)',
-      image: '/landingpage.png',
+      image: '/Landingpage.png',
     },
   ];
 
@@ -185,6 +185,8 @@ export default function Portfolio() {
       { name: 'Docker', icon: 'devicon-docker-plain colored', desc: '' },
       { name: 'MySQL', icon: 'devicon-mysql-plain colored', desc: '' },
       { name: 'PostgreSQL', icon: 'devicon-postgresql-plain colored', desc: '' },
+      { name: 'Svelte', icon: 'devicon-svelte-plain colored', desc: '' },
+      { name: 'Asana', custom: true, src: '/Asana.svg', desc: '' },
     ],
   };
 
@@ -340,10 +342,11 @@ export default function Portfolio() {
               initial={{ opacity: 0, y: 16 }}
               animate={introComplete ? { opacity: 1, y: 0 } : { opacity: 0, y: 16 }}
               transition={{ delay: 0.9, duration: 0.6 }}
-              className="flex flex-row gap-3 sm:gap-4 justify-center items-center"
+              className="flex flex-row flex-wrap gap-3 sm:gap-4 justify-center items-center"
             >
               <StarButton href="#experience">VIEW MY WORK</StarButton>
               <StarButton href="#contact">GET IN TOUCH</StarButton>
+              <StarButton href="/Lorenzana_Resume.pdf" target="_blank">DOWNLOAD RESUME</StarButton>
             </motion.div>
           </div>
 
