@@ -143,7 +143,7 @@ export default function Portfolio() {
       bg: 'from-yellow-950/60 to-zinc-950',
       cardBg: 'linear-gradient(145deg, #1c1a07 0%, #713f12 55%, #a16207 100%)',
       glowBg: 'radial-gradient(circle, rgba(250,204,21,0.5) 0%, transparent 70%)',
-      image: '/Landingpage.png',
+      image: '/Bai Finance LandingPage.png',
     },
   ];
 
@@ -187,6 +187,9 @@ export default function Portfolio() {
       { name: 'PostgreSQL', icon: 'devicon-postgresql-plain colored', desc: '' },
       { name: 'Svelte', icon: 'devicon-svelte-plain colored', desc: '' },
       { name: 'Asana', custom: true, src: '/Asana.svg', desc: '' },
+      { name: 'ServiceNow', custom: true, src: '/ServiceNow.svg', desc: '' },
+      { name: 'Claude', custom: true, src: '/Claude.svg', desc: '' },
+      { name: 'Gemini', custom: true, src: '/Gemini.svg', desc: '' },
     ],
   };
 
