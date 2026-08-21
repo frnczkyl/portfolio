@@ -1,114 +1,94 @@
-@media (max-width: 768px) {
+@media (max-width: 767.98px) {
 
-  /* ── Snap: disable snapping, allow free scroll ── */
-  .snap-container {
-    scroll-snap-type: none !important;
-    overflow-x: hidden !important;
-  }
-  .snap-section {
-    scroll-snap-align: none !important;
-    height: auto !important;
-    min-height: unset !important;
-    padding-left: 1.25rem !important;
-    padding-right: 1.25rem !important;
-    display: block !important;
+  /* No overflow rule here on purpose. Setting overflow-x on `html` stops body's
+     value from propagating to the viewport, which turns body into a scroll
+     container and breaks the sticky work stack. body alone (in globals.css)
+     already contains horizontal overflow at every width. */
+
+  nav a:active {
+    color: #17150e !important;
   }
 
-  html, body {
-    overflow-x: hidden !important;
-  }
+  /* ─────────────────────────────────────────────
+     Centred reading column on small screens.
 
-  /* ── Hero: keep full-screen ── */
-  #hero {
-    display: flex !important;
-    flex-direction: column !important;
-    align-items: center !important;
-    justify-content: center !important;
-    height: 100vh !important;
-    padding-top: 5rem !important;
-    padding-bottom: 2rem !important;
-  }
-  #hero .star-btn {
-    width: 8.5rem !important;
-    height: 2.5rem !important;
-  }
-  #hero .star-btn strong {
-    font-size: 8px !important;
-    letter-spacing: 1.5px !important;
-  }
-
-  /* ── All content sections ── */
+     Each section centres its own text. The rules
+     after it re-centre the boxes that text-align
+     can't reach on its own — flex rows, and blocks
+     whose width is capped by a max-width.
+  ───────────────────────────────────────────── */
+  #hero,
   #about,
+  #experience,
   #projects,
   #skills,
-  #experience,
   #certificates,
-  #contact {
-    padding-top: 5.5rem !important;
-    padding-bottom: 4rem !important;
-    padding-left: 1.25rem !important;
-    padding-right: 1.25rem !important;
-    margin-bottom: 0 !important;
-    display: block !important;
+  footer {
+    text-align: center;
   }
 
-  /* ── About ── */
-  #about .grid {
-    display: flex !important;
-    flex-direction: column !important;
-    gap: 2rem !important;
+  /* a width-capped paragraph needs its box centred, not just its text */
+  #hero p,
+  #about p,
+  #experience p,
+  #projects p,
+  #skills p,
+  #certificates p {
+    margin-left: auto;
+    margin-right: auto;
   }
 
-  /* ── Projects ── */
-  #projects .grid {
-    display: flex !important;
-    flex-direction: column !important;
-    gap: 2rem !important;
-  }
-  #projects .grid > div:first-child,
-  #projects .grid > div:first-child > div {
-    width: 100% !important;
-    min-height: 200px !important;
-  }
-  #projects .grid > div:last-child {
-    width: 100% !important;
-    align-items: center !important;
-    text-align: center !important;
+  /* flex rows that would otherwise stay packed to the left */
+  .cta-row,
+  .inline-row,
+  .tag-row,
+  .action-row,
+  .group-head,
+  .work-card-meta {
+    justify-content: center;
   }
 
-  /* ── Skills: smaller cards on mobile ── */
-  #skills .p-4 {
-    padding: 0.625rem !important;
+  .cta-row .btn {
+    justify-content: center;
   }
 
-  /* ── Experience ── */
-  #experience .max-w-lg {
-    max-width: 100% !important;
+  /* the work card's caption sits over the screenshot */
+  .work-card-caption {
+    text-align: center;
   }
 
-  /* ── Certificates: needs a fixed height so height:100% on cc-wrap resolves ── */
-  #certificates {
-    height: 100svh !important;
-    min-height: 100svh !important;
-    padding: 0 !important;
-    position: relative !important;
-    overflow: hidden !important;
-    display: block !important;
+  /* project rows: index above the title rather than beside it */
+  #projects .num-row {
+    flex-direction: column;
+    align-items: center;
+    gap: 0.35rem;
+  }
+  #projects .num-row .idx {
+    width: auto;
   }
 
-  /* ── Contact ── */
-  #contact {
-    min-height: 100svh !important;
-    display: flex !important;
-    flex-direction: column !important;
-    align-items: center !important;
-    justify-content: flex-start !important;
-    padding-top: 5rem !important;
-    padding-bottom: 3rem !important;
+  /* this one header goes side-by-side at sm; keep it stacked while centred */
+  .section-head {
+    flex-direction: column;
+    align-items: center;
   }
 
-  /* ── Nav tap ── */
-  nav a:active {
-    color: #ffffff !important;
+  /* footer link columns */
+  footer .flex.flex-col {
+    align-items: center;
+  }
+}
+
+@media (max-width: 767.98px) {
+  /* Travel distances are tuned for a desktop-width column. On a phone the
+     same throw pushes letters and tiles well past the edge — contained by
+     body's overflow, but it means content animating in off-screen. */
+  .scatter-unit {
+    --sx: 34px;
+    --sr: 26deg;
+  }
+  .skill-cell {
+    --travel-x: 22px;
+    --travel-y: 14px;
   }
 }
