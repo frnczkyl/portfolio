@@ -12,6 +12,7 @@ import CircuitRail from './components/CircuitRail';
 import SkillsGrid, { type SkillItem } from './components/SkillsGrid';
 import ScatterText from './components/ScatterText';
 import WorkStack, { type WorkItem } from './components/WorkStack';
+import ImagePlate from './components/ImagePlate';
 
 type Project = {
   title: string;
@@ -27,7 +28,7 @@ function getTagIcon(tag: string) {
     'Java': 'devicon-java-plain colored', 'Python': 'devicon-python-plain colored',
     'C#': 'devicon-csharp-plain colored', 'React.js': 'devicon-react-original colored',
     'React': 'devicon-react-original colored', 'Next.js': 'devicon-nextjs-plain text-[var(--foreground)]',
-    'Django': 'devicon-django-plain text-emerald-700', 'Android': 'devicon-android-plain colored',
+    'Django': 'devicon-django-plain icon-django', 'Android': 'devicon-android-plain colored',
     'Godot': 'devicon-godot-plain colored', 'PostgreSQL': 'devicon-postgresql-plain colored',
     'Tailwind CSS': 'devicon-tailwindcss-plain colored', 'Prisma': 'devicon-prisma-original text-[var(--foreground)]',
     'Docker': 'devicon-docker-plain colored', 'MySQL': 'devicon-mysql-plain colored',
@@ -100,7 +101,7 @@ export default function Portfolio() {
       { name: 'React.js', icon: 'devicon-react-original colored' },
       { name: 'Next.js', icon: 'devicon-nextjs-plain text-[var(--foreground)]' },
       { name: 'Tailwind CSS', icon: 'devicon-tailwindcss-plain colored' },
-      { name: 'Django', icon: 'devicon-django-plain text-emerald-700' },
+      { name: 'Django', icon: 'devicon-django-plain icon-django' },
       { name: 'Node.js', icon: 'devicon-nodejs-plain colored' },
       { name: 'Firebase', icon: 'devicon-firebase-plain colored' },
       { name: 'Supabase', icon: 'devicon-supabase-plain colored' },
@@ -110,11 +111,11 @@ export default function Portfolio() {
       { name: 'AWS', icon: 'devicon-amazonwebservices-plain-wordmark colored' },
       { name: 'Android', icon: 'devicon-android-plain colored' },
       { name: 'Vercel', icon: 'devicon-vercel-plain text-[var(--foreground)]' },
-      { name: 'Railway', icon: 'devicon-railway-original colored' },
+      { name: 'Railway', icon: 'devicon-railway-original text-[var(--foreground)]' },
       { name: 'Godot', icon: 'devicon-godot-plain colored' },
       { name: 'Postman', icon: 'devicon-postman-plain colored' },
       { name: 'Bash', icon: 'devicon-bash-plain colored' },
-      { name: 'PowerShell', icon: 'devicon-powershell-plain colored' },
+      { name: 'PowerShell', icon: 'devicon-powershell-plain icon-powershell' },
       { name: 'Prisma', icon: 'devicon-prisma-original text-[var(--foreground)]' },
       { name: 'Go High Level', custom: true, src: '/GoHighLevel.svg' },
       { name: 'Docker', icon: 'devicon-docker-plain colored' },
@@ -257,12 +258,13 @@ export default function Portfolio() {
             initial={{ opacity: 0, x: -16 }} whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: false, amount: 0.3 }} transition={{ duration: 0.5 }}
             /* capped so the portrait does not tower over the text column */
-            className="corner-frame p-1 w-full max-w-md mx-auto md:mx-0"
+            className="w-full max-w-md mx-auto md:mx-0"
           >
-            <span className="cf-tr" /><span className="cf-br" />
-            <div className="relative rounded-xl overflow-hidden border border-[var(--border)]" style={{ aspectRatio: '4/5' }}>
-              <Image src="/MeMyself.jpg" alt="Francis Kyle Lorenzana" fill className="object-cover object-top" />
-            </div>
+            <ImagePlate code="FIG.01" label="Talisay, Cebu">
+              <div className="relative" style={{ aspectRatio: '4/5' }}>
+                <Image src="/MeMyself.jpg" alt="Francis Kyle Lorenzana" fill className="object-cover object-top" />
+              </div>
+            </ImagePlate>
           </motion.div>
 
           <motion.div
@@ -395,18 +397,19 @@ export default function Portfolio() {
 
             {/* preview only earns its place beside the list; below lg it is just a
                 stacked screenshot, and being display:none keeps it unfetched */}
-            <div className="corner-frame p-1 hidden lg:block lg:sticky lg:top-24">
-              <span className="cf-tr" /><span className="cf-br" />
-              <AnimatePresence mode="wait">
-                <motion.div
-                  key={p.image}
-                  initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.3 }}
-                  className="relative rounded-xl overflow-hidden border border-[var(--border)]"
-                  style={{ aspectRatio: '16/11' }}
-                >
-                  <Image src={p.image} alt={p.title} fill className="object-cover" />
-                </motion.div>
-              </AnimatePresence>
+            <div className="hidden lg:block lg:sticky lg:top-24">
+              <ImagePlate code={`PRJ.${String(projectIndex + 1).padStart(2, '0')}`} label={p.title}>
+                <AnimatePresence mode="wait">
+                  <motion.div
+                    key={p.image}
+                    initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.3 }}
+                    className="relative"
+                    style={{ aspectRatio: '16/11' }}
+                  >
+                    <Image src={p.image} alt={p.title} fill className="object-cover" />
+                  </motion.div>
+                </AnimatePresence>
+              </ImagePlate>
             </div>
           </div>
         </div>
@@ -453,9 +456,13 @@ export default function Portfolio() {
 
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
             {visibleCerts.map((cert) => (
-              <a key={cert.name} href={cert.link} target="_blank" rel="noopener noreferrer" className="shot-tile flex flex-col">
-                <div className="relative w-full" style={{ aspectRatio: '4/3' }}>
+              <a key={cert.name} href={cert.link} target="_blank" rel="noopener noreferrer" className="shot-tile cert-card flex flex-col">
+                {/* viewfinder marks sit over the thumbnail so they cost no space */}
+                <div className="cert-shot relative w-full" style={{ aspectRatio: '4/3' }}>
                   <Image src={cert.image} alt={cert.name} fill className="object-cover" />
+                  <span className="cert-mark cm-tl" aria-hidden />
+                  <span className="cert-mark cm-br" aria-hidden />
+                  <span className="cert-scan" aria-hidden />
                 </div>
                 <div className="p-3">
                   {/* fixed two-line box so every card is the same height */}
