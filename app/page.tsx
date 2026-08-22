@@ -262,7 +262,7 @@ export default function Portfolio() {
           >
             <ImagePlate code="FIG.01" label="Talisay, Cebu">
               <div className="relative" style={{ aspectRatio: '4/5' }}>
-                <Image src="/MeMyself.jpg" alt="Francis Kyle Lorenzana" fill className="object-cover object-top" />
+                <Image src="/Me.JPG" alt="Francis Kyle Lorenzana" fill priority className="object-cover object-[50%_28%]" />
               </div>
             </ImagePlate>
           </motion.div>

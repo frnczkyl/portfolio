@@ -901,8 +901,14 @@
 }
 
 @media (max-width: 768px) {
+  /* Shorten the slot rather than growing the card: on a phone the card can
+     only be as wide as the column, so a taller card just crops the screenshot
+     harder. A shorter slot closes the gap and tightens the whole stack. */
+  .work-slot {
+    height: 78svh;
+  }
   .work-card {
-    --card-h: min(52svh, 22rem);
+    --card-h: min(54svh, 23rem);
     border-radius: 1rem;
   }
   .work-card-caption { left: 1rem; right: 1rem; bottom: 1rem; }
@@ -1122,4 +1128,6 @@ footer.corner-frame::after {
 
 .icon-powershell { color: #2b6fd6; }
 :root[data-theme="dark"] .icon-powershell { color: #6aa5ff; }
+
+
 
